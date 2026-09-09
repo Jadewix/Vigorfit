@@ -1,0 +1,198 @@
+@import "tailwindcss";
+
+/*
+  The client booking flow runs the dark brand inside the same dashboard shell
+  that /coach and /admin keep on the light theme. This variant lets one
+  component carry both: light utilities stay exactly as they are, and the dark
+  ones are written `app-dark:`, applying only under the client area's wrapper.
+*/
+@custom-variant app-dark (&:where(.app-dark, .app-dark *));
+
+/*
+  Design system — "Vigorfit" poster-brutalist black + scarlet.
+  Tokens live on :root; app dashboards keep their own light surfaces
+  (they set explicit bg-slate-* on their containers), so the marketing
+  site and login opt into the dark brand explicitly via .brand-dark.
+*/
+:root {
+  /* App (dashboard) surfaces — unchanged light theme */
+  --background: #f8fafc;
+  --foreground: #0f172a;
+
+  /* Brand palette — poster-brutalist black + scarlet */
+  --ink: #0a0809; /* page black, faint red undertone */
+  --surface: #140f11; /* raised panel */
+  --surface-2: #1c1417; /* higher panel / hover */
+  --line: #2b2023; /* neutral hairline */
+  --rule: rgba(248, 29, 44, 0.28); /* red framing rule */
+  --mist: #a8999c; /* secondary text on dark */
+  --bone: #f4f0f1; /* primary text on dark */
+  --crimson: #f81d2c; /* dominant brand red — fills and display type */
+  --crimson-lift: #ff4a52; /* red text at body sizes (better contrast) */
+  --crimson-deep: #7a0f1c; /* glow / gradient base */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-ink: var(--ink);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-rule: var(--rule);
+  --color-mist: var(--mist);
+  --color-bone: var(--bone);
+  --color-crimson: var(--crimson);
+  --color-crimson-lift: var(--crimson-lift);
+  --color-crimson-deep: var(--crimson-deep);
+
+  --font-sans: var(--font-archivo);
+  --font-display: var(--font-anton);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Dark brand shell for public/marketing surfaces. */
+.brand-dark {
+  background: var(--ink);
+  color: var(--bone);
+}
+
+/* Anchor targets clear the sticky nav. */
+.brand-dark [id] {
+  scroll-margin-top: 5.5rem;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background: var(--crimson);
+  color: #fff;
+}
+
+/* Fine film grain — depth without noise. Kept very low opacity. */
+.grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/*
+  Poster type — the massive condensed display treatment from the brief's
+  reference. Anton is already heavy and condensed; these tighten it further
+  so the headline reads as a single solid block of colour.
+*/
+.poster {
+  font-family: var(--font-display), Impact, "Arial Narrow", sans-serif;
+  text-transform: uppercase;
+  line-height: 0.92;
+  letter-spacing: -0.015em;
+  font-weight: 400;
+}
+
+/*
+  Two steps of one headline scale. .h-sec is for full-bleed section heads;
+  .h-col is for heads that sit in a narrower column, where the section size
+  would crowd the measure.
+*/
+.h-sec {
+  font-size: clamp(2.5rem, 7.5vw, 6rem);
+}
+.h-col {
+  font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+}
+
+/* Tracked-out label, per the reference's "WE ARE / NUEVA TECH" marker. */
+.label {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.6875rem;
+  line-height: 1.45;
+  font-weight: 600;
+}
+
+/* Vertical "SCROLL DOWN" rail. */
+.vertical {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+/* One orchestrated entrance, used deliberately. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/*
+  Progressive enhancement: with no JS (or no IntersectionObserver) the element
+  carries no data-shown attribute and stays visible. Only once the client has
+  taken over does it hide, then animate in.
+*/
+.reveal[data-shown="false"] {
+  opacity: 0;
+}
+.reveal[data-shown="true"] {
+  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Hero load sequence — staggered lines. */
+.load-rise {
+  opacity: 0;
+  animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal[data-shown="false"],
+  .reveal[data-shown="true"],
+  .load-rise {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
+}
+
+/*
+  Inside the dark client area the dashboard headings take the same poster
+  treatment as the marketing sections, so the booking flow reads as one piece
+  with the hero rather than as a separate admin screen.
+*/
+.app-dark .page-heading {
+  font-family: var(--font-display), Impact, "Arial Narrow", sans-serif;
+  text-transform: uppercase;
+  line-height: 0.92;
+  letter-spacing: -0.015em;
+  font-weight: 400;
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  color: var(--crimson);
+}
+
+/* Small caps markers, matching the marketing site's tracked-out labels. */
+.app-dark .panel-title {
+  font-family: var(--font-display), Impact, "Arial Narrow", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-weight: 400;
+  font-size: 1.125rem;
+  color: var(--bone);
+}
