@@ -42,18 +42,23 @@ function label12h(hhmm: string): string {
   return `${hour}:${String(m).padStart(2, "0")} ${period}`;
 }
 
-export function BookForm({ coachId }: { coachId: string }) {
+export function BookForm({
+  coachId,
+  today,
+}: {
+  coachId: string;
+  /** Today's date on the studio's clock, "YYYY-MM-DD", from the server. */
+  today: string;
+}) {
   const [state, formAction, pending] = useActionState(
     createBookingAction,
     initial,
   );
 
   // Stable identities so the calendar isn't handed new props every render.
-  const todayDate = useMemo(() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return d;
-  }, []);
+  // Today is Beirut's date, not the device's: a phone set to another zone would
+  // otherwise offer yesterday, or hide today, around midnight.
+  const todayDate = useMemo(() => new Date(`${today}T00:00:00`), [today]);
   const disabledDays = useMemo(
     () => [{ before: todayDate }, { dayOfWeek: [0] }],
     [todayDate],
@@ -135,6 +140,7 @@ export function BookForm({ coachId }: { coachId: string }) {
             onSelect={(d) => setDate(d ? toDateValue(d) : "")}
             defaultMonth={todayDate}
             startMonth={todayDate}
+            today={todayDate}
             // Past days and Sundays (studio closed) can't be picked at all.
             disabled={disabledDays}
           />

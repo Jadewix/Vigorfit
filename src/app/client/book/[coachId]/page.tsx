@@ -5,6 +5,7 @@ import { PageHeading } from "@/components/dashboard-shell";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookForm } from "./book-form";
 import { STUDIO_HOURS_DISPLAY } from "@/lib/booking";
+import { zonedToday } from "@/lib/timezone";
 import { type Coach, type Profile } from "@/lib/types";
 
 export default async function BookCoachPage({
@@ -88,7 +89,7 @@ export default async function BookCoachPage({
             <CardTitle>Request a session</CardTitle>
           </CardHeader>
           <CardBody>
-            <BookForm coachId={coachId} />
+            <BookForm coachId={coachId} today={zonedToday()} />
           </CardBody>
         </Card>
       </div>

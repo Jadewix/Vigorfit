@@ -1,5 +1,5 @@
 import { StatusBadge } from "@/components/ui/badge";
-import { formatTime } from "@/lib/utils";
+import { formatInAppTimezone, formatTime } from "@/lib/utils";
 import type { Booking } from "@/lib/types";
 
 export function BookingList({
@@ -18,17 +18,16 @@ export function BookingList({
   return (
     <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white app-dark:divide-line app-dark:rounded-none app-dark:border-line app-dark:bg-surface/50">
       {items.map((b) => {
-        const start = new Date(b.starts_at);
         return (
           <li key={b.id} className="flex items-start gap-3 p-3.5">
             {/* The chip already carries the date, so the line beside it leads
                 with the time rather than repeating it and wrapping. */}
             <div className="flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 app-dark:rounded-none app-dark:bg-crimson app-dark:text-white">
               <span className="text-[10px] font-semibold uppercase leading-none">
-                {start.toLocaleDateString(undefined, { month: "short" })}
+                {formatInAppTimezone(b.starts_at, { month: "short" })}
               </span>
               <span className="text-base font-bold leading-tight">
-                {start.getDate()}
+                {formatInAppTimezone(b.starts_at, { day: "numeric" })}
               </span>
             </div>
 
@@ -37,7 +36,7 @@ export function BookingList({
                   between them rather than splitting "11:00 AM". */}
               <p className="text-sm font-medium text-slate-900 app-dark:text-bone">
                 <span className="whitespace-nowrap">
-                  {start.toLocaleDateString(undefined, { weekday: "short" })} ·{" "}
+                  {formatInAppTimezone(b.starts_at, { weekday: "short" })} ·{" "}
                   {formatTime(b.starts_at)} –
                 </span>{" "}
                 <span className="whitespace-nowrap">

@@ -93,8 +93,12 @@ data.
 
 ## Notes / next steps
 
-- **Timezones**: booking times are handled with the server's timezone for now.
-  If you deploy somewhere in UTC, consider capturing the client's timezone.
+- **Timezones**: booking times are always on the studio's clock — Lebanon
+  (`Asia/Beirut`), or whichever IANA zone `APP_TIMEZONE` names — never the
+  server's, which is UTC on Workers. Go through `src/lib/timezone.ts` and
+  `formatInAppTimezone()` rather than `new Date("…T10:00")`, `getHours()` or
+  `toLocaleString()` without a `timeZone`. `node scripts/check-timezones.mjs`
+  runs the booking code under several server timezones and checks they agree.
 - **Deploy**: the app runs on Cloudflare Workers via
   [vinext](https://github.com/cloudflare/vinext) (`vite.config.ts` +
   `wrangler.jsonc`). Push to GitHub and import the repo under Workers. The

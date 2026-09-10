@@ -63,7 +63,7 @@ WHATSAPP_PHONE_NUMBER_ID=...        # from API Setup
 WHATSAPP_ACCESS_TOKEN=...           # permanent system-user token
 WHATSAPP_API_VERSION=v21.0
 WHATSAPP_LANG=en
-APP_TIMEZONE=Asia/Beirut           # how times are shown in messages
+APP_TIMEZONE=Asia/Beirut           # studio clock for bookings + messages (the default)
 ```
 
 Restart `npm run dev` after changing env.

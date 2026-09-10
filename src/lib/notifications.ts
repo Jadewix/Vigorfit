@@ -6,8 +6,7 @@
  */
 import { createAdminClient } from "@/lib/supabase/admin";
 import { WA_TEMPLATES, sendWhatsAppTemplate } from "@/lib/whatsapp";
-
-const TZ = process.env.APP_TIMEZONE || undefined;
+import { APP_TIMEZONE } from "@/lib/timezone";
 
 function formatWhen(iso: string): string {
   return new Date(iso).toLocaleString("en-US", {
@@ -16,7 +15,7 @@ function formatWhen(iso: string): string {
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
-    timeZone: TZ,
+    timeZone: APP_TIMEZONE,
   });
 }
 

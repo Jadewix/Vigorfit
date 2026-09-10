@@ -11,6 +11,7 @@ import {
   isOpenOn,
   slotTimesFor,
 } from "@/lib/booking";
+import { weekdayOf, zonedTimeToUtc } from "@/lib/timezone";
 
 export type BookingState = { error?: string };
 
@@ -31,8 +32,11 @@ export async function createBookingAction(
     return { error: "Please choose a date and time." };
   }
 
-  const starts = new Date(`${date}T${time}:00`);
-  if (Number.isNaN(starts.getTime())) {
+  // The date and time are on the studio's clock. `new Date()` would read them
+  // on the server's clock instead, which is UTC on Workers, and store a
+  // 10:00 AM session as 1:00 PM Beirut time.
+  const starts = zonedTimeToUtc(date, time);
+  if (!starts) {
     return { error: "That date/time is invalid." };
   }
   if (starts.getTime() < Date.now()) {
@@ -54,7 +58,7 @@ export async function createBookingAction(
   }
 
   // 2. The chosen time must be a real slot in the studio's opening hours.
-  const weekday = starts.getDay();
+  const weekday = weekdayOf(date);
   if (!isOpenOn(weekday)) {
     return { error: "The studio is closed that day." };
   }

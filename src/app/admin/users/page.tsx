@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile, requireRole } from "@/lib/auth";
+import { formatInAppTimezone } from "@/lib/utils";
 import { PageHeading } from "@/components/dashboard-shell";
 import { CreateAccountPanel } from "./create-account-panel";
 import { UsersManager } from "./users-manager";
@@ -33,7 +34,7 @@ export default async function AdminUsersPage() {
       full_name: p.full_name,
       phone: p.phone,
       email: p.email,
-      joined: new Date(p.created_at).toLocaleDateString("en-US", {
+      joined: formatInAppTimezone(p.created_at, {
         year: "numeric",
         month: "short",
         day: "numeric",
