@@ -1,12 +1,19 @@
 import Link from "next/link";
 import { getCurrentProfile } from "@/lib/auth";
-import { createClient } from "@/lib/supabase/server";
+import { getPublicCoaches } from "@/lib/public-coaches";
 import { buttonClasses } from "@/components/ui/button";
 import { SiteNav } from "@/components/site/site-nav";
 import { Reveal } from "@/components/site/reveal";
-import { ContactForm, WhatsAppIcon } from "@/components/site/contact-form";
-import { STUDIO_EMAIL, STUDIO_WHATSAPP_DISPLAY, waLink } from "@/lib/studio";
-import type { Coach, Profile } from "@/lib/types";
+import { OpenStatus } from "@/components/site/open-status";
+import {
+  STUDIO_ADDRESS,
+  STUDIO_HOURS,
+  STUDIO_MAPS_URL,
+  STUDIO_WHATSAPP_DISPLAY,
+  WHATSAPP_GREETING,
+  formatTime,
+  waLink,
+} from "@/lib/studio";
 
 function initialsOf(name: string): string {
   return (
@@ -19,12 +26,6 @@ function initialsOf(name: string): string {
       .toUpperCase() || "C"
   );
 }
-
-const stats = [
-  { value: "11", unit: "yrs", label: "Coaching, one studio, no franchise" },
-  { value: "480+", unit: "", label: "Athletes coached to their goal" },
-  { value: "4.9", unit: "/5", label: "Average rating across sessions" },
-];
 
 const steps = [
   {
@@ -44,27 +45,24 @@ const steps = [
   },
 ];
 
+// Contact details that open WhatsApp or Maps. The underline is what marks
+// them as links on phones, where there's no hover. `.poster` sits outside
+// Tailwind's layers, so its tight line-height needs `!` to be overridden —
+// without the extra room the underline runs into the address's second line.
+const detailLink =
+  "poster text-2xl leading-[1.15]! text-bone underline decoration-rule decoration-2 underline-offset-4 transition-colors hover:text-crimson hover:decoration-crimson";
+
 export default async function Home() {
-  const profile = await getCurrentProfile();
+  // Coaches are public, so signed-out visitors see the team too. The cards
+  // still route into the existing auth-gated booking flow untouched. The two
+  // lookups are independent, so they run concurrently.
+  const [profile, coaches] = await Promise.all([
+    getCurrentProfile(),
+    getPublicCoaches(),
+  ]);
   const isClient = profile?.role === "client";
   const bookHref = isClient ? "/client/coaches" : "/login";
-
-  // Surface real coaches from the booking system; the cards route into the
-  // existing (auth-gated) booking flow untouched.
-  const supabase = await createClient();
-  const { data: coachesData } = await supabase
-    .from("coaches")
-    .select("*")
-    .eq("active", true);
-  const coaches = (coachesData ?? []) as Coach[];
-  const ids = coaches.map((c) => c.id);
-  const { data: profs } =
-    ids.length > 0
-      ? await supabase.from("profiles").select("*").in("id", ids)
-      : { data: [] };
-  const profileMap = new Map<string, Profile>(
-    (profs ?? []).map((p) => [p.id, p as Profile]),
-  );
+  const whatsappHref = waLink(WHATSAPP_GREETING);
 
   return (
     <div className="brand-dark relative flex min-h-screen flex-col overflow-x-hidden font-sans">
@@ -98,63 +96,47 @@ export default async function Home() {
         </div>
 
         <div className="relative z-10 mx-auto grid w-full max-w-[1500px] items-center gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[1.25fr_0.75fr] lg:gap-14 lg:py-20 lg:pl-24 lg:pr-10">
-          {/* Poster headline */}
-          <h1 className="poster text-crimson">
+          {/* Poster headline. Each line is sized in container units so it runs
+              the full column width at every screen size: 100 ÷ the line's
+              rendered width in Anton ems (8.785 and 3.284), less 1% so
+              rounding never overflows. */}
+          <h1 className="poster @container text-crimson">
             <span
-              className="load-rise block text-[clamp(1.75rem,8.2vw,5rem)]"
+              className="load-rise block whitespace-nowrap text-[length:11.27cqw]"
               style={{ animationDelay: "60ms" }}
             >
               Strength Conditioning
-            </span>
+            </span>{" "}
             <span
-              className="load-rise block text-[clamp(3.5rem,15vw,12rem)]"
+              className="load-rise block whitespace-nowrap text-[length:30.15cqw]"
               style={{ animationDelay: "160ms" }}
             >
               Coaches
             </span>
           </h1>
 
-          {/* Right column — label, statement, established mark */}
+          {/* Right column — statement, live opening hours, actions */}
           <div className="lg:pt-6">
-            <div
-              className="load-rise flex items-start gap-2.5"
+            <p
+              className="load-rise max-w-md text-lg leading-snug text-bone sm:text-xl"
               style={{ animationDelay: "260ms" }}
             >
-              <svg
-                width="10"
-                height="12"
-                viewBox="0 0 10 12"
-                fill="var(--crimson)"
-                className="mt-0.5 shrink-0"
-              >
-                <path d="M0 0l10 6-10 6z" />
-              </svg>
-              <p className="label text-crimson">
-                We are
-                <br />
-                Vigorfit
-              </p>
-            </div>
-
-            <p
-              className="load-rise mt-6 max-w-md text-lg leading-snug text-crimson-lift sm:text-xl"
-              style={{ animationDelay: "340ms" }}
-            >
-              A private coaching studio pairing you with senior coaches who
-              program for your body, your schedule, and your goals — then hold
-              you to them.
+              A gym on Main Street in Zgharta. Train on your own with a
+              membership, or book sessions with one of our coaches.
             </p>
 
             <div
               className="load-rise mt-10 border-b border-rule pb-4"
-              style={{ animationDelay: "420ms" }}
+              style={{ animationDelay: "340ms" }}
             >
-              <span className="label text-crimson">Est. 2014</span>
+              <OpenStatus className="label" />
             </div>
 
+            {/* Side by side only where the column is wide enough for both
+                labels; the narrower desktop column stacks them like mobile. */}
             <div
-              className="load-rise mt-8 flex flex-col gap-3 sm:flex-row"
-              style={{ animationDelay: "500ms" }}
+              className="load-rise mt-8 flex flex-col gap-3 sm:flex-row lg:flex-col"
+              style={{ animationDelay: "420ms" }}
             >
               <Link
                 href={bookHref}
@@ -163,10 +145,12 @@ export default async function Home() {
                 Book a session
               </Link>
               <a
-                href="#team"
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
                 className={buttonClasses("hairline", "lg", "label px-7")}
               >
-                Meet the team
+                Message us on WhatsApp
               </a>
             </div>
           </div>
@@ -195,8 +179,8 @@ export default async function Home() {
                 Coaches are being set up
               </p>
               <p className="mx-auto mt-3 max-w-md text-mist">
-                The studio is adding its coaches now. Log in to see who&rsquo;s
-                available and book the moment they&rsquo;re live.
+                The studio is adding its coaches now. Check back soon to see
+                who&rsquo;s available and book the moment they&rsquo;re live.
               </p>
               <Link
                 href={bookHref}
@@ -208,8 +192,7 @@ export default async function Home() {
           ) : (
             <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {coaches.map((c, i) => {
-                const p = profileMap.get(c.id);
-                const name = p?.full_name || "Coach";
+                const name = c.name;
                 return (
                   <Reveal key={c.id} delay={(i % 3) * 90}>
                     <div className="group flex h-full flex-col border border-line bg-ink/50 p-6 transition-colors hover:border-crimson">
@@ -300,20 +283,6 @@ export default async function Home() {
               Browse the team
             </a>
           </Reveal>
-
-          <dl className="mt-16 grid grid-cols-1 gap-8 border-t border-rule pt-10 sm:grid-cols-3">
-            {stats.map((s) => (
-              <div key={s.label}>
-                <dt className="poster text-5xl text-bone">
-                  {s.value}
-                  <span className="text-crimson">{s.unit}</span>
-                </dt>
-                <dd className="mt-1 text-sm leading-snug text-mist">
-                  {s.label}
-                </dd>
-              </div>
-            ))}
-          </dl>
         </div>
       </section>
 
@@ -322,60 +291,73 @@ export default async function Home() {
         id="contact"
         className="relative border-t border-line px-5 py-24 sm:px-8 lg:py-32"
       >
-        <div className="mx-auto grid max-w-6xl gap-14 lg:grid-cols-[0.85fr_1.15fr]">
-          <Reveal>
+        <div className="mx-auto max-w-6xl">
+          <Reveal className="max-w-2xl">
             <h2 className="poster h-col text-bone">
               Start a conversation
             </h2>
             <p className="mt-5 max-w-md text-lg leading-relaxed text-mist">
-              Not sure where to begin? Tell us what you&rsquo;re training for
-              and we&rsquo;ll point you to the right coach.
+              Questions about memberships or coaching? Message us on WhatsApp.
             </p>
 
-            <dl className="mt-10 space-y-5 border-t border-rule pt-8">
+            <dl className="mt-10 space-y-6 border-t border-rule pt-8">
               <div>
                 <dt className="label text-mist">WhatsApp</dt>
                 <dd className="mt-1">
                   <a
-                    href={waLink("Hi Vigorfit — I'd like to book a session.")}
+                    href={whatsappHref}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="poster inline-flex items-center gap-2.5 text-2xl text-bone transition-colors hover:text-crimson"
+                    className={detailLink}
                   >
-                    <WhatsAppIcon className="text-crimson" />
                     {STUDIO_WHATSAPP_DISPLAY}
                   </a>
                 </dd>
               </div>
               <div>
-                <dt className="label text-mist">Email</dt>
+                <dt className="label text-mist">Address</dt>
                 <dd className="mt-1">
                   <a
-                    href={`mailto:${STUDIO_EMAIL}`}
-                    className="poster text-2xl text-bone transition-colors hover:text-crimson"
+                    href={STUDIO_MAPS_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={detailLink}
                   >
-                    {STUDIO_EMAIL}
+                    {STUDIO_ADDRESS[0]}
+                    <br />
+                    {STUDIO_ADDRESS[1]}
                   </a>
                 </dd>
               </div>
               <div>
-                <dt className="label text-mist">Studio</dt>
-                <dd className="poster mt-1 text-2xl text-bone">
-                  14 Forge Lane, Unit 3
-                </dd>
-              </div>
-              <div>
                 <dt className="label text-mist">Hours</dt>
-                <dd className="poster mt-1 text-2xl text-bone">
-                  Mon–Sat, 6am–8pm
+                <dd className="mt-1">
+                  {/* Two columns so the times line up under each other. */}
+                  <dl className="poster grid grid-cols-[auto_1fr] gap-x-8 gap-y-1.5 text-2xl">
+                    {STUDIO_HOURS.map(({ label, hours }) => (
+                      <div key={label} className="contents">
+                        <dt className="text-bone">{label}</dt>
+                        <dd className={hours ? "text-bone" : "text-mist"}>
+                          {hours
+                            ? `${formatTime(hours.open)} – ${formatTime(hours.close)}`
+                            : "Closed"}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
                 </dd>
               </div>
             </dl>
-          </Reveal>
 
-          <Reveal delay={120}>
-            <div className="border border-line bg-surface/50 p-6 sm:p-8">
-              <ContactForm />
+            <div className="mt-10">
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={buttonClasses("primary", "lg", "label px-8")}
+              >
+                Message us on WhatsApp
+              </a>
             </div>
           </Reveal>
         </div>
