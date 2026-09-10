@@ -95,5 +95,27 @@ data.
 
 - **Timezones**: booking times are handled with the server's timezone for now.
   If you deploy somewhere in UTC, consider capturing the client's timezone.
-- **Deploy**: when ready, push to GitHub and import into Vercel. Add the same
-  three env vars in the Vercel project settings.
+- **Deploy**: the app runs on Cloudflare Workers via
+  [vinext](https://github.com/cloudflare/vinext) (`vite.config.ts` +
+  `wrangler.jsonc`). Push to GitHub and import the repo under Workers. The
+  build writes its own `dist/server/wrangler.json`, so both deploy commands
+  have to point at it:
+
+  | Setting | Value |
+  | --- | --- |
+  | Build command | `npm run build:vinext` |
+  | Deploy command | `npx wrangler deploy --config dist/server/wrangler.json` |
+  | Non-production branch | `npx wrangler versions upload --config dist/server/wrangler.json` |
+
+  `next dev` still works for local development; `npm run dev:vinext` runs the
+  app the way Workers will.
+
+  Env vars land in two separate places. The `NEXT_PUBLIC_*` three are inlined
+  into the client bundle at build time, so they belong in the **Workers Builds**
+  build variables. Everything else is read at request time through
+  `process.env` (populated from bindings by `nodejs_compat`), so it belongs on
+  the Worker under **Settings -> Variables and Secrets** —
+  `SUPABASE_SERVICE_ROLE_KEY`, `WHATSAPP_ACCESS_TOKEN` and `CRON_SECRET` as
+  Secret, the rest as Text.
+- **Reminders cron**: `/api/cron/reminders` needs an hourly caller. On Workers
+  that is a Cron Trigger, not Vercel Cron.
