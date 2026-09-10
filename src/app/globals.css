@@ -70,13 +70,17 @@ body {
 }
 
 /*
-  .brand-dark paints the black on a wrapper, so the canvas behind it would
-  otherwise stay the light app background — a white strip whenever iOS
-  bounces past the top or bottom of the page. The dark colour scheme also
-  gives these pages dark native scrollbars.
+  .brand-dark paints the black on a wrapper, so the page behind it would
+  otherwise stay the light app background. iOS shows that background when it
+  bounces past the top or bottom of the page, and Safari tints its toolbars
+  from the body's colour, which left a white band at the bottom. The dark
+  colour scheme also gives these pages dark native scrollbars.
 */
-html:has(.brand-dark) {
+html:has(.brand-dark),
+html:has(.brand-dark) body {
   background: var(--ink);
+}
+html:has(.brand-dark) {
   color-scheme: dark;
 }
 

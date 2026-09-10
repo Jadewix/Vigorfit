@@ -1,3 +1,4 @@
+import type { Viewport } from "next";
 import Link from "next/link";
 import { getCurrentProfile } from "@/lib/auth";
 import { getPublicCoaches } from "@/lib/public-coaches";
@@ -5,6 +6,7 @@ import { buttonClasses } from "@/components/ui/button";
 import { SiteNav } from "@/components/site/site-nav";
 import { Reveal } from "@/components/site/reveal";
 import { OpenStatus } from "@/components/site/open-status";
+import { SiteFooter } from "@/components/site/site-footer";
 import {
   STUDIO_ADDRESS,
   STUDIO_HOURS,
@@ -51,6 +53,10 @@ const steps = [
 // without the extra room the underline runs into the address's second line.
 const detailLink =
   "poster text-2xl leading-[1.15]! text-bone underline decoration-rule decoration-2 underline-offset-4 transition-colors hover:text-crimson hover:decoration-crimson";
+
+// Phone browsers that tint their toolbars from theme-color get the page's
+// black instead of their default light bar.
+export const viewport: Viewport = { themeColor: "#0a0809" };
 
 export default async function Home() {
   // Coaches are public, so signed-out visitors see the team too. The cards
@@ -391,6 +397,8 @@ export default async function Home() {
           </div>
         </Reveal>
       </section>
+
+      <SiteFooter />
     </div>
   );
 }

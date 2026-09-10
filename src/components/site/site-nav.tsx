@@ -12,7 +12,7 @@ const sections = [
   { id: "booking", href: "#booking", label: "Booking" },
 ];
 
-function Wordmark({ onClick }: { onClick?: () => void }) {
+export function Wordmark({ onClick }: { onClick?: () => void }) {
   return (
     <Link
       href="/"
