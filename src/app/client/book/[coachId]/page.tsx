@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeading } from "@/components/dashboard-shell";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
+import { CoachAvatar } from "@/components/coach-avatar";
 import { BookForm } from "./book-form";
 import { STUDIO_HOURS_DISPLAY } from "@/lib/booking";
 import { zonedToday } from "@/lib/timezone";
@@ -53,13 +54,26 @@ export default async function BookCoachPage({
         {/* min-w-0: a grid item defaults to min-width:auto, so without this a
             wide child (the calendar) stretches the whole track past the page. */}
         <div className="min-w-0 space-y-6">
-          {coach.bio && (
+          {(coach.bio || coach.avatar_url) && (
             <Card>
               <CardHeader>
                 <CardTitle>About {name.split(" ")[0]}</CardTitle>
               </CardHeader>
               <CardBody>
-                <p className="text-sm leading-relaxed text-mist">{coach.bio}</p>
+                <div className="flex items-start gap-4">
+                  {coach.avatar_url && (
+                    <CoachAvatar
+                      name={name}
+                      photoUrl={coach.avatar_url}
+                      className="h-20 w-20"
+                    />
+                  )}
+                  {coach.bio && (
+                    <p className="text-sm leading-relaxed text-mist">
+                      {coach.bio}
+                    </p>
+                  )}
+                </div>
               </CardBody>
             </Card>
           )}

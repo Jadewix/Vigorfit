@@ -1,32 +1,38 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
 import { getOpenStatus } from "@/lib/studio";
 
+type Status = ReturnType<typeof getOpenStatus>;
+
 /**
- * Live "Open now until 5pm" / "Closed, opens Monday at 9am" line.
+ * "Open now until 5pm" while the studio is open, and nothing at all while it's
+ * closed, so the hero never leads with "Closed".
  *
- * Worked out in the browser only: a server-rendered time would go stale in a
- * cached copy of the page and wouldn't match the client at hydration. So the
- * first render is a blank placeholder that holds the line's height, and the
- * status fills in after mount, re-checked every minute.
+ * The page passes the status it rendered with, so the first paint is already
+ * right and hydration matches. After that it re-checks every minute, so a tab
+ * left open past closing time drops the line.
  */
-export function OpenStatus({ className }: { className?: string }) {
-  const [status, setStatus] = useState<ReturnType<
-    typeof getOpenStatus
-  > | null>(null);
+export function OpenStatus({
+  initial,
+  className,
+  style,
+}: {
+  initial: Status;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  const [status, setStatus] = useState(initial);
 
   useEffect(() => {
-    const update = () => setStatus(getOpenStatus());
-    update();
-    const id = setInterval(update, 60_000);
+    const id = setInterval(() => setStatus(getOpenStatus()), 60_000);
     return () => clearInterval(id);
   }, []);
 
+  if (!status.open) return null;
   return (
-    <p className={cn(status?.open ? "text-crimson" : "text-mist", className)}>
-      {status ? status.text : <>&nbsp;</>}
-    </p>
+    <div className={className} style={style}>
+      <p className="label text-crimson">{status.text}</p>
+    </div>
   );
 }

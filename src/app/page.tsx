@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getCurrentProfile } from "@/lib/auth";
 import { getPublicCoaches } from "@/lib/public-coaches";
 import { buttonClasses } from "@/components/ui/button";
+import { CoachAvatar } from "@/components/coach-avatar";
 import { SiteNav } from "@/components/site/site-nav";
 import { Reveal } from "@/components/site/reveal";
 import { OpenStatus } from "@/components/site/open-status";
@@ -14,20 +15,9 @@ import {
   STUDIO_WHATSAPP_DISPLAY,
   WHATSAPP_GREETING,
   formatTime,
+  getOpenStatus,
   waLink,
 } from "@/lib/studio";
-
-function initialsOf(name: string): string {
-  return (
-    name
-      .split(" ")
-      .map((s) => s[0])
-      .filter(Boolean)
-      .slice(0, 2)
-      .join("")
-      .toUpperCase() || "C"
-  );
-}
 
 const steps = [
   {
@@ -104,20 +94,20 @@ export default async function Home() {
         <div className="relative z-10 mx-auto grid w-full max-w-[1500px] items-center gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[1.25fr_0.75fr] lg:gap-14 lg:py-20 lg:pl-24 lg:pr-10">
           {/* Poster headline. Each line is sized in container units so it runs
               the full column width at every screen size: 100 ÷ the line's
-              rendered width in Anton ems (8.785 and 3.284), less 1% so
+              rendered width in Anton ems (6.263 and 3.216), less 1% so
               rounding never overflows. */}
           <h1 className="poster @container text-crimson">
             <span
-              className="load-rise block whitespace-nowrap text-[length:11.27cqw]"
+              className="load-rise block whitespace-nowrap text-[length:15.81cqw]"
               style={{ animationDelay: "60ms" }}
             >
-              Strength Conditioning
+              Gym & Coaching
             </span>{" "}
             <span
-              className="load-rise block whitespace-nowrap text-[length:30.15cqw]"
+              className="load-rise block whitespace-nowrap text-[length:30.78cqw]"
               style={{ animationDelay: "160ms" }}
             >
-              Coaches
+              Zgharta
             </span>
           </h1>
 
@@ -127,16 +117,15 @@ export default async function Home() {
               className="load-rise max-w-md text-lg leading-snug text-bone sm:text-xl"
               style={{ animationDelay: "260ms" }}
             >
-              A gym on Main Street in Zgharta. Train on your own with a
-              membership, or book sessions with one of our coaches.
+              We&rsquo;re on Main Street. Train on your own with a membership,
+              or book sessions with one of our coaches.
             </p>
 
-            <div
+            <OpenStatus
+              initial={getOpenStatus()}
               className="load-rise mt-10 border-b border-rule pb-4"
               style={{ animationDelay: "340ms" }}
-            >
-              <OpenStatus className="label" />
-            </div>
+            />
 
             {/* Side by side only where the column is wide enough for both
                 labels; the narrower desktop column stacks them like mobile. */}
@@ -203,9 +192,11 @@ export default async function Home() {
                   <Reveal key={c.id} delay={(i % 3) * 90}>
                     <div className="group flex h-full flex-col border border-line bg-ink/50 p-6 transition-colors hover:border-crimson">
                       <div className="flex items-center gap-3.5">
-                        <span className="flex h-12 w-12 items-center justify-center bg-crimson font-display text-lg text-white">
-                          {initialsOf(name)}
-                        </span>
+                        <CoachAvatar
+                          name={name}
+                          photoUrl={c.photoUrl}
+                          className="h-12 w-12 text-lg"
+                        />
                         <div>
                           <p className="poster text-xl text-bone">{name}</p>
                           {c.specialty && (

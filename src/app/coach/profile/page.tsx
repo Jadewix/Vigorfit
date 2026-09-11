@@ -3,6 +3,7 @@ import { getCurrentProfile } from "@/lib/auth";
 import { PageHeading } from "@/components/dashboard-shell";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { CoachProfileForm } from "./coach-profile-form";
+import { CoachPhotoForm } from "./coach-photo-form";
 import { STUDIO_HOURS_DISPLAY, SESSION_LABEL } from "@/lib/booking";
 import type { Coach } from "@/lib/types";
 
@@ -29,6 +30,12 @@ export default async function CoachProfilePage() {
             <CardTitle>Your coach profile</CardTitle>
           </CardHeader>
           <CardBody>
+            <CoachPhotoForm
+              coachId={me!.id}
+              name={me!.full_name || "Coach"}
+              photoUrl={(coach as Coach | null)?.avatar_url ?? null}
+            />
+            <div className="my-5 border-t border-slate-200" />
             <CoachProfileForm coach={(coach as Coach) ?? null} />
           </CardBody>
         </Card>

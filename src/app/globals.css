@@ -70,17 +70,18 @@ body {
 }
 
 /*
-  .brand-dark paints the black on a wrapper, so the page behind it would
+  The dark pages (.brand-dark: the site and login; .app-dark: the client
+  booking area) paint their black on a wrapper, so the page behind it would
   otherwise stay the light app background. iOS shows that background when it
   bounces past the top or bottom of the page, and Safari tints its toolbars
-  from the body's colour, which left a white band at the bottom. The dark
+  from the body's colour, which left white bands at the edges. The dark
   colour scheme also gives these pages dark native scrollbars.
 */
-html:has(.brand-dark),
-html:has(.brand-dark) body {
+html:has(.brand-dark, .app-dark),
+html:has(.brand-dark, .app-dark) body {
   background: var(--ink);
 }
-html:has(.brand-dark) {
+html:has(.brand-dark, .app-dark) {
   color-scheme: dark;
 }
 

@@ -8,14 +8,19 @@ export type PublicCoach = {
   name: string;
   specialty: string | null;
   bio: string | null;
+  photoUrl: string | null;
 };
 
 async function fetchActiveCoaches(
   client: SupabaseClient,
 ): Promise<PublicCoach[]> {
+  // `*` rather than a column list so this keeps working on a database where
+  // supabase/coach-photos.sql (which adds avatar_url) hasn't been run yet.
+  // coaches holds only public-facing fields, and just the ones below leave
+  // this function.
   const { data, error } = await client
     .from("coaches")
-    .select("id, specialty, bio, profiles(full_name)")
+    .select("*, profiles(full_name)")
     .eq("active", true)
     .order("created_at", { ascending: true });
   if (error) throw error;
@@ -28,6 +33,7 @@ async function fetchActiveCoaches(
       name: profile?.full_name || "Coach",
       specialty: c.specialty,
       bio: c.bio,
+      photoUrl: c.avatar_url ?? null,
     };
   });
 }

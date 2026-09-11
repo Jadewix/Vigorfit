@@ -1,6 +1,11 @@
+import type { Viewport } from "next";
 import { requireRole } from "@/lib/auth";
 import { DashboardShell } from "@/components/dashboard-shell";
 import { CalendarIcon, UsersIcon } from "@/components/icons";
+
+// The client area runs on the dark brand; phone browsers that tint their
+// toolbars from theme-color match it instead of showing a light bar.
+export const viewport: Viewport = { themeColor: "#0a0809" };
 
 export default async function ClientLayout({
   children,

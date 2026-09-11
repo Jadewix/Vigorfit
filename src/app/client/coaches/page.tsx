@@ -4,6 +4,7 @@ import { PageHeading } from "@/components/dashboard-shell";
 import { EmptyState } from "@/components/empty-state";
 import { buttonClasses } from "@/components/ui/button";
 import { UsersIcon } from "@/components/icons";
+import { CoachAvatar } from "@/components/coach-avatar";
 import type { Coach, Profile } from "@/lib/types";
 
 export default async function BrowseCoachesPage() {
@@ -42,12 +43,6 @@ export default async function BrowseCoachesPage() {
           {coaches.map((c) => {
             const p = profileMap.get(c.id);
             const name = p?.full_name || "Coach";
-            const initials = name
-              .split(" ")
-              .map((s) => s[0])
-              .slice(0, 2)
-              .join("")
-              .toUpperCase();
 
             return (
               <div
@@ -55,9 +50,11 @@ export default async function BrowseCoachesPage() {
                 className="flex h-full flex-col border border-line bg-ink/50 p-6 transition-colors hover:border-crimson"
               >
                 <div className="flex items-center gap-3.5">
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center bg-crimson font-display text-lg text-white">
-                    {initials}
-                  </span>
+                  <CoachAvatar
+                    name={name}
+                    photoUrl={c.avatar_url}
+                    className="h-12 w-12 text-lg"
+                  />
                   <div className="min-w-0">
                     <p className="poster text-xl text-bone">{name}</p>
                     {c.specialty && (

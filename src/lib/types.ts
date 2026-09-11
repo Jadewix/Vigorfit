@@ -29,6 +29,9 @@ export interface Coach {
   specialty: string | null;
   hourly_rate: number | null;
   active: boolean;
+  /** Public photo URL in the coach-photos bucket. Absent until
+   *  supabase/coach-photos.sql has been run on the database. */
+  avatar_url?: string | null;
   created_at: string;
 }
 
