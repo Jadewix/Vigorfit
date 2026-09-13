@@ -4,7 +4,6 @@ import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import { createBookingAction, type BookingState } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { cn } from "@/lib/utils";
 import {
   SESSION_LABEL,
   SESSION_MINUTES,
@@ -13,11 +12,12 @@ import {
   type Plan,
   type ScheduleTrack,
 } from "@/lib/booking";
+import { SlotCell, slotStateOf, label12h } from "./slot-cell";
 
 const initial: BookingState = {};
 const inputClass =
-  "h-11 w-full border border-line bg-ink px-3 text-sm text-bone outline-none transition-colors placeholder:text-mist/60 focus:border-crimson";
-const labelClass = "label mb-2 block text-mist";
+  "h-11 w-full border border-line bg-ground px-3 text-sm text-bone outline-none transition-colors placeholder:text-sage-dim/60 focus:border-sage";
+const labelClass = "tag mb-2 block text-sage-dim";
 
 /**
  * Local Y-M-D, not `toISOString().slice(0,10)` — the latter is UTC and can name
@@ -29,25 +29,8 @@ function toDateValue(d: Date): string {
     d.getDate(),
   ).padStart(2, "0")}`;
 }
-/** Shared shape for the time-slot cells, so grid and skeleton stay in step. */
-/**
- * Every slot cell is the same fixed size. The time is kept on one line
- * (`whitespace-nowrap` + a slightly smaller size) so cells don't end up a mix
- * of one- and two-line boxes, and `tabular-nums` keeps the digits aligned
- * across the grid.
- */
-const slotBase =
-  "flex h-14 flex-col items-center justify-center gap-1 border px-1 text-center text-[13px] font-medium leading-none tabular-nums transition-colors";
 
 type Slot = { time: string; taken: boolean; mine: boolean; remaining: number };
-
-/** "14:00" -> "2:00 PM" */
-function label12h(hhmm: string): string {
-  const [h, m] = hhmm.split(":").map(Number);
-  const period = h < 12 ? "AM" : "PM";
-  const hour = h % 12 === 0 ? 12 : h % 12;
-  return `${hour}:${String(m).padStart(2, "0")} ${period}`;
-}
 
 export function BookForm({
   coachId,
@@ -153,7 +136,7 @@ export function BookForm({
         <span className={labelClass}>Date</span>
         {/* The value the server action reads; the calendar drives it. */}
         <input type="hidden" name="date" value={date} required />
-        <div className="flex justify-center border border-line bg-ink">
+        <div className="flex justify-center border border-line bg-ground">
           <Calendar
             mode="single"
             selected={date ? new Date(`${date}T00:00:00`) : undefined}
@@ -165,7 +148,7 @@ export function BookForm({
             disabled={disabledDays}
           />
         </div>
-        <p className="mt-2 text-xs text-mist">
+        <p className="mt-2 text-xs text-sage-dim">
           Each session is {SESSION_LABEL}.{" "}
           {track
             ? `Your plan trains on ${TRACKS[track].short}.`
@@ -176,11 +159,11 @@ export function BookForm({
       <div>
         <label className={labelClass}>Available times</label>
         {!date ? (
-          <p className="border border-line bg-surface/40 px-3 py-3 text-sm text-mist">
+          <p className="border border-line bg-panel/40 px-3 py-3 text-sm text-sage-dim">
             Choose a date to see available times.
           </p>
         ) : isSunday || closed ? (
-          <p className="border border-amber-400/30 bg-amber-400/10 px-3 py-3 text-sm text-amber-300">
+          <p className="border border-line bg-panel/40 px-3 py-3 text-sm text-sage-dim">
             The studio is closed on Sundays. Please pick another day.
           </p>
         ) : loading ? (
@@ -193,77 +176,33 @@ export function BookForm({
               <span
                 key={i}
                 aria-hidden
-                className="h-14 animate-pulse border border-line bg-surface/60"
+                className="h-14 animate-pulse border border-line bg-panel/60"
               />
             ))}
           </div>
         ) : slots.length === 0 ? (
-          <p className="border border-amber-400/30 bg-amber-400/10 px-3 py-3 text-sm text-amber-300">
+          <p className="border border-line bg-panel/40 px-3 py-3 text-sm text-sage-dim">
             No times left on this day. Try another date.
           </p>
         ) : (
           <>
             <div className="grid grid-cols-2 gap-2 min-[400px]:grid-cols-3 sm:grid-cols-4">
-              {slots.map((s) =>
-                s.taken ? (
-                  <span
-                    key={s.time}
-                    aria-disabled
-                    title={s.mine ? "You already booked this time" : "Fully booked"}
-                    className={cn(
-                      slotBase,
-                      "cursor-not-allowed border-line bg-surface/50 text-mist/50",
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        "whitespace-nowrap line-through decoration-2",
-                        s.mine
-                          ? "decoration-mist/50"
-                          : "decoration-crimson",
-                      )}
-                    >
-                      {label12h(s.time)}
-                    </span>
-                    <span
-                      className={cn(
-                        "text-[10px] font-normal uppercase tracking-wide",
-                        s.mine ? "text-mist/50" : "text-crimson",
-                      )}
-                    >
-                      {s.mine ? "Yours" : "Full"}
-                    </span>
-                  </span>
-                ) : (
-                  <button
-                    key={s.time}
-                    type="button"
-                    onClick={() => setTime(s.time)}
-                    className={cn(
-                      slotBase,
-                      time === s.time
-                        ? "border-crimson bg-crimson text-white"
-                        : "border-line bg-ink text-bone hover:border-crimson hover:text-crimson",
-                    )}
-                  >
-                    <span className="whitespace-nowrap">{label12h(s.time)}</span>
-                    {s.remaining === 1 && (
-                      <span
-                        className={cn(
-                          "whitespace-nowrap text-[10px] font-normal uppercase tracking-wide",
-                          time === s.time ? "text-white/80" : "text-crimson-lift",
-                        )}
-                      >
-                        1 left
-                      </span>
-                    )}
-                  </button>
-                ),
-              )}
+              {slots.map((s) => (
+                <SlotCell
+                  key={s.time}
+                  time={s.time}
+                  state={slotStateOf(s, time === s.time)}
+                  remaining={s.remaining}
+                  onSelect={() => setTime(s.time)}
+                />
+              ))}
             </div>
-            <p className="mt-3 text-xs text-mist/70">
-              Each slot takes up to {capacityFor(plan)} clients. Crossed-out
-              times are full.
+            {/* A legend, because the grid now uses colour to say three
+                different things. Each entry names its own state. */}
+            <p className="mt-3 text-xs leading-relaxed text-sage-dim">
+              Each slot takes up to {capacityFor(plan)} clients.{" "}
+              <span className="text-sage">Green is yours</span>,{" "}
+              <span className="text-red-lift">red is full</span>.
             </p>
           </>
         )}
@@ -271,7 +210,7 @@ export function BookForm({
 
       <div>
         <label className={labelClass} htmlFor="notes">
-          Notes for your coach <span className="text-mist/60">(optional)</span>
+          Notes for your coach <span className="text-sage-dim/60">(optional)</span>
         </label>
         <textarea
           id="notes"
@@ -283,7 +222,7 @@ export function BookForm({
       </div>
 
       {state.error && (
-        <p className="border border-crimson/40 bg-crimson/10 px-3 py-2 text-sm text-crimson-lift">
+        <p className="border border-oxblood/60 bg-oxblood/15 px-3 py-2 text-sm text-red-lift">
           {state.error}
         </p>
       )}
@@ -292,7 +231,7 @@ export function BookForm({
         type="submit"
         size="lg"
         disabled={pending || !time}
-        className="label w-full"
+        className="tag w-full"
       >
         {pending
           ? "Requesting…"
@@ -300,7 +239,7 @@ export function BookForm({
             ? `Request ${label12h(time)} session`
             : "Select a time"}
       </Button>
-      <p className="text-center text-xs text-mist/70">
+      <p className="text-center text-xs text-sage-dim/70">
         Your coach will confirm the session.
       </p>
     </form>

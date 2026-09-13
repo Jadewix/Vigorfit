@@ -7,8 +7,8 @@ import type { Coach } from "@/lib/types";
 
 const initial: FormState = {};
 const inputClass =
-  "h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100";
-const labelClass = "mb-1.5 block text-sm font-medium text-slate-700";
+  "h-10 w-full rounded-lg border border-line-light bg-paper-panel px-3 text-sm text-ink outline-none focus:border-forest focus:ring-2 focus:ring-forest/20";
+const labelClass = "mb-1.5 block text-sm font-medium text-ink";
 
 export function CoachProfileForm({ coach }: { coach: Coach | null }) {
   const [state, formAction, pending] = useActionState(
@@ -47,23 +47,23 @@ export function CoachProfileForm({ coach }: { coach: Coach | null }) {
         />
       </div>
 
-      <label className="flex items-center gap-2 text-sm text-slate-700">
+      <label className="flex items-center gap-2 text-sm text-ink">
         <input
           type="checkbox"
           name="active"
           defaultChecked={coach?.active ?? true}
-          className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+          className="h-4 w-4 rounded border-line-light text-forest focus:ring-forest/40"
         />
         Accepting new bookings (visible to clients)
       </label>
 
       {state.error && (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="rounded-lg bg-oxblood/10 px-3 py-2 text-sm text-oxblood">
           {state.error}
         </p>
       )}
       {state.success && (
-        <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+        <p className="rounded-lg bg-forest/10 px-3 py-2 text-sm text-forest">
           {state.success}
         </p>
       )}

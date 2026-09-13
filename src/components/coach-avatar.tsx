@@ -13,7 +13,7 @@ function initialsOf(name: string): string {
 }
 
 /**
- * A coach's photo, or their initials on a crimson square when they haven't
+ * A coach's photo, or their initials on a sage square when they haven't
  * added one. Size it with `className` (e.g. "h-12 w-12 text-lg"). It's
  * decorative: the coach's name always sits next to it.
  */
@@ -46,7 +46,7 @@ export function CoachAvatar({
     <span
       aria-hidden
       className={cn(
-        "flex shrink-0 items-center justify-center bg-crimson font-display text-white",
+        "flex shrink-0 items-center justify-center bg-sage font-display text-ink",
         className,
       )}
     >

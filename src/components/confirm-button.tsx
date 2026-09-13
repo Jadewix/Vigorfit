@@ -73,7 +73,7 @@ export function ConfirmSubmit({
         onClick={() => setArmed(false)}
         className={cn(
           buttonClasses("ghost", size),
-          "app-dark:text-mist app-dark:hover:bg-surface-2 app-dark:hover:text-bone",
+          "app-dark:text-sage-dim app-dark:hover:bg-panel-2 app-dark:hover:text-bone",
         )}
       >
         Cancel

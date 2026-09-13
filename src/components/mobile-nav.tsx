@@ -64,16 +64,16 @@ export function MobileNav({
     .toUpperCase();
 
   const itemClass =
-    "block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 app-dark:rounded-none app-dark:text-mist app-dark:hover:bg-surface-2 app-dark:hover:text-bone";
+    "block rounded-lg px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors hover:bg-paper hover:text-ink app-dark:rounded-none app-dark:text-sage-dim app-dark:hover:bg-panel-2 app-dark:hover:text-bone";
 
   return (
     <div className="md:hidden">
-      <header className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 app-dark:border-rule app-dark:bg-ink">
+      <header className="flex items-center justify-between border-b border-line-light bg-paper-panel px-4 py-3 app-dark:border-rule app-dark:bg-ground">
         <Link href="/" className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600 text-white app-dark:rounded-none app-dark:bg-crimson">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-forest text-paper app-dark:rounded-none app-dark:bg-sage">
             <BoltIcon width={16} height={16} />
           </span>
-          <span className="font-bold text-slate-900 app-dark:font-display app-dark:text-lg app-dark:font-normal app-dark:uppercase app-dark:text-bone">
+          <span className="font-bold text-ink app-dark:font-display app-dark:text-lg app-dark:font-normal app-dark:uppercase app-dark:text-bone">
             Vigorfit
           </span>
         </Link>
@@ -82,7 +82,7 @@ export function MobileNav({
           onClick={() => setOpen(true)}
           aria-label="Open menu"
           aria-expanded={open}
-          className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-700 transition-colors hover:bg-slate-100 app-dark:rounded-none app-dark:text-bone app-dark:hover:bg-surface-2"
+          className="flex h-9 w-9 items-center justify-center rounded-lg text-ink transition-colors hover:bg-paper app-dark:rounded-none app-dark:text-bone app-dark:hover:bg-panel-2"
         >
           <MenuIcon />
         </button>
@@ -93,7 +93,7 @@ export function MobileNav({
         aria-hidden
         onClick={() => setOpen(false)}
         className={cn(
-          "fixed inset-0 z-40 bg-slate-900/50 transition-opacity duration-300 app-dark:bg-black/70",
+          "fixed inset-0 z-40 bg-ink/50 transition-opacity duration-300 app-dark:bg-black/70",
           open ? "opacity-100" : "pointer-events-none opacity-0",
         )}
       />
@@ -105,13 +105,13 @@ export function MobileNav({
         aria-label="Menu"
         aria-hidden={!open}
         className={cn(
-          "fixed inset-y-0 right-0 z-50 flex w-[82%] max-w-xs flex-col border-l border-slate-200 bg-white shadow-2xl transition-transform duration-300 ease-out",
-          "app-dark:border-line app-dark:bg-surface app-dark:shadow-none",
+          "fixed inset-y-0 right-0 z-50 flex w-[82%] max-w-xs flex-col border-l border-line-light bg-paper-panel shadow-2xl transition-transform duration-300 ease-out",
+          "app-dark:border-line app-dark:bg-panel app-dark:shadow-none",
           open ? "translate-x-0" : "pointer-events-none translate-x-full",
         )}
       >
-        <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 app-dark:border-line">
-          <span className="text-xs font-semibold uppercase tracking-wide text-slate-400 app-dark:text-mist">
+        <div className="flex items-center justify-between border-b border-line-light px-4 py-3 app-dark:border-line">
+          <span className="text-xs font-semibold uppercase tracking-wide text-ink-muted app-dark:text-sage-dim">
             Menu
           </span>
           <button
@@ -119,7 +119,7 @@ export function MobileNav({
             type="button"
             onClick={() => setOpen(false)}
             aria-label="Close menu"
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-700 transition-colors hover:bg-slate-100 app-dark:rounded-none app-dark:text-bone app-dark:hover:bg-surface-2"
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-ink transition-colors hover:bg-paper app-dark:rounded-none app-dark:text-bone app-dark:hover:bg-panel-2"
           >
             <CloseIcon />
           </button>
@@ -129,13 +129,13 @@ export function MobileNav({
           <NavLinks items={navItems} />
         </div>
 
-        <div className="border-t border-slate-200 p-3 app-dark:border-line">
+        <div className="border-t border-line-light p-3 app-dark:border-line">
           <div className="flex items-center gap-3 px-3 pb-3">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-200 text-sm font-semibold text-slate-600 app-dark:rounded-none app-dark:bg-crimson app-dark:text-white">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-line-light text-sm font-semibold text-ink-muted app-dark:rounded-none app-dark:bg-sage app-dark:text-ink">
               {initials}
             </span>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-slate-900 app-dark:text-bone">
+              <p className="truncate text-sm font-medium text-ink app-dark:text-bone">
                 {profile.full_name || profile.username || "Unnamed"}
               </p>
               <RoleBadge role={profile.role} />

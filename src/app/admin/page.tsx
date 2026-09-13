@@ -1,9 +1,8 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeading } from "@/components/dashboard-shell";
 import { BookingList } from "@/components/booking-list";
-import { StatCard } from "@/components/stat-card";
 import { EmptyState } from "@/components/empty-state";
+import { StatCard } from "@/components/ui/stat-card";
 import { CalendarIcon, ClockIcon, UsersIcon, WhistleIcon } from "@/components/icons";
 import type { Booking } from "@/lib/types";
 
@@ -50,18 +49,23 @@ export default async function AdminOverview() {
         subtitle="A snapshot of your coaching studio."
       />
 
+      {/*
+        Each card links to the records behind its figure, using the same
+        filters the destination pages read, so the number you tap matches the
+        number of rows you land on.
+      */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
           label="Coaches"
           value={coachesRes.count ?? 0}
           icon={<WhistleIcon />}
-          href="/admin/users"
+          href="/admin/users?role=coach"
         />
         <StatCard
           label="Clients"
           value={clientsRes.count ?? 0}
           icon={<UsersIcon />}
-          href="/admin/users"
+          href="/admin/users?role=client"
         />
         <StatCard
           label="Total bookings"
@@ -73,21 +77,13 @@ export default async function AdminOverview() {
           label="Pending"
           value={pendingRes.count ?? 0}
           icon={<ClockIcon />}
-          href="/admin/bookings"
+          href="/admin/bookings?status=pending"
         />
       </div>
 
-      <div className="mb-3 mt-10 flex items-baseline justify-between gap-4">
-        <h2 className="text-lg font-semibold text-slate-900">
-          Recent bookings
-        </h2>
-        <Link
-          href="/admin/bookings"
-          className="text-sm font-medium text-crimson hover:underline"
-        >
-          View all
-        </Link>
-      </div>
+      <h2 className="panel-title mb-3 mt-10 text-lg text-ink app-dark:text-bone">
+        Recent bookings
+      </h2>
       {recent.length === 0 ? (
         <EmptyState
           title="No bookings yet"

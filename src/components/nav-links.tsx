@@ -30,15 +30,15 @@ export function NavLinks({ items }: { items: NavItem[] }) {
               "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
               "app-dark:rounded-none app-dark:text-xs app-dark:font-semibold app-dark:uppercase app-dark:tracking-[0.12em]",
               active
-                ? "bg-emerald-50 text-emerald-700 app-dark:bg-crimson app-dark:text-white"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 app-dark:text-mist app-dark:hover:bg-surface-2 app-dark:hover:text-bone",
+                ? "bg-forest/10 text-forest app-dark:bg-sage app-dark:text-ink"
+                : "text-ink-muted hover:bg-paper hover:text-ink app-dark:text-sage-dim app-dark:hover:bg-panel-2 app-dark:hover:text-bone",
             )}
           >
             <span
               className={
                 active
-                  ? "text-emerald-600 app-dark:text-white"
-                  : "text-slate-400 app-dark:text-mist"
+                  ? "text-forest app-dark:text-paper"
+                  : "text-ink-muted app-dark:text-sage-dim"
               }
             >
               {item.icon}

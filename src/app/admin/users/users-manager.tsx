@@ -18,12 +18,19 @@ const FILTERS: { key: Filter; label: string }[] = [
 export function UsersManager({
   users,
   meId,
+  initialFilter = "all",
 }: {
   users: AdminUser[];
   meId: string;
+  /**
+   * Which filter to open on, taken from `?role=` by the page. The roster stays
+   * fully interactive after that — this only decides the starting view, so an
+   * Overview stat card can land on exactly the accounts it counted.
+   */
+  initialFilter?: Filter;
 }) {
   const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState<Filter>("all");
+  const [filter, setFilter] = useState<Filter>(initialFilter);
 
   const counts = useMemo(
     () => ({
@@ -54,14 +61,14 @@ export function UsersManager({
           <SearchIcon
             width={18}
             height={18}
-            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted"
           />
           <input
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search by name, username or phone…"
-            className="h-11 w-full rounded-lg border border-slate-300 bg-white pl-10 pr-3 text-sm text-slate-900 outline-none transition-colors focus:border-crimson focus:ring-2 focus:ring-crimson/20"
+            className="h-11 w-full rounded-lg border border-line-light bg-paper-panel pl-10 pr-3 text-sm text-ink outline-none transition-colors focus:border-forest focus:ring-2 focus:ring-forest/20"
           />
         </div>
 
@@ -76,15 +83,15 @@ export function UsersManager({
                 className={cn(
                   "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors",
                   active
-                    ? "border-crimson bg-crimson text-white"
-                    : "border-slate-300 bg-white text-slate-600 hover:border-slate-400",
+                    ? "border-forest bg-forest text-paper"
+                    : "border-line-light bg-paper-panel text-ink-muted hover:border-ink-muted",
                 )}
               >
                 {f.label}
                 <span
                   className={cn(
                     "rounded-full px-1.5 text-xs",
-                    active ? "bg-white/20" : "bg-slate-100 text-slate-500",
+                    active ? "bg-paper/25" : "bg-paper text-ink-muted",
                   )}
                 >
                   {counts[f.key]}
@@ -97,9 +104,9 @@ export function UsersManager({
 
       {/* List */}
       {visible.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
-          <p className="font-medium text-slate-900">No matching users</p>
-          <p className="mt-1 text-sm text-slate-500">
+        <div className="rounded-xl border border-dashed border-line-light bg-paper-panel px-6 py-12 text-center">
+          <p className="font-medium text-ink">No matching users</p>
+          <p className="mt-1 text-sm text-ink-muted">
             Try a different search or filter.
           </p>
         </div>

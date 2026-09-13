@@ -7,8 +7,8 @@ import type { Profile } from "@/lib/types";
 
 const initial: ProfileState = {};
 const inputClass =
-  "h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100";
-const labelClass = "mb-1.5 block text-sm font-medium text-slate-700";
+  "h-10 w-full rounded-lg border border-line-light bg-paper-panel px-3 text-sm text-ink outline-none focus:border-forest focus:ring-2 focus:ring-forest/20";
+const labelClass = "mb-1.5 block text-sm font-medium text-ink";
 
 export function EditProfileForm({ profile }: { profile: Profile }) {
   const [state, formAction, pending] = useActionState(
@@ -42,18 +42,18 @@ export function EditProfileForm({ profile }: { profile: Profile }) {
           placeholder="+961 70 123 456"
           className={inputClass}
         />
-        <p className="mt-1 text-xs text-slate-400">
+        <p className="mt-1 text-xs text-ink-muted">
           Include the country code — used for booking notifications.
         </p>
       </div>
 
       {state.error && (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="rounded-lg bg-oxblood/10 px-3 py-2 text-sm text-oxblood">
           {state.error}
         </p>
       )}
       {state.success && (
-        <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+        <p className="rounded-lg bg-forest/10 px-3 py-2 text-sm text-forest">
           {state.success}
         </p>
       )}

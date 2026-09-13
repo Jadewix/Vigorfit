@@ -1,4 +1,4 @@
-import { Wordmark } from "@/components/site/site-nav";
+import { Wordmark } from "@/components/site/wordmark";
 import {
   STUDIO_ADDRESS,
   STUDIO_HOURS,
@@ -9,7 +9,7 @@ import {
   waLink,
 } from "@/lib/studio";
 
-const footerLink = "text-bone transition-colors hover:text-crimson";
+const footerLink = "text-bone transition-colors hover:text-sage";
 
 /**
  * Compact, centred footer: the studio's details in small type, with the
@@ -17,10 +17,10 @@ const footerLink = "text-bone transition-colors hover:text-crimson";
  */
 export function SiteFooter() {
   return (
-    <footer className="border-t border-rule bg-ink px-5 pb-5 pt-8 sm:px-8">
+    <footer className="border-t border-rule bg-ground px-5 pb-5 pt-8 sm:px-8">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 text-center">
         <Wordmark />
-        <div className="space-y-1.5 text-xs leading-relaxed text-mist">
+        <div className="space-y-1.5 text-xs leading-relaxed text-sage-dim">
           <p>
             <a
               href={STUDIO_MAPS_URL}
@@ -57,9 +57,9 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="mx-auto mt-6 flex max-w-6xl items-center justify-between gap-4 border-t border-line pt-4 text-[11px] text-mist">
+      <div className="mx-auto mt-6 flex max-w-6xl items-center justify-between gap-4 border-t border-line pt-4 text-[11px] text-sage-dim">
         <p>© {new Date().getFullYear()} Vigorfit</p>
-        <p className="text-mist/60">Developed by Planck</p>
+        <p className="text-sage-dim/60">Developed by Planck</p>
       </div>
     </footer>
   );

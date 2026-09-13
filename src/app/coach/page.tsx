@@ -1,10 +1,9 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth";
 import { PageHeading } from "@/components/dashboard-shell";
 import { BookingList } from "@/components/booking-list";
-import { StatCard } from "@/components/stat-card";
 import { EmptyState } from "@/components/empty-state";
+import { StatCard } from "@/components/ui/stat-card";
 import { CalendarIcon, ClockIcon, UsersIcon } from "@/components/icons";
 import type { Booking } from "@/lib/types";
 
@@ -43,38 +42,35 @@ export default async function CoachOverview() {
         subtitle="Here's what's coming up."
       />
 
+      {/*
+        Each card links to the records behind its figure, using the same
+        filters the destination pages read, so the number you tap matches the
+        number of rows you land on.
+      */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard
           label="Upcoming sessions"
           value={upcoming.length}
           icon={<CalendarIcon />}
-          href="/coach/bookings"
+          href="/coach/bookings?when=upcoming"
         />
         <StatCard
           label="Pending requests"
           value={pending.length}
           icon={<ClockIcon />}
-          href="/coach/bookings"
+          href="/coach/bookings?status=pending"
         />
         <StatCard
           label="Clients"
           value={clientCount}
           icon={<UsersIcon />}
-          href="/coach/bookings"
+          href="/coach/clients"
         />
       </div>
 
-      <div className="mb-3 mt-10 flex items-baseline justify-between gap-4">
-        <h2 className="text-lg font-semibold text-slate-900">
-          Next sessions
-        </h2>
-        <Link
-          href="/coach/bookings"
-          className="text-sm font-medium text-crimson hover:underline"
-        >
-          View all
-        </Link>
-      </div>
+      <h2 className="panel-title mb-3 mt-10 text-lg text-ink app-dark:text-bone">
+        Next sessions
+      </h2>
       {upcoming.length === 0 ? (
         <EmptyState
           title="Nothing on the calendar"

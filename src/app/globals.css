@@ -1,66 +1,122 @@
 @import "tailwindcss";
 
 /*
-  The client booking flow runs the dark brand inside the same dashboard shell
-  that /coach and /admin keep on the light theme. This variant lets one
-  component carry both: light utilities stay exactly as they are, and the dark
-  ones are written `app-dark:`, applying only under the client area's wrapper.
+  `app-dark:` means "on any dark surface".
+
+  Two wrappers paint the dark olive: `.brand-dark` (the marketing site and
+  login) and `.app-dark` (the client booking area, which runs the dark brand
+  inside the same dashboard shell that /coach and /admin keep on light paper).
+  This variant matches both, so a single shared component — Button, Card,
+  StatCard — can carry the light and dark treatment at once: light utilities
+  stay exactly as they are, and the dark ones are written `app-dark:`.
+
+  The name is kept despite now covering both surfaces, because it is already
+  spelled across ~130 call sites and renaming it would be churn without a
+  behavioural gain.
 */
-@custom-variant app-dark (&:where(.app-dark, .app-dark *));
+@custom-variant app-dark (
+  &:where(.app-dark, .app-dark *, .brand-dark, .brand-dark *)
+);
 
 /*
-  Design system — "Vigorfit" poster-brutalist black + scarlet.
-  Tokens live on :root; app dashboards keep their own light surfaces
-  (they set explicit bg-slate-* on their containers), so the marketing
-  site and login opt into the dark brand explicitly via .brand-dark.
+  Design system — "Vigorfit", the training ledger.
+
+  A gym's real records are numbers in columns: times, capacities, counts. That
+  is what earns a monospace face as the product's whole voice rather than as
+  decoration on small labels. Deep olive is the ground the record is kept on,
+  and red carries exactly one meaning: blocked.
+
+  Palette proportions follow the brief — green dominant, grey for structure,
+  black for the deepest wells, red as the single sharp accent.
+
+  Two surfaces:
+    - dark olive  (.brand-dark, .app-dark) — site, login, client booking
+    - light paper (:root default)          — coach and admin dashboards
+
+  CONTRAST RULES, measured against these grounds. Do not collapse these into
+  fewer tokens; each pair below exists because its alternative fails WCAG AA:
+
+    --oxblood on --ground   1.42:1  FAIL — fills and borders ONLY, never text
+    --red-lift on --ground  5.78:1  PASS — every red glyph uses this
+    --sage on --paper       1.94:1  FAIL — never sage text on the light surface
+    --forest on --paper     6.54:1  PASS — green text/CTA on the light surface
 */
 :root {
-  /* App (dashboard) surfaces — unchanged light theme */
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  /* ── Dark olive surfaces ─────────────────────────────── */
+  --ground: #16281b; /* dominant surface — unmistakably green, not black */
+  --panel: #1e3324; /* raised panel */
+  --panel-2: #27402d; /* hover / higher */
+  --panel-green: #22381f; /* "yours" state tint */
+  --panel-red: #2e1f21; /* "full" state tint */
 
-  /* Brand palette — poster-brutalist black + scarlet */
-  --ink: #0a0809; /* page black, faint red undertone */
-  --surface: #140f11; /* raised panel */
-  --surface-2: #1c1417; /* higher panel / hover */
-  --line: #2b2023; /* neutral hairline */
-  --rule: rgba(248, 29, 44, 0.28); /* red framing rule */
-  --mist: #a8999c; /* secondary text on dark */
-  --bone: #f4f0f1; /* primary text on dark */
-  --crimson: #f81d2c; /* dominant brand red — fills and display type */
-  --crimson-lift: #ff4a52; /* red text at body sizes (better contrast) */
-  --crimson-deep: #7a0f1c; /* glow / gradient base */
+  --line: #314b38; /* hairline on dark */
+  --rule: rgba(151, 176, 140, 0.28); /* sage framing rule */
+
+  --bone: #ecefe8; /* primary text on dark */
+  --sage: #97b08c; /* secondary text, accents, "yours" */
+  --sage-dim: #7e9476; /* tertiary text on dark */
+  --grey: #b8b8b8; /* structural grey — the brief's 20% */
+
+  --oxblood: #7b0f14; /* red fills and borders only */
+  --red-lift: #e87f87; /* red text and icons on dark */
+
+  /* ── Light paper surfaces ────────────────────────────── */
+  --paper: #e8eae2;
+  --paper-panel: #f4f5f0;
+  --ink: #0b0d0b; /* the brief's 10% black */
+  --ink-muted: #4a5348; /* secondary text on paper */
+  --line-light: #cfd4c7; /* hairline on paper */
+  --forest: #2f5a3a; /* green text and CTA on paper */
+
+  /* Dashboards are the light surface by default; the dark pages opt in. */
+  --background: var(--paper);
+  --foreground: var(--ink);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  --color-ink: var(--ink);
-  --color-surface: var(--surface);
-  --color-surface-2: var(--surface-2);
+  --color-ground: var(--ground);
+  --color-panel: var(--panel);
+  --color-panel-2: var(--panel-2);
+  --color-panel-green: var(--panel-green);
+  --color-panel-red: var(--panel-red);
+
   --color-line: var(--line);
   --color-rule: var(--rule);
-  --color-mist: var(--mist);
-  --color-bone: var(--bone);
-  --color-crimson: var(--crimson);
-  --color-crimson-lift: var(--crimson-lift);
-  --color-crimson-deep: var(--crimson-deep);
 
-  --font-sans: var(--font-archivo);
-  --font-display: var(--font-anton);
-  --font-mono: var(--font-geist-mono);
+  --color-bone: var(--bone);
+  --color-sage: var(--sage);
+  --color-sage-dim: var(--sage-dim);
+  --color-grey: var(--grey);
+
+  --color-oxblood: var(--oxblood);
+  --color-red-lift: var(--red-lift);
+
+  --color-paper: var(--paper);
+  --color-paper-panel: var(--paper-panel);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-line-light: var(--line-light);
+  --color-forest: var(--forest);
+
+  /* One family carries display, body and data. */
+  --font-sans: var(--font-plex-mono);
+  --font-display: var(--font-plex-mono);
+  --font-mono: var(--font-plex-mono);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: var(--font-sans), ui-monospace, "SFMono-Regular", Menlo,
+    monospace;
 }
 
 /* Dark brand shell for public/marketing surfaces. */
 .brand-dark {
-  background: var(--ink);
+  background: var(--ground);
   color: var(--bone);
 }
 
@@ -71,15 +127,15 @@ body {
 
 /*
   The dark pages (.brand-dark: the site and login; .app-dark: the client
-  booking area) paint their black on a wrapper, so the page behind it would
-  otherwise stay the light app background. iOS shows that background when it
+  booking area) paint their olive on a wrapper, so the page behind it would
+  otherwise stay the light paper background. iOS shows that background when it
   bounces past the top or bottom of the page, and Safari tints its toolbars
-  from the body's colour, which left white bands at the edges. The dark
-  colour scheme also gives these pages dark native scrollbars.
+  from the body's colour, which left pale bands at the edges. The dark colour
+  scheme also gives these pages dark native scrollbars.
 */
 html:has(.brand-dark, .app-dark),
 html:has(.brand-dark, .app-dark) body {
-  background: var(--ink);
+  background: var(--ground);
 }
 html:has(.brand-dark, .app-dark) {
   color-scheme: dark;
@@ -90,66 +146,120 @@ html {
 }
 
 ::selection {
-  background: var(--crimson);
-  color: #fff;
+  background: var(--sage);
+  color: var(--ink);
 }
 
-/* Fine film grain — depth without noise. Kept very low opacity. */
+/* Fine film grain — paper texture under the ledger. Kept very low opacity. */
 .grain::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.04;
+  opacity: 0.05;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /*
-  Poster type — the massive condensed display treatment from the brief's
-  reference. Anton is already heavy and condensed; these tighten it further
-  so the headline reads as a single solid block of colour.
+  Display type.
+
+  IBM Plex Mono has fixed advance widths, so at poster sizes the even gaps
+  between glyphs read as holes and the line falls apart into separate letters.
+  Pulling the tracking well negative closes those gaps so a headline reads as
+  one solid block — this is the single most important number in the file, and
+  it is why display type here is not simply "the body font, larger".
 */
-.poster {
-  font-family: var(--font-display), Impact, "Arial Narrow", sans-serif;
+.display {
+  font-family: var(--font-display), ui-monospace, monospace;
   text-transform: uppercase;
-  line-height: 0.92;
-  letter-spacing: -0.015em;
-  font-weight: 400;
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+}
+
+/* Three steps of one display scale. */
+.d-xl {
+  font-size: clamp(2.5rem, 9vw, 6rem);
+}
+.d-lg {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+}
+.d-md {
+  font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+  letter-spacing: -0.035em;
 }
 
 /*
-  Two steps of one headline scale. .h-sec is for full-bleed section heads;
-  .h-col is for heads that sit in a narrower column, where the section size
-  would crowd the measure.
+  Structural marker. Uppercase survives only where it encodes structure — nav,
+  buttons, table and panel headers — never as a decorative eyebrow above a
+  heading. Mono already reads as "record" without that crutch.
 */
-.h-sec {
-  font-size: clamp(2.5rem, 7.5vw, 6rem);
-}
-.h-col {
-  font-size: clamp(2.25rem, 4.5vw, 3.5rem);
-}
-
-/* Tracked-out label, per the reference's "WE ARE / NUEVA TECH" marker. */
-.label {
+.tag {
   text-transform: uppercase;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.1em;
   font-size: 0.6875rem;
   line-height: 1.45;
   font-weight: 600;
 }
 
-/* Vertical "SCROLL DOWN" rail. */
+/*
+  Ledger row — the signature device: label left, figure right, leader dots
+  spanning whatever space is left. Alignment like this only works in a
+  monospaced face, and it encodes real information (a key and its value)
+  rather than decorating the page.
+*/
+.ledger {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+.ledger-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75ch;
+}
+/*
+  The leader dots are an ::after on the term rather than an element of their
+  own, so the markup stays a valid <dl>: a `div` grouping `dt` + `dd` is
+  allowed, but a stray `span` between them is not.
+*/
+.ledger-row > dt {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: baseline;
+  gap: 0.75ch;
+  min-width: 0;
+  white-space: nowrap;
+}
+.ledger-row > dt::after {
+  content: "";
+  flex: 1 1 auto;
+  min-width: 1.5ch;
+  border-bottom: 1px dotted var(--rule);
+  transform: translateY(-0.3em);
+}
+.ledger-row > dd {
+  flex: none;
+  text-align: right;
+}
+
+/* Body copy measure. Mono runs wide, so the usual 80ch is too long here. */
+.measure {
+  max-width: 62ch;
+}
+
+/* Vertical rail label. */
 .vertical {
   writing-mode: vertical-rl;
   text-orientation: mixed;
 }
 
-/* One orchestrated entrance, used deliberately. */
+/* One orchestrated entrance, used deliberately — the hero load only. */
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
@@ -189,26 +299,32 @@ html {
 }
 
 /*
-  Inside the dark client area the dashboard headings take the same poster
-  treatment as the marketing sections, so the booking flow reads as one piece
-  with the hero rather than as a separate admin screen.
+  Dashboard headings. On the light paper surface these stay quiet and
+  readable; inside the dark client area they take the same display treatment
+  as the marketing sections, so the booking flow reads as one piece with the
+  hero rather than as a separate admin screen.
 */
+.page-heading {
+  font-family: var(--font-display), ui-monospace, monospace;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
 .app-dark .page-heading {
-  font-family: var(--font-display), Impact, "Arial Narrow", sans-serif;
   text-transform: uppercase;
-  line-height: 0.92;
-  letter-spacing: -0.015em;
-  font-weight: 400;
-  font-size: clamp(2rem, 5vw, 3.25rem);
-  color: var(--crimson);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  font-size: clamp(1.75rem, 5vw, 2.75rem);
+  color: var(--bone);
 }
 
-/* Small caps markers, matching the marketing site's tracked-out labels. */
+.panel-title {
+  font-family: var(--font-display), ui-monospace, monospace;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
 .app-dark .panel-title {
-  font-family: var(--font-display), Impact, "Arial Narrow", sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.02em;
-  font-weight: 400;
-  font-size: 1.125rem;
+  font-size: 1.0625rem;
   color: var(--bone);
 }

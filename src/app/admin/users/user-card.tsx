@@ -40,8 +40,8 @@ export type AdminUser = {
 };
 
 const inputClass =
-  "h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition-colors focus:border-crimson focus:ring-2 focus:ring-crimson/20";
-const labelClass = "mb-1.5 block text-sm font-medium text-slate-700";
+  "h-10 w-full rounded-lg border border-line-light bg-paper-panel px-3 text-sm text-ink outline-none transition-colors focus:border-forest focus:ring-2 focus:ring-forest/20";
+const labelClass = "mb-1.5 block text-sm font-medium text-ink";
 
 function initialsOf(name: string): string {
   return (
@@ -82,43 +82,43 @@ export function UserCard({
   const name = user.full_name || user.username || "Unnamed";
 
   return (
-    <li className="rounded-xl border border-slate-200 bg-white shadow-sm">
+    <li className="rounded-xl border border-line-light bg-paper-panel shadow-sm">
       {/* Summary row — kept compact so the details stay on one line each.
           `relative` anchors the Edit button's stretched hit area below, so
           clicking anywhere on the row opens the editor. */}
-      <div className="relative flex items-start gap-3 p-3.5 transition-colors hover:bg-slate-50">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-crimson/10 text-xs font-bold text-crimson">
+      <div className="relative flex items-start gap-3 p-3.5 transition-colors hover:bg-paper">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-forest/10 text-xs font-bold text-forest">
           {initialsOf(name)}
         </span>
 
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 items-center gap-2">
-            <p className="truncate text-sm font-semibold text-slate-900">
+            <p className="truncate text-sm font-semibold text-ink">
               {name}
             </p>
             <RoleBadge role={user.role} />
             {isSelf && (
-              <span className="shrink-0 text-xs text-slate-400">(you)</span>
+              <span className="shrink-0 text-xs text-ink-muted">(you)</span>
             )}
             {user.role === "coach" && user.coach && !user.coach.active && (
-              <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500">
+              <span className="shrink-0 rounded-full bg-paper px-2 py-0.5 text-[10px] font-medium text-ink-muted">
                 Hidden
               </span>
             )}
           </div>
 
-          <p className="truncate text-xs text-slate-500">
+          <p className="truncate text-xs text-ink-muted">
             {user.username ? `@${user.username}` : "no username"}
           </p>
 
           <dl className="mt-1.5 space-y-0.5 text-xs">
             <div className="flex gap-1.5">
-              <dt className="shrink-0 text-slate-400">Phone</dt>
-              <dd className="truncate text-slate-600">{user.phone || "—"}</dd>
+              <dt className="shrink-0 text-ink-muted">Phone</dt>
+              <dd className="truncate text-ink-muted">{user.phone || "—"}</dd>
             </div>
             <div className="flex gap-1.5">
-              <dt className="shrink-0 text-slate-400">Joined</dt>
-              <dd className="whitespace-nowrap text-slate-600">
+              <dt className="shrink-0 text-ink-muted">Joined</dt>
+              <dd className="whitespace-nowrap text-ink-muted">
                 {user.joined}
               </dd>
             </div>
@@ -146,8 +146,8 @@ export function UserCard({
             )}
             {user.role === "coach" && user.coach?.specialty && (
               <div className="flex gap-1.5">
-                <dt className="shrink-0 text-slate-400">Specialty</dt>
-                <dd className="truncate text-slate-600">
+                <dt className="shrink-0 text-ink-muted">Specialty</dt>
+                <dd className="truncate text-ink-muted">
                   {user.coach.specialty}
                 </dd>
               </div>
@@ -167,8 +167,8 @@ export function UserCard({
             "flex h-8 shrink-0 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium transition-colors",
             "after:absolute after:inset-0 after:content-['']",
             editing
-              ? "border-crimson text-crimson"
-              : "border-slate-300 text-slate-700 hover:bg-slate-50",
+              ? "border-forest text-forest"
+              : "border-line-light text-ink hover:bg-paper",
           )}
         >
           {editing ? (
@@ -185,7 +185,7 @@ export function UserCard({
 
       {/* Editor */}
       {editing && (
-        <div className="border-t border-slate-100 bg-slate-50/60 p-4 sm:p-5">
+        <div className="border-t border-line-light bg-paper/60 p-4 sm:p-5">
           <form action={formAction}>
           <input type="hidden" name="id" value={user.id} />
 
@@ -206,7 +206,7 @@ export function UserCard({
               <label className={labelClass} htmlFor={`phone-${user.id}`}>
                 WhatsApp number
                 {user.role !== "admin" && (
-                  <span className="text-slate-400"> (required)</span>
+                  <span className="text-ink-muted"> (required)</span>
                 )}
               </label>
               <input
@@ -222,17 +222,17 @@ export function UserCard({
           </div>
 
           {/* Read-only identity — see updateUserAction for why these are fixed. */}
-          <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-xs text-slate-400">
+          <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-xs text-ink-muted">
             <span>
               Username:{" "}
-              <span className="font-medium text-slate-500">
+              <span className="font-medium text-ink-muted">
                 {user.username || "—"}
               </span>{" "}
               · fixed
             </span>
             <span>
               Role:{" "}
-              <span className="font-medium capitalize text-slate-500">
+              <span className="font-medium capitalize text-ink-muted">
                 {user.role}
               </span>{" "}
               · fixed
@@ -298,7 +298,7 @@ export function UserCard({
           )}
 
           {user.role === "coach" && (
-            <div className="mt-4 grid gap-4 rounded-lg border border-slate-200 bg-white p-4">
+            <div className="mt-4 grid gap-4 rounded-lg border border-line-light bg-paper-panel p-4">
               <div>
                 <label
                   className={labelClass}
@@ -331,9 +331,9 @@ export function UserCard({
                   type="checkbox"
                   name="active"
                   defaultChecked={user.coach?.active ?? false}
-                  className="h-4 w-4 rounded border-slate-300 text-crimson focus:ring-crimson/30"
+                  className="h-4 w-4 rounded border-line-light text-forest focus:ring-forest/30"
                 />
-                <span className="text-sm text-slate-700">
+                <span className="text-sm text-ink">
                   Visible to clients (listed on the site and bookable)
                 </span>
               </label>
@@ -341,12 +341,12 @@ export function UserCard({
           )}
 
           {state.error && (
-            <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+            <p className="mt-4 rounded-lg bg-oxblood/10 px-3 py-2 text-sm text-oxblood">
               {state.error}
             </p>
           )}
           {state.success && (
-            <p className="mt-4 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+            <p className="mt-4 rounded-lg bg-forest/10 px-3 py-2 text-sm text-forest">
               {state.success}
             </p>
           )}
@@ -368,8 +368,8 @@ export function UserCard({
           {/* Reset password and Delete each render their own <form>, so they
               must live OUTSIDE the edit form above — nested forms are invalid
               HTML and break hydration. */}
-          <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-slate-200 pt-4">
-            <span className="mr-auto text-xs font-medium uppercase tracking-wide text-slate-400">
+          <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-line-light pt-4">
+            <span className="mr-auto text-xs font-medium uppercase tracking-wide text-ink-muted">
               Account actions
             </span>
             <ResetPasswordButton

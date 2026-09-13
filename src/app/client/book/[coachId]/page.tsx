@@ -64,7 +64,7 @@ export default async function BookCoachPage({
         action={
           <Link
             href="/client/coaches"
-            className="label text-mist transition-colors hover:text-crimson"
+            className="tag text-sage-dim transition-colors hover:text-sage"
           >
             ← Back to coaches
           </Link>
@@ -90,7 +90,7 @@ export default async function BookCoachPage({
                     />
                   )}
                   {coach.bio && (
-                    <p className="text-sm leading-relaxed text-mist">
+                    <p className="text-sm leading-relaxed text-sage-dim">
                       {coach.bio}
                     </p>
                   )}
@@ -110,13 +110,13 @@ export default async function BookCoachPage({
                     key={row.days}
                     className="flex justify-between gap-4 py-2.5 first:pt-0 last:pb-0"
                   >
-                    <span className="label text-mist">{row.days}</span>
+                    <span className="tag text-sage-dim">{row.days}</span>
                     <span className="text-bone">{row.hours}</span>
                   </li>
                 ))}
               </ul>
               {sub.plan && (
-                <p className="mt-3 border-t border-line pt-3 text-xs text-mist">
+                <p className="mt-3 border-t border-line pt-3 text-xs text-sage-dim">
                   Your plan: {PLANS[sub.plan].label}
                   {sub.track ? ` · ${TRACKS[sub.track].short}` : ""}
                 </p>
@@ -131,19 +131,19 @@ export default async function BookCoachPage({
           </CardHeader>
           <CardBody>
             {needsPlan ? (
-              <div className="border border-amber-400/30 bg-amber-400/10 px-4 py-4 text-sm text-amber-300">
+              <div className="border border-oxblood/70 bg-panel-red px-4 py-4 text-sm text-red-lift">
                 <p className="font-medium">
                   No subscription on your account yet.
                 </p>
-                <p className="mt-1 text-amber-300/80">
+                <p className="mt-1 text-red-lift/80">
                   The studio adds your plan when you sign up at the gym. Once
                   it&rsquo;s set, your days and times appear here.
                 </p>
               </div>
             ) : sub.expired ? (
-              <div className="border border-amber-400/30 bg-amber-400/10 px-4 py-4 text-sm text-amber-300">
+              <div className="border border-oxblood/70 bg-panel-red px-4 py-4 text-sm text-red-lift">
                 <p className="font-medium">Your subscription has ended.</p>
-                <p className="mt-1 text-amber-300/80">
+                <p className="mt-1 text-red-lift/80">
                   It ran out on {sub.endsOn}. Ask the studio to renew it and
                   your calendar comes straight back.
                 </p>
@@ -151,18 +151,18 @@ export default async function BookCoachPage({
             ) : (
               <>
                 {freeSession && (
-                  <div className="mb-4 border border-crimson/40 bg-crimson/10 px-4 py-3 text-sm text-bone">
+                  <div className="mb-4 border border-sage/50 bg-panel-green px-4 py-3 text-sm text-bone">
                     <span className="font-medium">
                       Your first session is free.
                     </span>{" "}
-                    <span className="text-mist">
+                    <span className="text-sage-dim">
                       Pick any open day. After it, the studio sets up your
                       subscription.
                     </span>
                   </div>
                 )}
                 {sub.expiringSoon && (
-                  <div className="mb-4 border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-300">
+                  <div className="mb-4 border border-oxblood/70 bg-panel-red px-4 py-3 text-sm text-red-lift">
                     <span className="font-medium">
                       {sub.daysLeft === 0
                         ? "Your subscription ends today."
@@ -170,13 +170,13 @@ export default async function BookCoachPage({
                             sub.daysLeft === 1 ? "" : "s"
                           }.`}
                     </span>{" "}
-                    <span className="text-amber-300/80">
+                    <span className="text-red-lift/80">
                       Renew with the studio to keep booking after {sub.endsOn}.
                     </span>
                   </div>
                 )}
                 {allowance && (
-                  <p className="mb-4 text-xs text-mist">
+                  <p className="mb-4 text-xs text-sage-dim">
                     {allowance.monthLimit - allowance.monthUsed} of{" "}
                     {allowance.monthLimit} sessions left this month ·{" "}
                     {allowance.weekLimit - allowance.weekUsed} of{" "}

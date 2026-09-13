@@ -35,7 +35,7 @@ export default async function CoachProfilePage() {
               name={me!.full_name || "Coach"}
               photoUrl={(coach as Coach | null)?.avatar_url ?? null}
             />
-            <div className="my-5 border-t border-slate-200" />
+            <div className="my-5 border-t border-line-light" />
             <CoachProfileForm coach={(coach as Coach) ?? null} />
           </CardBody>
         </Card>
@@ -45,15 +45,15 @@ export default async function CoachProfilePage() {
             <CardTitle>Studio hours</CardTitle>
           </CardHeader>
           <CardBody>
-            <ul className="space-y-1.5 text-sm text-slate-700">
+            <ul className="space-y-1.5 text-sm text-ink">
               {STUDIO_HOURS_DISPLAY.map((row) => (
                 <li key={row.days} className="flex justify-between gap-4">
-                  <span className="font-medium text-slate-900">{row.days}</span>
+                  <span className="font-medium text-ink">{row.days}</span>
                   <span>{row.hours}</span>
                 </li>
               ))}
             </ul>
-            <p className="mt-4 text-sm text-slate-500">
+            <p className="mt-4 text-sm text-ink-muted">
               Clients book hourly slots within these hours. Each session is{" "}
               {SESSION_LABEL}. A semi-private slot seats{" "}
               {PLANS.semi_private.capacity}; a class seats{" "}

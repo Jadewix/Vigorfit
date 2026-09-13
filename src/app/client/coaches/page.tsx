@@ -47,7 +47,7 @@ export default async function BrowseCoachesPage() {
             return (
               <div
                 key={c.id}
-                className="flex h-full flex-col border border-line bg-ink/50 p-6 transition-colors hover:border-crimson"
+                className="flex h-full flex-col border border-line bg-ground/50 p-6 transition-colors hover:border-sage"
               >
                 <div className="flex items-center gap-3.5">
                   <CoachAvatar
@@ -56,15 +56,15 @@ export default async function BrowseCoachesPage() {
                     className="h-12 w-12 text-lg"
                   />
                   <div className="min-w-0">
-                    <p className="poster text-xl text-bone">{name}</p>
+                    <p className="display text-xl text-bone">{name}</p>
                     {c.specialty && (
-                      <p className="label mt-1 text-crimson">{c.specialty}</p>
+                      <p className="tag mt-1 text-sage">{c.specialty}</p>
                     )}
                   </div>
                 </div>
 
                 {c.bio && (
-                  <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-mist">
+                  <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-sage-dim">
                     {c.bio}
                   </p>
                 )}
@@ -75,7 +75,7 @@ export default async function BrowseCoachesPage() {
                     className={buttonClasses(
                       "primary",
                       "sm",
-                      "label w-full px-4",
+                      "tag w-full px-4",
                     )}
                   >
                     Book a session

@@ -1,8 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Wordmark } from "@/components/site/wordmark";
 import type { LoginState } from "@/lib/types";
 
 const initial: LoginState = {};
@@ -27,25 +27,15 @@ export function LoginForm({
         className="pointer-events-none absolute inset-0 z-0"
         style={{
           background:
-            "radial-gradient(90% 70% at 50% -10%, rgba(225,29,51,0.18), transparent 60%)",
+            "radial-gradient(90% 70% at 50% -10%, rgba(151,176,140,0.14), transparent 60%)",
         }}
       />
       <div className="relative z-10 w-full max-w-sm">
-        <Link
-          href="/"
-          className="mb-8 flex items-center justify-center gap-2.5"
-        >
-          <span className="flex h-9 w-9 items-center justify-center bg-crimson font-display text-lg text-white">
-            C
-          </span>
-          <span className="poster text-2xl text-bone">
-            Vigorfit<span className="text-crimson">.</span>
-          </span>
-        </Link>
+        <Wordmark className="mb-8 justify-center" />
 
-        <div className="border border-line bg-surface/70 p-8 backdrop-blur">
-          <h1 className="poster text-3xl text-bone">{title}</h1>
-          <p className="mt-1.5 text-sm text-mist">{subtitle}</p>
+        <div className="border border-line bg-panel/70 p-8 backdrop-blur">
+          <h1 className="display text-3xl text-bone">{title}</h1>
+          <p className="mt-1.5 text-sm text-sage-dim">{subtitle}</p>
 
           <form action={formAction} className="mt-6 space-y-4">
             <div>
@@ -63,7 +53,7 @@ export function LoginForm({
                 autoCapitalize="none"
                 spellCheck={false}
                 required
-                className="h-11 w-full border border-line bg-ink/60 px-3.5 text-sm text-bone placeholder:text-mist/60 outline-none transition focus:border-crimson focus:ring-2 focus:ring-crimson/30"
+                className="h-11 w-full border border-line bg-ground/60 px-3.5 text-sm text-bone placeholder:text-sage-dim/60 outline-none transition focus:border-sage focus:ring-2 focus:ring-sage/30"
                 placeholder="yourusername"
               />
             </div>
@@ -81,13 +71,13 @@ export function LoginForm({
                 type="password"
                 autoComplete="current-password"
                 required
-                className="h-11 w-full border border-line bg-ink/60 px-3.5 text-sm text-bone placeholder:text-mist/60 outline-none transition focus:border-crimson focus:ring-2 focus:ring-crimson/30"
+                className="h-11 w-full border border-line bg-ground/60 px-3.5 text-sm text-bone placeholder:text-sage-dim/60 outline-none transition focus:border-sage focus:ring-2 focus:ring-sage/30"
                 placeholder="••••••••"
               />
             </div>
 
             {state.error && (
-              <p className="border border-crimson/40 bg-crimson/10 px-3 py-2 text-sm text-bone">
+              <p className="border border-oxblood/60 bg-oxblood/15 px-3 py-2 text-sm text-bone">
                 {state.error}
               </p>
             )}
@@ -104,7 +94,7 @@ export function LoginForm({
         </div>
 
         {footNote && (
-          <div className="mt-6 text-center text-xs text-mist">{footNote}</div>
+          <div className="mt-6 text-center text-xs text-sage-dim">{footNote}</div>
         )}
       </div>
     </main>

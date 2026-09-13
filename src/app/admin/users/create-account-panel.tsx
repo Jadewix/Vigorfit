@@ -27,15 +27,15 @@ export function CreateAccountPanel() {
 
   return (
     <Card>
-      <div className="flex items-center justify-between border-b border-slate-100 p-5">
-        <h2 className="text-base font-semibold text-slate-900">
+      <div className="flex items-center justify-between border-b border-line-light p-5">
+        <h2 className="text-base font-semibold text-ink">
           Add a new account
         </h2>
         <button
           type="button"
           onClick={() => setOpen(false)}
           aria-label="Close"
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-ink-muted transition-colors hover:bg-paper hover:text-ink"
         >
           <CloseIcon width={18} height={18} />
         </button>
