@@ -1,6 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { notifyReminder } from "@/lib/notifications";
+import {
+  notifyReminder,
+  notifySubscriptionExpiring,
+} from "@/lib/notifications";
+import { EXPIRY_REMINDER_DAYS } from "@/lib/booking";
+import { shiftDate, zonedToday } from "@/lib/timezone";
 
 export const dynamic = "force-dynamic";
 
@@ -50,5 +55,37 @@ export async function GET(req: NextRequest) {
     sent++;
   }
 
-  return NextResponse.json({ ok: true, sent });
+  // --- subscriptions about to run out ------------------------------------
+  // Sent once per period: the end date we warned about is stamped on the
+  // profile, so bumping it on renewal re-arms the reminder by itself.
+  let expiryReminders = 0;
+  const today = zonedToday();
+  const horizon = shiftDate(today, EXPIRY_REMINDER_DAYS);
+  const { data: expiring, error: expErr } = await admin
+    .from("profiles")
+    .select("id, subscription_ends_on, subscription_reminder_sent_for")
+    .eq("role", "client")
+    .not("subscription_ends_on", "is", null)
+    .gte("subscription_ends_on", today)
+    .lte("subscription_ends_on", horizon ?? today);
+
+  // 42703 = subscription-limits.sql hasn't been run; skip this half quietly.
+  if (expErr && expErr.code !== "42703") {
+    console.error("[cron] expiring lookup", expErr.message);
+  }
+  for (const c of expiring ?? []) {
+    if (c.subscription_reminder_sent_for === c.subscription_ends_on) continue;
+    // Only stamp a send that actually happened. A failed one (template not
+    // approved yet, number not allow-listed, WhatsApp not configured) must
+    // stay unstamped so the next run tries again.
+    const delivered = await notifySubscriptionExpiring(c.id);
+    if (!delivered) continue;
+    await admin
+      .from("profiles")
+      .update({ subscription_reminder_sent_for: c.subscription_ends_on })
+      .eq("id", c.id);
+    expiryReminders++;
+  }
+
+  return NextResponse.json({ ok: true, sent, expiryReminders });
 }

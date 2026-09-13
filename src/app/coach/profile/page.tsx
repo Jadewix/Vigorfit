@@ -4,7 +4,7 @@ import { PageHeading } from "@/components/dashboard-shell";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { CoachProfileForm } from "./coach-profile-form";
 import { CoachPhotoForm } from "./coach-photo-form";
-import { STUDIO_HOURS_DISPLAY, SESSION_LABEL } from "@/lib/booking";
+import { PLANS, STUDIO_HOURS_DISPLAY, SESSION_LABEL } from "@/lib/booking";
 import type { Coach } from "@/lib/types";
 
 export default async function CoachProfilePage() {
@@ -55,7 +55,9 @@ export default async function CoachProfilePage() {
             </ul>
             <p className="mt-4 text-sm text-slate-500">
               Clients book hourly slots within these hours. Each session is{" "}
-              {SESSION_LABEL}, and up to 2 clients can share a slot.
+              {SESSION_LABEL}. A semi-private slot seats{" "}
+              {PLANS.semi_private.capacity}; a class seats{" "}
+              {PLANS.classes.capacity}.
             </p>
           </CardBody>
         </Card>

@@ -5,7 +5,12 @@
  * of the acting user's RLS scope.
  */
 import { createAdminClient } from "@/lib/supabase/admin";
-import { WA_TEMPLATES, sendWhatsAppTemplate } from "@/lib/whatsapp";
+import {
+  WA_TEMPLATES,
+  isWhatsAppConfigured,
+  sendWhatsAppTemplate,
+} from "@/lib/whatsapp";
+import { PLANS, isPlan } from "@/lib/booking";
 import { APP_TIMEZONE } from "@/lib/timezone";
 
 function formatWhen(iso: string): string {
@@ -125,5 +130,53 @@ export async function notifyReminder(bookingId: string): Promise<void> {
     ]);
   } catch (e) {
     console.error("[notify] notifyReminder", e);
+  }
+}
+
+/** A "YYYY-MM-DD" date as e.g. "Sep 20", on the studio’s clock. */
+function formatDay(date: string): string {
+  // Midday avoids the date shifting either way across a timezone offset.
+  return new Date(`${date}T12:00:00Z`).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    timeZone: APP_TIMEZONE,
+  });
+}
+
+/**
+ * Subscription about to run out -> notify the client.
+ *
+ * Returns whether a message actually reached WhatsApp. The caller stamps
+ * the profile so the reminder goes out once per period, and stamping a
+ * send that never happened would lose that period's warning for good.
+ */
+export async function notifySubscriptionExpiring(
+  profileId: string,
+): Promise<boolean> {
+  try {
+    const admin = createAdminClient();
+    const { data: p } = await admin
+      .from("profiles")
+      .select("full_name, username, phone, plan, subscription_ends_on")
+      .eq("id", profileId)
+      .single();
+    if (!p || !p.subscription_ends_on) return false;
+
+    const result = await sendWhatsAppTemplate({
+      to: p.phone,
+      template: WA_TEMPLATES.subscriptionExpiring,
+      params: [
+        firstName(p.full_name || p.username || "there"),
+        isPlan(p.plan) ? PLANS[p.plan].label : "training",
+        formatDay(p.subscription_ends_on),
+      ],
+    });
+
+    // Dry-run reports ok even with no credentials, but nothing reached the
+    // client, so it must not count as sent.
+    return isWhatsAppConfigured() && result.ok;
+  } catch (e) {
+    console.error("[notify] notifySubscriptionExpiring", e);
+    return false;
   }
 }

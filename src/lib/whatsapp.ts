@@ -20,6 +20,9 @@ export const WA_TEMPLATES = {
     process.env.WHATSAPP_TEMPLATE_BOOKING_UPDATE || "booking_update",
   sessionReminder:
     process.env.WHATSAPP_TEMPLATE_SESSION_REMINDER || "session_reminder",
+  subscriptionExpiring:
+    process.env.WHATSAPP_TEMPLATE_SUBSCRIPTION_EXPIRING ||
+    "subscription_expiring",
 };
 
 export function isWhatsAppConfigured(): boolean {

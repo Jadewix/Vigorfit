@@ -1,7 +1,18 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { SLOT_CAPACITY, isOpenOn, slotTimesFor } from "@/lib/booking";
+import {
+  TRACKS,
+  capacityFor,
+  isOpenOn,
+  isTrackDay,
+  slotAvailability,
+  slotTimesFor,
+} from "@/lib/booking";
+import {
+  getSubscription,
+  hasFreeSessionAvailable,
+} from "@/lib/subscription";
 import {
   utcToZonedTime,
   weekdayOf,
@@ -49,7 +60,9 @@ export async function GET(
     day && open
       ? createAdminClient()
           .from("bookings")
-          .select("starts_at, client_id")
+          // `plan` may not exist yet (subscriptions.sql not run), and this
+          // query is fired before we know, so take the whole row.
+          .select("*")
           .eq("coach_id", coachId)
           .in("status", ["pending", "confirmed"])
           .gte("starts_at", day.start.toISOString())
@@ -73,14 +86,49 @@ export async function GET(
     return NextResponse.json({ slots: [], closed: true });
   }
 
-  const booked = bookedPromise ? await bookedPromise : [];
+  // The subscription decides both the capacity and which weekdays are on
+  // offer. It needs the user id so it can't join the batch above, but it can
+  // run alongside the bookings read.
+  const [sub, booked] = await Promise.all([
+    getSubscription(user.id),
+    bookedPromise ?? Promise.resolve([]),
+  ]);
 
-  // How many clients are in each slot, and whether the viewer is one of them.
-  const counts = new Map<string, number>();
+  // A client with no subscription gets one free session; after that they
+  // cannot book until an admin assigns a plan.
+  const isTrial = sub.configured && sub.role === "client" && !sub.plan;
+  if (isTrial && !(await hasFreeSessionAvailable(user.id))) {
+    return NextResponse.json({ slots: [], closed: false, noPlan: true });
+  }
+
+  // An ended subscription blocks booking until the studio renews it.
+  if (sub.expired) {
+    return NextResponse.json({
+      slots: [],
+      closed: false,
+      expired: true,
+      endsOn: sub.endsOn,
+    });
+  }
+
+  // Their plan only trains on certain weekdays.
+  if (!isTrackDay(weekday, sub.track)) {
+    return NextResponse.json({
+      slots: [],
+      closed: false,
+      offTrack: true,
+      trackLabel: sub.track ? TRACKS[sub.track].short : null,
+    });
+  }
+
+  // Who is already in each slot, and whether the viewer is one of them.
+  const occupants = new Map<string, { plan?: string | null }[]>();
   const mine = new Set<string>();
   for (const b of booked) {
     const key = utcToZonedTime(b.starts_at).time;
-    counts.set(key, (counts.get(key) ?? 0) + 1);
+    const list = occupants.get(key) ?? [];
+    list.push({ plan: b.plan ?? null });
+    occupants.set(key, list);
     if (b.client_id === user.id) mine.add(key);
   }
 
@@ -88,7 +136,11 @@ export async function GET(
   const slots = slotTimesFor(weekday)
     .filter((t) => zonedTimeToUtc(date, t)!.getTime() >= now)
     .map((t) => {
-      const remaining = Math.max(0, SLOT_CAPACITY - (counts.get(t) ?? 0));
+      const { remaining } = slotAvailability(
+        (occupants.get(t) ?? []) as { plan?: null }[],
+        sub.plan,
+        { trial: isTrial },
+      );
       return {
         time: t,
         remaining,
@@ -97,5 +149,9 @@ export async function GET(
       };
     });
 
-  return NextResponse.json({ slots, closed: false });
+  return NextResponse.json({
+    slots,
+    closed: false,
+    capacity: capacityFor(sub.plan),
+  });
 }

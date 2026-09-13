@@ -34,6 +34,9 @@ export default async function AdminUsersPage() {
       full_name: p.full_name,
       phone: p.phone,
       email: p.email,
+      plan: p.plan ?? null,
+      schedule_track: p.schedule_track ?? null,
+      subscription_ends_on: p.subscription_ends_on ?? null,
       joined: formatInAppTimezone(p.created_at, {
         year: "numeric",
         month: "short",

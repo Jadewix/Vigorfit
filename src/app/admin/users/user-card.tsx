@@ -9,6 +9,14 @@ import { cn } from "@/lib/utils";
 import { ResetPasswordButton } from "./reset-password-button";
 import { updateUserAction, deleteUserAction, type UpdateUserState } from "./actions";
 import type { Role } from "@/lib/types";
+import {
+  PLANS,
+  PLAN_VALUES,
+  TRACKS,
+  TRACK_VALUES,
+  type Plan,
+  type ScheduleTrack,
+} from "@/lib/booking";
 
 export type AdminUser = {
   id: string;
@@ -17,6 +25,11 @@ export type AdminUser = {
   full_name: string | null;
   phone: string | null;
   email: string | null;
+  /** Subscription. null until an admin assigns one. */
+  plan: Plan | null;
+  schedule_track: ScheduleTrack | null;
+  /** "paid until" date, "YYYY-MM-DD". */
+  subscription_ends_on: string | null;
   /** Preformatted on the server so SSR and client render identical text. */
   joined: string;
   coach: {
@@ -70,8 +83,10 @@ export function UserCard({
 
   return (
     <li className="rounded-xl border border-slate-200 bg-white shadow-sm">
-      {/* Summary row — kept compact so the details stay on one line each */}
-      <div className="flex items-start gap-3 p-3.5">
+      {/* Summary row — kept compact so the details stay on one line each.
+          `relative` anchors the Edit button's stretched hit area below, so
+          clicking anywhere on the row opens the editor. */}
+      <div className="relative flex items-start gap-3 p-3.5 transition-colors hover:bg-slate-50">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-crimson/10 text-xs font-bold text-crimson">
           {initialsOf(name)}
         </span>
@@ -107,6 +122,28 @@ export function UserCard({
                 {user.joined}
               </dd>
             </div>
+            {user.role === "client" && (
+              <div className="flex gap-1.5">
+                <dt className="shrink-0 text-slate-400">Plan</dt>
+                <dd className="truncate text-slate-600">
+                  {user.plan
+                    ? `${PLANS[user.plan].label} · ${
+                        user.schedule_track
+                          ? TRACKS[user.schedule_track].short
+                          : "no schedule"
+                      }`
+                    : "Not set"}
+                </dd>
+              </div>
+            )}
+            {user.role === "client" && user.subscription_ends_on && (
+              <div className="flex gap-1.5">
+                <dt className="shrink-0 text-slate-400">Paid until</dt>
+                <dd className="truncate text-slate-600">
+                  {user.subscription_ends_on}
+                </dd>
+              </div>
+            )}
             {user.role === "coach" && user.coach?.specialty && (
               <div className="flex gap-1.5">
                 <dt className="shrink-0 text-slate-400">Specialty</dt>
@@ -124,7 +161,11 @@ export function UserCard({
           aria-expanded={editing}
           aria-label={editing ? `Close ${name}` : `Edit ${name}`}
           className={cn(
+            // after:inset-0 stretches this button across the whole row, so
+            // the row is clickable without a second control competing with
+            // it for the same action.
             "flex h-8 shrink-0 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium transition-colors",
+            "after:absolute after:inset-0 after:content-['']",
             editing
               ? "border-crimson text-crimson"
               : "border-slate-300 text-slate-700 hover:bg-slate-50",
@@ -197,6 +238,64 @@ export function UserCard({
               · fixed
             </span>
           </div>
+
+          {user.role === "client" && (
+            <div className="mt-4 grid gap-4 rounded-lg border border-slate-200 bg-white p-4 sm:grid-cols-2">
+              <div>
+                <label className={labelClass} htmlFor={`plan-${user.id}`}>
+                  Subscription
+                </label>
+                <select
+                  id={`plan-${user.id}`}
+                  name="plan"
+                  defaultValue={user.plan ?? ""}
+                  className={inputClass}
+                >
+                  <option value="">Not set</option>
+                  {PLAN_VALUES.map((p) => (
+                    <option key={p} value={p}>
+                      {PLANS[p].label} — ${PLANS[p].priceUsd}/month
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className={labelClass} htmlFor={`track-${user.id}`}>
+                  Schedule
+                </label>
+                <select
+                  id={`track-${user.id}`}
+                  name="schedule_track"
+                  defaultValue={user.schedule_track ?? ""}
+                  className={inputClass}
+                >
+                  <option value="">Not set</option>
+                  {TRACK_VALUES.map((t) => (
+                    <option key={t} value={t}>
+                      {TRACKS[t].short}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="sm:col-span-2">
+                <label className={labelClass} htmlFor={`ends-${user.id}`}>
+                  Paid until
+                </label>
+                <input
+                  id={`ends-${user.id}`}
+                  name="subscription_ends_on"
+                  type="date"
+                  defaultValue={user.subscription_ends_on ?? ""}
+                  className={inputClass}
+                />
+              </div>
+              <p className="text-xs text-slate-400 sm:col-span-2">
+                Set both, or neither. With no subscription the client can
+                sign in but not book. Renewing means moving the paid-until
+                date forward.
+              </p>
+            </div>
+          )}
 
           {user.role === "coach" && (
             <div className="mt-4 grid gap-4 rounded-lg border border-slate-200 bg-white p-4">

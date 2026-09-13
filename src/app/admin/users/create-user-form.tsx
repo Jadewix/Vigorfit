@@ -4,6 +4,12 @@ import { useActionState, useState } from "react";
 import { createUserAction, type CreateUserState } from "./actions";
 import { Button } from "@/components/ui/button";
 import type { Role } from "@/lib/types";
+import {
+  PLANS,
+  PLAN_VALUES,
+  TRACKS,
+  TRACK_VALUES,
+} from "@/lib/booking";
 
 const initialState: CreateUserState = {};
 
@@ -122,6 +128,69 @@ export function CreateUserForm() {
               rows={2}
               className={inputClass.replace("h-10", "min-h-[64px] py-2")}
             />
+          </div>
+        </div>
+      )}
+
+      {role === "client" && (
+        <div className="grid gap-4 rounded-lg bg-slate-50 p-4 sm:grid-cols-2">
+          <div>
+            <label className={labelClass} htmlFor="plan">
+              Subscription
+            </label>
+            <select
+              id="plan"
+              name="plan"
+              defaultValue=""
+              className={inputClass}
+            >
+              <option value="">Not set yet</option>
+              {PLAN_VALUES.map((p) => (
+                <option key={p} value={p}>
+                  {PLANS[p].label} — ${PLANS[p].priceUsd}/month
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-xs text-slate-400">
+              Until this is set they can sign in, but not book.
+            </p>
+          </div>
+          <div>
+            <label className={labelClass} htmlFor="schedule_track">
+              Schedule
+            </label>
+            <select
+              id="schedule_track"
+              name="schedule_track"
+              defaultValue=""
+              className={inputClass}
+            >
+              <option value="">Not set yet</option>
+              {TRACK_VALUES.map((t) => (
+                <option key={t} value={t}>
+                  {TRACKS[t].short}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-xs text-slate-400">
+              They can only book on these days.
+            </p>
+          </div>
+          <div className="sm:col-span-2">
+            <label className={labelClass} htmlFor="subscription_ends_on">
+              Paid until{" "}
+              <span className="text-slate-400">(can be set later)</span>
+            </label>
+            <input
+              id="subscription_ends_on"
+              name="subscription_ends_on"
+              type="date"
+              className={inputClass}
+            />
+            <p className="mt-1 text-xs text-slate-400">
+              Their 12 sessions a month are counted over the month ending on
+              this date, and booking stops once it passes.
+            </p>
           </div>
         </div>
       )}

@@ -1,0 +1,20 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "vigorfit-cron",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-10",
+
+  // Hourly. Session reminders look 24h ahead and mark themselves sent, and the
+  // expiry sweep only warns once per subscription period, so a run that finds
+  // nothing to do is free.
+  "triggers": {
+    "crons": ["0 * * * *"]
+  },
+
+  "vars": {
+    "APP_URL": "https://vigorfit.plancksoftware.workers.dev"
+  }
+
+  // CRON_SECRET is a secret, not a var:
+  //   npx wrangler secret put CRON_SECRET --config cron-worker/wrangler.jsonc
+}

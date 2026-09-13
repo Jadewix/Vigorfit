@@ -170,6 +170,93 @@ export function zonedDayRange(
   };
 }
 
+/** "YYYY-MM-DD" `days` later (negative goes back). Null if malformed. */
+export function shiftDate(date: string, days: number): string | null {
+  const d = parseDate(date);
+  if (!d) return null;
+  return new Date(Date.UTC(d[0], d[1] - 1, d[2] + days))
+    .toISOString()
+    .slice(0, 10);
+}
+
+/**
+ * "YYYY-MM-DD" `months` later (negative goes back), clamped to the end of a
+ * shorter month: Jan 31 minus one month is Dec 31, plus one is Feb 28/29.
+ * Null if malformed.
+ */
+export function addMonths(date: string, months: number): string | null {
+  const d = parseDate(date);
+  if (!d) return null;
+  const firstOfTarget = new Date(Date.UTC(d[0], d[1] - 1 + months, 1));
+  const y = firstOfTarget.getUTCFullYear();
+  const m = firstOfTarget.getUTCMonth();
+  const lastDay = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+  return new Date(Date.UTC(y, m, Math.min(d[2], lastDay)))
+    .toISOString()
+    .slice(0, 10);
+}
+
+/** Whole days from `from` to `date`; negative once `date` has passed. */
+export function daysUntil(date: string, from: string): number | null {
+  const a = parseDate(from);
+  const b = parseDate(date);
+  if (!a || !b) return null;
+  const aMs = Date.UTC(a[0], a[1] - 1, a[2]);
+  const bMs = Date.UTC(b[0], b[1] - 1, b[2]);
+  return Math.round((bMs - aMs) / DAY_MS);
+}
+
+/**
+ * The calendar week (Monday 00:00 up to the next Monday 00:00, studio clock)
+ * containing `date`, as a half-open [start, end) instant range. Null if
+ * `date` is malformed.
+ */
+export function zonedWeekRange(
+  date: string,
+  timeZone: string = APP_TIMEZONE,
+): { start: Date; end: Date } | null {
+  const weekday = weekdayOf(date); // 0 = Sunday
+  if (weekday < 0) return null;
+  // Sunday is the last day of the week here, so it counts back six days.
+  const monday = shiftDate(date, -((weekday + 6) % 7));
+  if (!monday) return null;
+  const nextMonday = shiftDate(monday, 7)!;
+  return {
+    start: zonedTimeToUtc(monday, "00:00", timeZone)!,
+    end: zonedTimeToUtc(nextMonday, "00:00", timeZone)!,
+  };
+}
+
+/**
+ * The subscription month a session on `date` falls in, as [start, end).
+ *
+ * With an end date it is the month ENDING on it (inclusive of that day), so
+ * the allowance tracks the billing period rather than the calendar. Without
+ * one it falls back to the calendar month, which is the best guess available.
+ */
+export function subscriptionMonthRange(
+  date: string,
+  endsOn: string | null,
+  timeZone: string = APP_TIMEZONE,
+): { start: Date; end: Date } | null {
+  if (endsOn) {
+    const periodStart = addMonths(endsOn, -1);
+    const dayAfterEnd = shiftDate(endsOn, 1);
+    if (!periodStart || !dayAfterEnd) return null;
+    return {
+      start: zonedTimeToUtc(periodStart, "00:00", timeZone)!,
+      end: zonedTimeToUtc(dayAfterEnd, "00:00", timeZone)!,
+    };
+  }
+  const d = parseDate(date);
+  if (!d) return null;
+  const first = `${d[0]}-${pad(d[1])}-01`;
+  const nextFirst = new Date(Date.UTC(d[0], d[1], 1)).toISOString().slice(0, 10);
+  return {
+    start: zonedTimeToUtc(first, "00:00", timeZone)!,
+    end: zonedTimeToUtc(nextFirst, "00:00", timeZone)!,
+  };
+}
 /** Day of the week of a "YYYY-MM-DD" date (0 = Sunday); no clock changes it. -1 if malformed. */
 export function weekdayOf(date: string): number {
   const d = parseDate(date);

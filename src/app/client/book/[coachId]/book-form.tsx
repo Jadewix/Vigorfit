@@ -5,7 +5,14 @@ import { createBookingAction, type BookingState } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
-import { SESSION_LABEL, SESSION_MINUTES } from "@/lib/booking";
+import {
+  SESSION_LABEL,
+  SESSION_MINUTES,
+  TRACKS,
+  capacityFor,
+  type Plan,
+  type ScheduleTrack,
+} from "@/lib/booking";
 
 const initial: BookingState = {};
 const inputClass =
@@ -45,10 +52,16 @@ function label12h(hhmm: string): string {
 export function BookForm({
   coachId,
   today,
+  plan,
+  track,
 }: {
   coachId: string;
   /** Today's date on the studio's clock, "YYYY-MM-DD", from the server. */
   today: string;
+  /** The subscription, which decides how many clients share a slot. */
+  plan?: Plan | null;
+  /** Which weekdays they may book. null = no track recorded yet. */
+  track?: ScheduleTrack | null;
 }) {
   const [state, formAction, pending] = useActionState(
     createBookingAction,
@@ -59,10 +72,17 @@ export function BookForm({
   // Today is Beirut's date, not the device's: a phone set to another zone would
   // otherwise offer yesterday, or hide today, around midnight.
   const todayDate = useMemo(() => new Date(`${today}T00:00:00`), [today]);
-  const disabledDays = useMemo(
-    () => [{ before: todayDate }, { dayOfWeek: [0] }],
-    [todayDate],
-  );
+  // Sunday is always out; a client on a schedule track also cannot pick the
+  // days their plan does not run on, so those are struck from the calendar
+  // rather than offered and then rejected on submit.
+  const disabledDays = useMemo(() => {
+    const offDays = track
+      ? [0, 1, 2, 3, 4, 5, 6].filter(
+          (d) => !TRACKS[track].weekdays.includes(d),
+        )
+      : [0];
+    return [{ before: todayDate }, { dayOfWeek: offDays }];
+  }, [todayDate, track]);
 
   const [date, setDate] = useState("");
   const [slots, setSlots] = useState<Slot[]>([]);
@@ -146,7 +166,10 @@ export function BookForm({
           />
         </div>
         <p className="mt-2 text-xs text-mist">
-          Each session is {SESSION_LABEL}. Closed Sundays.
+          Each session is {SESSION_LABEL}.{" "}
+          {track
+            ? `Your plan trains on ${TRACKS[track].short}.`
+            : "Closed Sundays."}
         </p>
       </div>
 
@@ -192,10 +215,22 @@ export function BookForm({
                       "cursor-not-allowed border-line bg-surface/50 text-mist/50",
                     )}
                   >
-                    <span className="whitespace-nowrap line-through">
+                    <span
+                      className={cn(
+                        "whitespace-nowrap line-through decoration-2",
+                        s.mine
+                          ? "decoration-mist/50"
+                          : "decoration-crimson",
+                      )}
+                    >
                       {label12h(s.time)}
                     </span>
-                    <span className="text-[10px] font-normal uppercase tracking-wide">
+                    <span
+                      className={cn(
+                        "text-[10px] font-normal uppercase tracking-wide",
+                        s.mine ? "text-mist/50" : "text-crimson",
+                      )}
+                    >
                       {s.mine ? "Yours" : "Full"}
                     </span>
                   </span>
@@ -227,7 +262,8 @@ export function BookForm({
               )}
             </div>
             <p className="mt-3 text-xs text-mist/70">
-              Each slot takes up to 2 clients. Crossed-out times are full.
+              Each slot takes up to {capacityFor(plan)} clients. Crossed-out
+              times are full.
             </p>
           </>
         )}

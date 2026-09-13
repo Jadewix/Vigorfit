@@ -57,7 +57,12 @@ export default async function Home() {
     getPublicCoaches(),
   ]);
   const isClient = profile?.role === "client";
-  const bookHref = isClient ? "/client/coaches" : "/login";
+  // A newcomer has no account yet (admins create them), so the public CTA
+  // points at Contact rather than a login page they cannot get past.
+  const bookHref = isClient ? "/client/coaches" : "#contact";
+  const bookLabel = isClient
+    ? "Book a session"
+    : "Book your first session free";
   const whatsappHref = waLink(WHATSAPP_GREETING);
 
   return (
@@ -137,7 +142,7 @@ export default async function Home() {
                 href={bookHref}
                 className={buttonClasses("primary", "lg", "label px-7")}
               >
-                Book a session
+                {bookLabel}
               </Link>
               <a
                 href={whatsappHref}
@@ -148,6 +153,17 @@ export default async function Home() {
                 Message us on WhatsApp
               </a>
             </div>
+            {!isClient && (
+              <p
+                className="load-rise mt-4 text-xs text-mist"
+                style={{ animationDelay: "480ms" }}
+              >
+                Already training with us?{" "}
+                <Link href="/login" className="text-crimson hover:underline">
+                  Log in
+                </Link>
+              </p>
+            )}
           </div>
         </div>
       </section>
@@ -181,7 +197,7 @@ export default async function Home() {
                 href={bookHref}
                 className={buttonClasses("primary", "md", "label mt-6")}
               >
-                {isClient ? "Go to booking" : "Log in to book"}
+                {isClient ? "Go to booking" : bookLabel}
               </Link>
             </div>
           ) : (
@@ -213,7 +229,7 @@ export default async function Home() {
 
                       <div className="mt-auto pt-6">
                         <Link
-                          href={isClient ? `/client/book/${c.id}` : "/login"}
+                          href={isClient ? `/client/book/${c.id}` : "#contact"}
                           className={buttonClasses(
                             "primary",
                             "sm",
@@ -271,7 +287,7 @@ export default async function Home() {
               href={bookHref}
               className={buttonClasses("primary", "lg", "label px-8")}
             >
-              {isClient ? "Book a session" : "Log in to book"}
+              {bookLabel}
             </Link>
             <a
               href="#team"
@@ -383,7 +399,7 @@ export default async function Home() {
               href={bookHref}
               className={buttonClasses("primary", "lg", "label px-10")}
             >
-              {isClient ? "Book a session" : "Log in to book"}
+              {bookLabel}
             </Link>
           </div>
         </Reveal>

@@ -2,8 +2,145 @@
 export const SESSION_MINUTES = 70; // 1 hour 10 minutes
 export const SESSION_LABEL = "1 hour 10 minutes";
 
-/** How many clients a coach can take in the same time slot. */
-export const SLOT_CAPACITY = 2;
+/* --------------------------------------------------------------- plans --- */
+
+export type Plan = "semi_private" | "classes";
+
+/**
+ * The two subscriptions. `capacity` is how many clients may share one time
+ * slot with the same coach. `priceUsd` is display-only — there is no billing
+ * in this app; the studio takes payment outside it.
+ */
+export const PLANS: Record<
+  Plan,
+  { label: string; priceUsd: number; capacity: number }
+> = {
+  semi_private: { label: "Semi-private", priceUsd: 120, capacity: 4 },
+  classes: { label: "Classes", priceUsd: 40, capacity: 8 },
+};
+
+export const PLAN_VALUES = Object.keys(PLANS) as Plan[];
+
+export function isPlan(value: unknown): value is Plan {
+  return typeof value === "string" && value in PLANS;
+}
+
+/**
+ * How many sessions one client may hold.
+ *
+ * The month is the subscription month (the one ending on their renewal
+ * date), not the calendar month. The week is Monday to Sunday on the
+ * studio's clock. Cancelled bookings never count; pending, confirmed and
+ * completed ones do.
+ *
+ * Note the shape of these two: a track runs three days a week, so 3 x 4
+ * weeks is exactly the monthly allowance, and the weekly cap of 4 only comes
+ * into play when someone books twice in one day to make up a session.
+ */
+export const MONTHLY_SESSION_LIMIT = 12;
+export const WEEKLY_SESSION_LIMIT = 4;
+
+/** How many days before the end date the client is warned. */
+export const EXPIRY_REMINDER_DAYS = 7;
+/* -------------------------------------------------------------- tracks --- */
+
+export type ScheduleTrack = "mwf" | "tts";
+
+/** Which weekdays each schedule track runs on (0 = Sunday). */
+export const TRACKS: Record<
+  ScheduleTrack,
+  { label: string; short: string; weekdays: number[] }
+> = {
+  mwf: {
+    label: "Monday, Wednesday, Friday",
+    short: "Mon · Wed · Fri",
+    weekdays: [1, 3, 5],
+  },
+  tts: {
+    label: "Tuesday, Thursday, Saturday",
+    short: "Tue · Thu · Sat",
+    weekdays: [2, 4, 6],
+  },
+};
+
+export const TRACK_VALUES = Object.keys(TRACKS) as ScheduleTrack[];
+
+export function isTrack(value: unknown): value is ScheduleTrack {
+  return typeof value === "string" && value in TRACKS;
+}
+
+/**
+ * Whether one session type owns a slot exclusively.
+ *
+ *   true  — the first booking claims that hour as semi-private *or* class, and
+ *           clients on the other plan see it as unavailable.
+ *   false — the two are counted separately, so one coach could hold 4
+ *           semi-private and 8 class clients in the same hour.
+ *
+ * PENDING: the studio hasn't decided yet. Flipping this constant is the whole
+ * change — `bookings.plan` records each session's type either way, so no data
+ * has to be rebuilt when the decision lands.
+ */
+export const SLOT_EXCLUSIVE_BY_PLAN = true;
+
+/**
+ * Capacity used for clients with no subscription recorded — which also covers
+ * the window before `supabase/subscriptions.sql` has been run.
+ */
+export const LEGACY_SLOT_CAPACITY = 2;
+
+/** How many clients may share one slot under a given plan. */
+export function capacityFor(plan: Plan | null | undefined): number {
+  return plan ? PLANS[plan].capacity : LEGACY_SLOT_CAPACITY;
+}
+
+/** A booking already sitting in a slot, as far as capacity is concerned. */
+export type SlotOccupant = { plan?: Plan | null };
+
+/**
+ * How a slot looks to a client on `plan`, given who is already in it.
+ *
+ * Both the slots API and the booking action go through here, so the calendar
+ * can never disagree with what the server will accept. Bookings made before
+ * subscriptions existed have a null plan: they occupy space but never block a
+ * slot on the grounds of being "the other type".
+ */
+export function slotAvailability(
+  occupants: SlotOccupant[],
+  plan: Plan | null | undefined,
+  options: { trial?: boolean } = {},
+): { remaining: number; blockedByOtherPlan: boolean } {
+  // A trial client has no plan of their own, so they join whatever session
+  // already owns the hour, or a class if it is empty. Without this they
+  // would be measured against LEGACY_SLOT_CAPACITY and a half-full class
+  // of 8 would look full to them.
+  const effective: Plan | null | undefined = options.trial
+    ? (occupants.find((o) => o.plan != null)?.plan ?? "classes")
+    : plan;
+  const capacity = capacityFor(effective);
+
+  if (SLOT_EXCLUSIVE_BY_PLAN) {
+    const otherType = occupants.some(
+      (o) => o.plan != null && effective != null && o.plan !== effective,
+    );
+    if (otherType) return { remaining: 0, blockedByOtherPlan: true };
+    return {
+      remaining: Math.max(0, capacity - occupants.length),
+      blockedByOtherPlan: false,
+    };
+  }
+
+  // Sharing allowed: each plan is counted against its own capacity.
+  const sameType = occupants.filter(
+    (o) => o.plan == null || effective == null || o.plan === effective,
+  ).length;
+  return {
+    remaining: Math.max(0, capacity - sameType),
+    blockedByOtherPlan: false,
+  };
+}
+
+/* --------------------------------------------------------------- hours --- */
 
 /**
  * Studio opening hours by weekday (0 = Sunday). Values are the first and last
@@ -21,6 +158,24 @@ const HOURS: Record<number, { first: number; last: number } | null> = {
 
 export function isOpenOn(weekday: number): boolean {
   return HOURS[weekday] != null;
+}
+
+/** Whether a weekday falls on the client's schedule track. */
+export function isTrackDay(
+  weekday: number,
+  track: ScheduleTrack | null | undefined,
+): boolean {
+  // No track recorded yet: opening hours are the only limit.
+  if (!track) return true;
+  return TRACKS[track].weekdays.includes(weekday);
+}
+
+/** A day is bookable when the studio is open *and* it's on the client's track. */
+export function isBookableDay(
+  weekday: number,
+  track: ScheduleTrack | null | undefined,
+): boolean {
+  return isOpenOn(weekday) && isTrackDay(weekday, track);
 }
 
 /** Bookable start times for a weekday, e.g. ["08:00", "09:00", ...]. */
