@@ -159,9 +159,17 @@ export default async function Home() {
         <HeroObject style={{ ["--ho-y" as string]: "-2%" }} />
 
         <div className="relative z-10 mx-auto w-full max-w-[1400px] px-5 py-20 sm:px-8 lg:px-12">
-          {/* Ends before the hero object's column begins (`lg:left-[53%]`),
-              so the two never overlap once a real render is dropped in. */}
-          <div className="lg:max-w-[50%] lg:pr-8">
+          {/*
+            Ends before the hero object's column begins (`lg:left-[62%]`), so
+            the two never overlap once a real render is dropped in.
+
+            The width is 58%, not half: the display clamp sizes off the
+            viewport (`6vw`), but this column is a fraction of it, and at
+            exactly the `lg` breakpoint a 50% column left the second headline
+            line 35px short of fitting — which stranded the "&" on its own
+            line. 58% clears it at every width from 1024 up.
+          */}
+          <div className="lg:max-w-[58%] lg:pr-8">
             {/*
               Two steps, not two equal lines. The place name takes the full
               display size and the trade sits a step below it: at one size the

@@ -41,7 +41,7 @@ export function HeroObject({
         // into its own column, starting past where the hero's text column
         // ends — an opaque render dropped in here must not land on the type.
         "inset-0 opacity-[0.18]",
-        "lg:inset-y-0 lg:left-[53%] lg:right-0 lg:opacity-100",
+        "lg:inset-y-0 lg:left-[62%] lg:right-0 lg:opacity-100",
         className,
       ]
         .filter(Boolean)
