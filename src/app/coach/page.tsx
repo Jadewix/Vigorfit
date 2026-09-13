@@ -3,29 +3,9 @@ import { getCurrentProfile } from "@/lib/auth";
 import { PageHeading } from "@/components/dashboard-shell";
 import { BookingList } from "@/components/booking-list";
 import { EmptyState } from "@/components/empty-state";
-import { Card } from "@/components/ui/card";
+import { StatCard } from "@/components/ui/stat-card";
 import { CalendarIcon, ClockIcon, UsersIcon } from "@/components/icons";
 import type { Booking } from "@/lib/types";
-
-function StatCard({
-  label,
-  value,
-  icon,
-}: {
-  label: string;
-  value: number;
-  icon: React.ReactNode;
-}) {
-  return (
-    <Card className="p-5">
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-slate-500">{label}</span>
-        <span className="text-slate-400">{icon}</span>
-      </div>
-      <p className="mt-2 text-3xl font-bold text-slate-900">{value}</p>
-    </Card>
-  );
-}
 
 export default async function CoachOverview() {
   const supabase = await createClient();
@@ -62,21 +42,33 @@ export default async function CoachOverview() {
         subtitle="Here's what's coming up."
       />
 
+      {/*
+        Each card links to the records behind its figure, using the same
+        filters the destination pages read, so the number you tap matches the
+        number of rows you land on.
+      */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard
           label="Upcoming sessions"
           value={upcoming.length}
           icon={<CalendarIcon />}
+          href="/coach/bookings?when=upcoming"
         />
         <StatCard
           label="Pending requests"
           value={pending.length}
           icon={<ClockIcon />}
+          href="/coach/bookings?status=pending"
         />
-        <StatCard label="Clients" value={clientCount} icon={<UsersIcon />} />
+        <StatCard
+          label="Clients"
+          value={clientCount}
+          icon={<UsersIcon />}
+          href="/coach/clients"
+        />
       </div>
 
-      <h2 className="mb-3 mt-10 text-lg font-semibold text-slate-900">
+      <h2 className="panel-title mb-3 mt-10 text-lg text-ink app-dark:text-bone">
         Next sessions
       </h2>
       {upcoming.length === 0 ? (

@@ -1,25 +1,19 @@
 import type { Metadata } from "next";
-import { Anton, Archivo, Geist_Mono } from "next/font/google";
+import { IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
-// Display face — heavy condensed poster grotesque for the oversized headlines.
-const anton = Anton({
-  variable: "--font-anton",
-  weight: "400",
-  subsets: ["latin"],
-  display: "swap",
-});
+/*
+  One family carries the whole product: display, body and data.
 
-// Body/UI face — sturdy neutral grotesque that holds up against the display.
-const archivo = Archivo({
-  variable: "--font-archivo",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-// Kept for the rare monospaced data readout (session times).
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+  A gym's records are numbers in columns — session times, slot capacities,
+  client counts — so a monospaced face is the native typeface of the thing
+  this app actually is, not a stylistic flourish. 700 does the display work,
+  400 the body, and the fixed advance widths line every time up in the
+  booking grid and the dashboards for free.
+*/
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
+  weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
   display: "swap",
 });
@@ -35,7 +29,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${anton.variable} ${archivo.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${plexMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

@@ -5,30 +5,13 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonClasses } from "@/components/ui/button";
 import { signOutAction } from "@/app/login/actions";
+import { Wordmark } from "@/components/site/wordmark";
 
 const sections = [
   { id: "top", href: "#top", label: "Home" },
   { id: "team", href: "#team", label: "Team" },
   { id: "booking", href: "#booking", label: "Booking" },
 ];
-
-export function Wordmark({ onClick }: { onClick?: () => void }) {
-  return (
-    <Link
-      href="/"
-      onClick={onClick}
-      className="flex items-center gap-2.5"
-      aria-label="Vigorfit home"
-    >
-      <span className="flex h-9 w-9 items-center justify-center rounded-sm bg-crimson font-display text-lg text-white">
-        C
-      </span>
-      <span className="poster text-2xl text-bone">
-        Vigorfit<span className="text-crimson">.</span>
-      </span>
-    </Link>
-  );
-}
 
 export function SiteNav({ isClient }: { isClient: boolean }) {
   const [open, setOpen] = useState(false);
@@ -64,7 +47,7 @@ export function SiteNav({ isClient }: { isClient: boolean }) {
   const close = () => setOpen(false);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-rule bg-ink">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-rule bg-ground">
       <div className="flex h-16 items-stretch justify-between pl-5 sm:pl-8 lg:h-[72px]">
         <div className="flex items-center">
           <Wordmark onClick={close} />
@@ -78,17 +61,17 @@ export function SiteNav({ isClient }: { isClient: boolean }) {
                 key={s.id}
                 href={s.href}
                 className={cn(
-                  "label relative flex items-center px-6 transition-colors",
+                  "tag relative flex items-center px-6 transition-colors",
                   active === s.id
-                    ? "text-crimson"
-                    : "text-mist hover:text-bone",
+                    ? "text-sage"
+                    : "text-sage-dim hover:text-bone",
                 )}
               >
                 {s.label}
                 <span
                   aria-hidden
                   className={cn(
-                    "absolute inset-x-5 bottom-0 h-0.5 bg-crimson transition-opacity",
+                    "absolute inset-x-5 bottom-0 h-0.5 bg-sage transition-opacity",
                     active === s.id ? "opacity-100" : "opacity-0",
                   )}
                 />
@@ -101,14 +84,14 @@ export function SiteNav({ isClient }: { isClient: boolean }) {
             <div className="hidden items-center gap-5 pl-4 pr-6 md:flex">
               <Link
                 href="/client/bookings"
-                className="label text-mist transition-colors hover:text-bone"
+                className="tag text-sage-dim transition-colors hover:text-bone"
               >
                 My bookings
               </Link>
               <form action={signOutAction}>
                 <button
                   type="submit"
-                  className="label text-mist transition-colors hover:text-bone"
+                  className="tag text-sage-dim transition-colors hover:text-bone"
                 >
                   Sign out
                 </button>
@@ -116,10 +99,10 @@ export function SiteNav({ isClient }: { isClient: boolean }) {
             </div>
           )}
 
-          {/* Flush-right red block, per the reference */}
+          {/* Flush-right sage block, anchoring the nav to the right edge. */}
           <a
             href="#contact"
-            className="label hidden items-center bg-crimson px-8 text-white transition-colors hover:bg-crimson-lift md:flex"
+            className="tag hidden items-center bg-sage px-8 text-ink transition-colors hover:bg-bone md:flex"
           >
             Contact us
           </a>
@@ -130,7 +113,7 @@ export function SiteNav({ isClient }: { isClient: boolean }) {
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-label={open ? "Close menu" : "Open menu"}
-            className="flex w-16 items-center justify-center bg-crimson text-white md:hidden"
+            className="flex w-16 items-center justify-center bg-sage text-ink md:hidden"
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
               {open ? (
@@ -156,7 +139,7 @@ export function SiteNav({ isClient }: { isClient: boolean }) {
       {/* Mobile drawer */}
       <div
         className={cn(
-          "fixed inset-0 top-16 z-40 bg-ink transition-[opacity,transform] duration-300 md:hidden",
+          "fixed inset-0 top-16 z-40 bg-ground transition-[opacity,transform] duration-300 md:hidden",
           open
             ? "pointer-events-auto opacity-100"
             : "pointer-events-none -translate-y-2 opacity-0",
@@ -168,7 +151,7 @@ export function SiteNav({ isClient }: { isClient: boolean }) {
               key={s.id}
               href={s.href}
               onClick={close}
-              className="poster border-b border-rule py-5 text-5xl text-bone"
+              className="display border-b border-rule py-5 text-4xl text-bone"
             >
               {s.label}
             </a>
@@ -176,7 +159,7 @@ export function SiteNav({ isClient }: { isClient: boolean }) {
           <a
             href="#contact"
             onClick={close}
-            className="poster border-b border-rule py-5 text-5xl text-crimson"
+            className="display border-b border-rule py-5 text-4xl text-sage"
           >
             Contact
           </a>

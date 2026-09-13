@@ -144,7 +144,7 @@ export function CoachPhotoForm({
 
   return (
     <div>
-      <p className="mb-1.5 text-sm font-medium text-slate-700">Profile photo</p>
+      <p className="mb-1.5 text-sm font-medium text-ink">Profile photo</p>
       <div className="flex items-center gap-4">
         <CoachAvatar
           name={name}
@@ -191,17 +191,17 @@ export function CoachPhotoForm({
           )}
         </div>
       </div>
-      <p className="mt-2 text-xs text-slate-500">
+      <p className="mt-2 text-xs text-ink-muted">
         Shown on your coach card. It&rsquo;s cropped to a square.
       </p>
 
       {message.error && (
-        <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="mt-3 rounded-lg bg-oxblood/10 px-3 py-2 text-sm text-oxblood">
           {message.error}
         </p>
       )}
       {message.success && (
-        <p className="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+        <p className="mt-3 rounded-lg bg-forest/10 px-3 py-2 text-sm text-forest">
           {message.success}
         </p>
       )}

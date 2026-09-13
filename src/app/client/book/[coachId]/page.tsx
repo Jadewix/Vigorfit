@@ -43,7 +43,7 @@ export default async function BookCoachPage({
         action={
           <Link
             href="/client/coaches"
-            className="label text-mist transition-colors hover:text-crimson"
+            className="tag text-sage-dim transition-colors hover:text-sage"
           >
             ← Back to coaches
           </Link>
@@ -69,7 +69,7 @@ export default async function BookCoachPage({
                     />
                   )}
                   {coach.bio && (
-                    <p className="text-sm leading-relaxed text-mist">
+                    <p className="text-sm leading-relaxed text-sage-dim">
                       {coach.bio}
                     </p>
                   )}
@@ -89,7 +89,7 @@ export default async function BookCoachPage({
                     key={row.days}
                     className="flex justify-between gap-4 py-2.5 first:pt-0 last:pb-0"
                   >
-                    <span className="label text-mist">{row.days}</span>
+                    <span className="tag text-sage-dim">{row.days}</span>
                     <span className="text-bone">{row.hours}</span>
                   </li>
                 ))}

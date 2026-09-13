@@ -6,6 +6,13 @@ import { EmptyState } from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
 import { ConfirmSubmit } from "@/components/confirm-button";
 import { CalendarIcon } from "@/components/icons";
+import { FilterChips, type FilterOption } from "@/components/ui/filter-chips";
+import {
+  filterBookings,
+  filterHref,
+  parseStatus,
+  parseWhen,
+} from "@/lib/booking-filters";
 import { setBookingStatusAction } from "./actions";
 import type { Booking } from "@/lib/types";
 
@@ -39,9 +46,16 @@ function StatusButton({
   );
 }
 
-export default async function CoachBookingsPage() {
+export default async function CoachBookingsPage(
+  props: PageProps<"/coach/bookings">,
+) {
   const supabase = await createClient();
   const me = await getCurrentProfile();
+
+  // `searchParams` is a promise in this version of Next; it must be awaited.
+  const params = await props.searchParams;
+  const status = parseStatus(params.status);
+  const when = parseWhen(params.when);
 
   const { data } = await supabase
     .from("bookings")
@@ -49,8 +63,43 @@ export default async function CoachBookingsPage() {
     .eq("coach_id", me!.id)
     .order("starts_at", { ascending: true });
 
-  const bookings = (data ?? []) as Booking[];
-  const ids = [...new Set(bookings.map((b) => b.client_id))];
+  const all = (data ?? []) as Booking[];
+  const bookings = filterBookings(all, { status, when });
+
+  // Counts come from the unfiltered list, so each chip shows how many rows it
+  // would reveal rather than how many are currently on screen.
+  const now = new Date().toISOString();
+  const chips: FilterOption[] = [
+    {
+      label: "All",
+      href: filterHref("/coach/bookings", {}),
+      active: status === "all" && when === "all",
+      count: all.length,
+    },
+    {
+      label: "Upcoming",
+      href: filterHref("/coach/bookings", { when: "upcoming" }),
+      active: when === "upcoming",
+      count: all.filter((b) => b.starts_at >= now && b.status !== "cancelled")
+        .length,
+    },
+    {
+      label: "Pending",
+      href: filterHref("/coach/bookings", { status: "pending" }),
+      active: status === "pending",
+      count: all.filter((b) => b.status === "pending").length,
+    },
+    {
+      label: "Past",
+      href: filterHref("/coach/bookings", { when: "past" }),
+      active: when === "past",
+      count: all.filter((b) => b.starts_at < now).length,
+    },
+  ];
+
+  // Names are looked up for every booking, not just the filtered ones, so
+  // switching filters doesn't re-fetch profiles.
+  const ids = [...new Set(all.map((b) => b.client_id))];
   const { data: profs } =
     ids.length > 0
       ? await supabase.from("profiles").select("id, full_name, username").in("id", ids)
@@ -67,12 +116,27 @@ export default async function CoachBookingsPage() {
         subtitle="Confirm requests and keep your schedule up to date."
       />
 
+      <FilterChips options={chips} label="Filter sessions" />
+
       {bookings.length === 0 ? (
-        <EmptyState
-          title="No sessions yet"
-          hint="Clients' booking requests will appear here for you to confirm."
-          icon={<CalendarIcon />}
-        />
+        /*
+          Two different empty states. "No sessions at all" is an invitation to
+          wait for bookings; "nothing matches this filter" is a dead end the
+          person can back out of, so it says which filter is responsible.
+        */
+        all.length === 0 ? (
+          <EmptyState
+            title="No sessions yet"
+            hint="Clients' booking requests will appear here for you to confirm."
+            icon={<CalendarIcon />}
+          />
+        ) : (
+          <EmptyState
+            title="Nothing matches this filter"
+            hint="No sessions in this view. Choose another filter above to see the rest."
+            icon={<CalendarIcon />}
+          />
+        )
       ) : (
         <BookingList
           items={bookings}

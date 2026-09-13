@@ -2,11 +2,13 @@ import type { Viewport } from "next";
 import Link from "next/link";
 import { getCurrentProfile } from "@/lib/auth";
 import { getPublicCoaches } from "@/lib/public-coaches";
+import { SESSION_LABEL } from "@/lib/booking";
 import { buttonClasses } from "@/components/ui/button";
 import { CoachAvatar } from "@/components/coach-avatar";
 import { SiteNav } from "@/components/site/site-nav";
 import { Reveal } from "@/components/site/reveal";
 import { OpenStatus } from "@/components/site/open-status";
+import { HeroObject } from "@/components/site/hero-object";
 import { SiteFooter } from "@/components/site/site-footer";
 import {
   STUDIO_ADDRESS,
@@ -19,6 +21,59 @@ import {
   waLink,
 } from "@/lib/studio";
 
+/*
+  ─────────────────────────────────────────────────────────────
+  ALL PAGE COPY LIVES HERE.
+
+  Every word on the landing page is in this one object, so a rewrite is an
+  edit to this block and nothing below it. Nothing in the layout measures
+  itself against specific words: the display lines size themselves with
+  `clamp()` rather than the per-line character math the previous Anton
+  headline needed, so these strings can get longer or shorter freely.
+  ─────────────────────────────────────────────────────────────
+*/
+const copy = {
+  hero: {
+    // Two display lines. The place name leads, because for a single-location
+    // studio that is the most useful thing a visitor can read first.
+    place: "Zgharta",
+    trade: "Gym & Coaching",
+    lead: "Train on your own with a membership, or book one-to-one sessions with a coach who programs for your goals.",
+    primary: "Book a session",
+    primaryGuest: "Log in to book",
+    secondary: "Message on WhatsApp",
+  },
+  team: {
+    heading: "The team",
+    lead: "Senior coaches who stay. You train with the person who writes your program — every session.",
+    emptyTitle: "Coaches are being set up",
+    emptyBody:
+      "The studio is adding its coaches now. Check back soon to see who’s available.",
+  },
+  booking: {
+    heading: "Booking",
+    lead: "Choose the coach who fits your goal, see when they’re free, and lock it in. Three steps, no back-and-forth.",
+    browse: "Browse the team",
+  },
+  contact: {
+    heading: "Start a conversation",
+    lead: "Questions about memberships or coaching? Message us on WhatsApp.",
+    whatsapp: "WhatsApp",
+    address: "Address",
+    hours: "Hours",
+    cta: "Message us on WhatsApp",
+  },
+  closing: {
+    heading: "Book your session",
+    lead: "Pick a coach, choose a time, and get to work. That’s the whole process.",
+  },
+} as const;
+
+/*
+  Numbered markers are usually decoration, but booking genuinely is a
+  sequence — you cannot pick a time before you have picked a coach — so the
+  numbers here carry real information about order.
+*/
 const steps = [
   {
     n: "01",
@@ -38,15 +93,33 @@ const steps = [
 ];
 
 // Contact details that open WhatsApp or Maps. The underline is what marks
-// them as links on phones, where there's no hover. `.poster` sits outside
-// Tailwind's layers, so its tight line-height needs `!` to be overridden —
-// without the extra room the underline runs into the address's second line.
+// them as links on phones, where there's no hover.
 const detailLink =
-  "poster text-2xl leading-[1.15]! text-bone underline decoration-rule decoration-2 underline-offset-4 transition-colors hover:text-crimson hover:decoration-crimson";
+  "text-xl font-medium text-bone underline decoration-rule decoration-2 underline-offset-4 transition-colors hover:text-sage hover:decoration-sage sm:text-2xl";
 
 // Phone browsers that tint their toolbars from theme-color get the page's
-// black instead of their default light bar.
-export const viewport: Viewport = { themeColor: "#0a0809" };
+// olive instead of their default light bar.
+export const viewport: Viewport = { themeColor: "#16281b" };
+
+/**
+ * One row of the hero's ledger: term on the left, value on the right, leader
+ * dots bridging the gap. The dots come from CSS (`.ledger-row > dt::after`),
+ * so the markup stays a plain definition list.
+ */
+function LedgerRow({
+  term,
+  children,
+}: {
+  term: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="ledger-row">
+      <dt className="tag text-sage-dim">{term}</dt>
+      <dd className="text-bone">{children}</dd>
+    </div>
+  );
+}
 
 export default async function Home() {
   // Coaches are public, so signed-out visitors see the team too. The cards
@@ -58,6 +131,7 @@ export default async function Home() {
   ]);
   const isClient = profile?.role === "client";
   const bookHref = isClient ? "/client/coaches" : "/login";
+  const bookLabel = isClient ? copy.hero.primary : copy.hero.primaryGuest;
   const whatsappHref = waLink(WHATSAPP_GREETING);
 
   return (
@@ -69,83 +143,86 @@ export default async function Home() {
         id="top"
         className="grain relative flex min-h-[100svh] items-center overflow-hidden border-b border-rule pt-16 lg:pt-[72px]"
       >
+        {/* Ground light. Low and off-centre, so the hero object below reads
+            as lit from one direction rather than evenly flooded. */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 z-0"
           style={{
             background:
-              "radial-gradient(75% 60% at 88% 92%, rgba(248,29,44,0.22), transparent 62%), radial-gradient(60% 50% at 10% 6%, rgba(122,15,28,0.30), transparent 65%)",
+              "radial-gradient(70% 55% at 78% 88%, rgba(151,176,140,0.14), transparent 64%), radial-gradient(55% 45% at 8% 4%, rgba(11,13,11,0.55), transparent 68%)",
           }}
         />
 
-        {/* Left rail — scroll cue, per the reference */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 hidden w-12 border-r border-rule lg:flex lg:flex-col lg:items-center lg:justify-center lg:gap-5">
-          <span className="vertical label text-crimson">Scroll down</span>
-          <svg width="14" height="10" viewBox="0 0 14 10" fill="none">
-            <path
-              d="M1 1l6 5 6-5"
-              stroke="var(--crimson)"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-            />
-          </svg>
-        </div>
+        {/* The reserved layer for the 3D dumbbell. Sits behind the type at
+            every size; see hero-object.tsx for how to drop the asset in. */}
+        <HeroObject style={{ ["--ho-y" as string]: "-2%" }} />
 
-        <div className="relative z-10 mx-auto grid w-full max-w-[1500px] items-center gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[1.25fr_0.75fr] lg:gap-14 lg:py-20 lg:pl-24 lg:pr-10">
-          {/* Poster headline. Each line is sized in container units so it runs
-              the full column width at every screen size: 100 ÷ the line's
-              rendered width in Anton ems (6.263 and 3.216), less 1% so
-              rounding never overflows. */}
-          <h1 className="poster @container text-crimson">
-            <span
-              className="load-rise block whitespace-nowrap text-[length:15.81cqw]"
-              style={{ animationDelay: "60ms" }}
-            >
-              Gym & Coaching
-            </span>{" "}
-            <span
-              className="load-rise block whitespace-nowrap text-[length:30.78cqw]"
-              style={{ animationDelay: "160ms" }}
-            >
-              Zgharta
-            </span>
-          </h1>
+        <div className="relative z-10 mx-auto w-full max-w-[1400px] px-5 py-20 sm:px-8 lg:px-12">
+          {/* Ends before the hero object's column begins (`lg:left-[53%]`),
+              so the two never overlap once a real render is dropped in. */}
+          <div className="lg:max-w-[50%] lg:pr-8">
+            {/*
+              Two steps, not two equal lines. The place name takes the full
+              display size and the trade sits a step below it: at one size the
+              longer second line wrapped and left a stranded "&", and two lines
+              shouting at the same volume gave the hero no hierarchy to read.
+            */}
+            <h1 className="display">
+              <span
+                className="load-rise d-xl block text-bone"
+                style={{ animationDelay: "60ms" }}
+              >
+                {copy.hero.place}
+              </span>
+              <span
+                className="load-rise d-lg mt-1 block text-sage"
+                style={{ animationDelay: "150ms" }}
+              >
+                {copy.hero.trade}
+              </span>
+            </h1>
 
-          {/* Right column — statement, live opening hours, actions */}
-          <div className="lg:pt-6">
             <p
-              className="load-rise max-w-md text-lg leading-snug text-bone sm:text-xl"
-              style={{ animationDelay: "260ms" }}
+              className="load-rise measure mt-7 text-base leading-relaxed text-sage-dim sm:text-lg"
+              style={{ animationDelay: "250ms" }}
             >
-              We&rsquo;re on Main Street. Train on your own with a membership,
-              or book sessions with one of our coaches.
+              {copy.hero.lead}
             </p>
 
-            <OpenStatus
-              initial={getOpenStatus()}
-              className="load-rise mt-10 border-b border-rule pb-4"
+            {/* The ledger. A gym's facts are a short list of figures, so the
+                hero states them as one rather than as prose or stat cards. */}
+            <dl
+              className="ledger load-rise mt-10 max-w-md text-sm"
               style={{ animationDelay: "340ms" }}
-            />
+            >
+              <LedgerRow term="Coaches">
+                <span className="tabular-nums">{coaches.length}</span>
+              </LedgerRow>
+              <LedgerRow term="Session">{SESSION_LABEL}</LedgerRow>
+              <LedgerRow term="Place">{STUDIO_ADDRESS[0]}</LedgerRow>
+              <LedgerRow term="Today">
+                <OpenStatus initial={getOpenStatus()} />
+              </LedgerRow>
+            </dl>
 
-            {/* Side by side only where the column is wide enough for both
-                labels; the narrower desktop column stacks them like mobile. */}
             <div
-              className="load-rise mt-8 flex flex-col gap-3 sm:flex-row lg:flex-col"
-              style={{ animationDelay: "420ms" }}
+              className="load-rise mt-10 flex flex-col gap-3 sm:flex-row"
+              style={{ animationDelay: "430ms" }}
             >
               <Link
                 href={bookHref}
-                className={buttonClasses("primary", "lg", "label px-7")}
+                className={buttonClasses("primary", "lg", "tag px-7")}
               >
-                Book a session
+                {bookLabel}
               </Link>
               <a
                 href={whatsappHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={buttonClasses("hairline", "lg", "label px-7")}
+                className={buttonClasses("hairline", "lg", "tag px-7")}
               >
-                Message us on WhatsApp
+                {copy.hero.secondary}
               </a>
             </div>
           </div>
@@ -155,78 +232,66 @@ export default async function Home() {
       {/* ── Team ───────────────────────────────────────────── */}
       <section
         id="team"
-        className="relative bg-surface/30 px-5 py-24 sm:px-8 lg:py-32"
+        className="relative bg-panel/30 px-5 py-24 sm:px-8 lg:py-32"
       >
         <div className="mx-auto max-w-6xl">
           <Reveal className="max-w-3xl">
-            <h2 className="poster h-sec text-crimson">
-              The team
-            </h2>
-            <p className="mt-5 text-lg leading-relaxed text-mist">
-              Senior coaches who stay. You train with the person who writes your
-              program — every session.
+            <h2 className="display d-lg text-sage">{copy.team.heading}</h2>
+            <p className="measure mt-5 text-base leading-relaxed text-sage-dim sm:text-lg">
+              {copy.team.lead}
             </p>
           </Reveal>
 
           {coaches.length === 0 ? (
-            <div className="mt-12 border border-line bg-ink/60 p-10 text-center">
-              <p className="poster text-3xl text-bone">
-                Coaches are being set up
-              </p>
-              <p className="mx-auto mt-3 max-w-md text-mist">
-                The studio is adding its coaches now. Check back soon to see
-                who&rsquo;s available and book the moment they&rsquo;re live.
+            <div className="mt-12 border border-line bg-ground/60 p-10 text-center">
+              <p className="display d-md text-bone">{copy.team.emptyTitle}</p>
+              <p className="mx-auto mt-3 max-w-md text-sage-dim">
+                {copy.team.emptyBody}
               </p>
               <Link
                 href={bookHref}
-                className={buttonClasses("primary", "md", "label mt-6")}
+                className={buttonClasses("primary", "md", "tag mt-6")}
               >
-                {isClient ? "Go to booking" : "Log in to book"}
+                {bookLabel}
               </Link>
             </div>
           ) : (
             <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {coaches.map((c, i) => {
-                const name = c.name;
-                return (
-                  <Reveal key={c.id} delay={(i % 3) * 90}>
-                    <div className="group flex h-full flex-col border border-line bg-ink/50 p-6 transition-colors hover:border-crimson">
-                      <div className="flex items-center gap-3.5">
-                        <CoachAvatar
-                          name={name}
-                          photoUrl={c.photoUrl}
-                          className="h-12 w-12 text-lg"
-                        />
-                        <div>
-                          <p className="poster text-xl text-bone">{name}</p>
-                          {c.specialty && (
-                            <p className="label text-crimson">{c.specialty}</p>
-                          )}
-                        </div>
-                      </div>
-
-                      {c.bio && (
-                        <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-mist">
-                          {c.bio}
-                        </p>
+              {coaches.map((c) => (
+                <div
+                  key={c.id}
+                  className="flex h-full flex-col border border-line bg-ground/50 p-6 transition-colors hover:border-sage"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <CoachAvatar
+                      name={c.name}
+                      photoUrl={c.photoUrl}
+                      className="h-12 w-12 text-lg"
+                    />
+                    <div className="min-w-0">
+                      <p className="display text-lg text-bone">{c.name}</p>
+                      {c.specialty && (
+                        <p className="tag text-sage">{c.specialty}</p>
                       )}
-
-                      <div className="mt-auto pt-6">
-                        <Link
-                          href={isClient ? `/client/book/${c.id}` : "/login"}
-                          className={buttonClasses(
-                            "primary",
-                            "sm",
-                            "label w-full",
-                          )}
-                        >
-                          Book a session
-                        </Link>
-                      </div>
                     </div>
-                  </Reveal>
-                );
-              })}
+                  </div>
+
+                  {c.bio && (
+                    <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-sage-dim">
+                      {c.bio}
+                    </p>
+                  )}
+
+                  <div className="mt-auto pt-6">
+                    <Link
+                      href={isClient ? `/client/book/${c.id}` : "/login"}
+                      className={buttonClasses("primary", "sm", "tag w-full")}
+                    >
+                      {copy.hero.primary}
+                    </Link>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -239,47 +304,44 @@ export default async function Home() {
       >
         <div className="mx-auto max-w-6xl">
           <Reveal className="max-w-3xl">
-            <h2 className="poster h-sec text-crimson">
-              Booking
-            </h2>
-            <p className="mt-5 text-lg leading-relaxed text-mist">
-              Choose the coach who fits your goal, see when they&rsquo;re free,
-              and lock it in. Three steps, no back-and-forth.
+            <h2 className="display d-lg text-sage">{copy.booking.heading}</h2>
+            <p className="measure mt-5 text-base leading-relaxed text-sage-dim sm:text-lg">
+              {copy.booking.lead}
             </p>
           </Reveal>
 
           <ol className="mt-12 grid gap-px border border-line bg-line sm:grid-cols-3">
-            {steps.map((s, i) => (
-              <Reveal as="li" key={s.n} delay={i * 90} className="bg-ink">
-                <div className="flex h-full flex-col p-8 transition-colors hover:bg-surface/50">
-                  <span className="poster block text-[clamp(3.5rem,6vw,5.5rem)] leading-[0.8] text-crimson">
+            {steps.map((s) => (
+              <li key={s.n} className="bg-ground">
+                <div className="flex h-full flex-col p-8 transition-colors hover:bg-panel/50">
+                  <span className="display block text-[clamp(3rem,5.5vw,4.5rem)] leading-[0.8] text-sage">
                     {s.n}
                   </span>
-                  <h3 className="poster mt-7 border-t border-rule pt-5 text-[clamp(1.5rem,2.2vw,1.875rem)] text-bone">
+                  <h3 className="display mt-7 border-t border-rule pt-5 text-[clamp(1.25rem,2vw,1.625rem)] text-bone">
                     {s.title}
                   </h3>
-                  <p className="mt-3 text-sm leading-relaxed text-mist">
+                  <p className="mt-3 text-sm leading-relaxed text-sage-dim">
                     {s.body}
                   </p>
                 </div>
-              </Reveal>
+              </li>
             ))}
           </ol>
 
-          <Reveal className="mt-10 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
             <Link
               href={bookHref}
-              className={buttonClasses("primary", "lg", "label px-8")}
+              className={buttonClasses("primary", "lg", "tag px-8")}
             >
-              {isClient ? "Book a session" : "Log in to book"}
+              {bookLabel}
             </Link>
             <a
               href="#team"
-              className={buttonClasses("hairline", "lg", "label px-8")}
+              className={buttonClasses("hairline", "lg", "tag px-8")}
             >
-              Browse the team
+              {copy.booking.browse}
             </a>
-          </Reveal>
+          </div>
         </div>
       </section>
 
@@ -290,17 +352,15 @@ export default async function Home() {
       >
         <div className="mx-auto max-w-6xl">
           <Reveal className="max-w-2xl">
-            <h2 className="poster h-col text-bone">
-              Start a conversation
-            </h2>
-            <p className="mt-5 max-w-md text-lg leading-relaxed text-mist">
-              Questions about memberships or coaching? Message us on WhatsApp.
+            <h2 className="display d-lg text-bone">{copy.contact.heading}</h2>
+            <p className="measure mt-5 text-base leading-relaxed text-sage-dim sm:text-lg">
+              {copy.contact.lead}
             </p>
 
             <dl className="mt-10 space-y-6 border-t border-rule pt-8">
               <div>
-                <dt className="label text-mist">WhatsApp</dt>
-                <dd className="mt-1">
+                <dt className="tag text-sage-dim">{copy.contact.whatsapp}</dt>
+                <dd className="mt-1.5">
                   <a
                     href={whatsappHref}
                     target="_blank"
@@ -312,8 +372,8 @@ export default async function Home() {
                 </dd>
               </div>
               <div>
-                <dt className="label text-mist">Address</dt>
-                <dd className="mt-1">
+                <dt className="tag text-sage-dim">{copy.contact.address}</dt>
+                <dd className="mt-1.5">
                   <a
                     href={STUDIO_MAPS_URL}
                     target="_blank"
@@ -327,14 +387,21 @@ export default async function Home() {
                 </dd>
               </div>
               <div>
-                <dt className="label text-mist">Hours</dt>
-                <dd className="mt-1">
-                  {/* Two columns so the times line up under each other. */}
-                  <dl className="poster grid grid-cols-[auto_1fr] gap-x-8 gap-y-1.5 text-2xl">
+                <dt className="tag text-sage-dim">{copy.contact.hours}</dt>
+                {/* The hours are the clearest case for the ledger: three
+                    labels against three figures, aligned by the typeface. */}
+                <dd className="mt-2">
+                  <dl className="ledger max-w-sm text-base">
                     {STUDIO_HOURS.map(({ label, hours }) => (
-                      <div key={label} className="contents">
-                        <dt className="text-bone">{label}</dt>
-                        <dd className={hours ? "text-bone" : "text-mist"}>
+                      <div key={label} className="ledger-row">
+                        <dt className="text-sage-dim">{label}</dt>
+                        <dd
+                          className={
+                            hours
+                              ? "tabular-nums text-bone"
+                              : "tabular-nums text-red-lift"
+                          }
+                        >
                           {hours
                             ? `${formatTime(hours.open)} – ${formatTime(hours.close)}`
                             : "Closed"}
@@ -351,9 +418,9 @@ export default async function Home() {
                 href={whatsappHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={buttonClasses("primary", "lg", "label px-8")}
+                className={buttonClasses("primary", "lg", "tag px-8")}
               >
-                Message us on WhatsApp
+                {copy.contact.cta}
               </a>
             </div>
           </Reveal>
@@ -367,23 +434,22 @@ export default async function Home() {
           className="pointer-events-none absolute inset-0 z-0"
           style={{
             background:
-              "radial-gradient(80% 120% at 50% 120%, rgba(248,29,44,0.24), transparent 62%)",
+              "radial-gradient(80% 120% at 50% 120%, rgba(151,176,140,0.16), transparent 62%)",
           }}
         />
         <Reveal className="relative z-10 mx-auto max-w-4xl text-center">
-          <h2 className="poster text-[clamp(2.8rem,10vw,8rem)] text-crimson">
-            Book your session
+          <h2 className="display text-[clamp(2.25rem,8vw,5.5rem)] text-sage">
+            {copy.closing.heading}
           </h2>
-          <p className="mx-auto mt-5 max-w-xl text-lg text-mist">
-            Pick a coach, choose a time, and get to work. That&rsquo;s the whole
-            process.
+          <p className="mx-auto mt-5 max-w-xl text-base text-sage-dim sm:text-lg">
+            {copy.closing.lead}
           </p>
           <div className="mt-9 flex justify-center">
             <Link
               href={bookHref}
-              className={buttonClasses("primary", "lg", "label px-10")}
+              className={buttonClasses("primary", "lg", "tag px-10")}
             >
-              {isClient ? "Book a session" : "Log in to book"}
+              {bookLabel}
             </Link>
           </div>
         </Reveal>

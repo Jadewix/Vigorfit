@@ -8,8 +8,8 @@ import type { Role } from "@/lib/types";
 const initialState: CreateUserState = {};
 
 const inputClass =
-  "h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition-colors focus:border-crimson focus:ring-2 focus:ring-crimson/20";
-const labelClass = "mb-1.5 block text-sm font-medium text-slate-700";
+  "h-10 w-full rounded-lg border border-line-light bg-paper-panel px-3 text-sm text-ink outline-none transition-colors focus:border-forest focus:ring-2 focus:ring-forest/20";
+const labelClass = "mb-1.5 block text-sm font-medium text-ink";
 
 export function CreateUserForm() {
   const [state, formAction, pending] = useActionState(
@@ -57,14 +57,14 @@ export function CreateUserForm() {
             placeholder="e.g. john_doe"
             className={inputClass}
           />
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-ink-muted">
             Lowercase letters, numbers and underscores. This is how they log in.
           </p>
         </div>
         <div>
           <label className={labelClass} htmlFor="phone">
             WhatsApp number{" "}
-            <span className="text-slate-400">
+            <span className="text-ink-muted">
               (required for coaches &amp; clients)
             </span>
           </label>
@@ -76,7 +76,7 @@ export function CreateUserForm() {
             required={role !== "admin"}
             className={inputClass}
           />
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-ink-muted">
             Include the country code — used for booking notifications.
           </p>
         </div>
@@ -93,14 +93,14 @@ export function CreateUserForm() {
             placeholder="At least 8 characters"
             className={inputClass}
           />
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-ink-muted">
             Share this with the user — they can change it later.
           </p>
         </div>
       </div>
 
       {role === "coach" && (
-        <div className="grid gap-4 rounded-lg bg-slate-50 p-4 sm:grid-cols-2">
+        <div className="grid gap-4 rounded-lg bg-paper p-4 sm:grid-cols-2">
           <div>
             <label className={labelClass} htmlFor="specialty">
               Specialty
@@ -127,12 +127,12 @@ export function CreateUserForm() {
       )}
 
       {state.error && (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="rounded-lg bg-oxblood/10 px-3 py-2 text-sm text-oxblood">
           {state.error}
         </p>
       )}
       {state.success && (
-        <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+        <p className="rounded-lg bg-forest/10 px-3 py-2 text-sm text-forest">
           {state.success}
         </p>
       )}

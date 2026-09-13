@@ -16,13 +16,13 @@ export function BookingList({
   renderActions?: (booking: Booking) => React.ReactNode;
 }) {
   return (
-    <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white app-dark:divide-line app-dark:rounded-none app-dark:border-line app-dark:bg-surface/50">
+    <ul className="divide-y divide-line-light rounded-xl border border-line-light bg-paper-panel app-dark:divide-line app-dark:rounded-none app-dark:border-line app-dark:bg-panel/50">
       {items.map((b) => {
         return (
           <li key={b.id} className="flex items-start gap-3 p-3.5">
             {/* The chip already carries the date, so the line beside it leads
                 with the time rather than repeating it and wrapping. */}
-            <div className="flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 app-dark:rounded-none app-dark:bg-crimson app-dark:text-white">
+            <div className="flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-lg bg-forest/10 text-forest app-dark:rounded-none app-dark:bg-sage app-dark:text-ink">
               <span className="text-[10px] font-semibold uppercase leading-none">
                 {formatInAppTimezone(b.starts_at, { month: "short" })}
               </span>
@@ -34,7 +34,7 @@ export function BookingList({
             <div className="min-w-0 flex-1">
               {/* Each time is kept unbreakable so a narrow column wraps
                   between them rather than splitting "11:00 AM". */}
-              <p className="text-sm font-medium text-slate-900 app-dark:text-bone">
+              <p className="text-sm font-medium text-ink app-dark:text-bone">
                 <span className="whitespace-nowrap">
                   {formatInAppTimezone(b.starts_at, { weekday: "short" })} ·{" "}
                   {formatTime(b.starts_at)} –
@@ -49,30 +49,30 @@ export function BookingList({
               <dl className="mt-1 space-y-0.5 text-xs">
                 {showCoach && (
                   <div className="flex gap-1.5">
-                    <dt className="shrink-0 text-slate-400 app-dark:text-mist/70">
+                    <dt className="shrink-0 text-ink-muted app-dark:text-sage-dim/70">
                       Coach
                     </dt>
-                    <dd className="truncate text-slate-600 app-dark:text-mist">
+                    <dd className="truncate text-ink-muted app-dark:text-sage-dim">
                       {getName(b.coach_id)}
                     </dd>
                   </div>
                 )}
                 {showClient && (
                   <div className="flex gap-1.5">
-                    <dt className="shrink-0 text-slate-400 app-dark:text-mist/70">
+                    <dt className="shrink-0 text-ink-muted app-dark:text-sage-dim/70">
                       Client
                     </dt>
-                    <dd className="truncate text-slate-600 app-dark:text-mist">
+                    <dd className="truncate text-ink-muted app-dark:text-sage-dim">
                       {getName(b.client_id)}
                     </dd>
                   </div>
                 )}
                 {b.notes && (
                   <div className="flex gap-1.5">
-                    <dt className="shrink-0 text-slate-400 app-dark:text-mist/70">
+                    <dt className="shrink-0 text-ink-muted app-dark:text-sage-dim/70">
                       Notes
                     </dt>
-                    <dd className="line-clamp-2 text-slate-600 app-dark:text-mist">
+                    <dd className="line-clamp-2 text-ink-muted app-dark:text-sage-dim">
                       {b.notes}
                     </dd>
                   </div>

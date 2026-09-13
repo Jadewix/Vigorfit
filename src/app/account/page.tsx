@@ -16,21 +16,21 @@ export default async function AccountPage() {
     <main className="mx-auto w-full max-w-lg px-4 py-10">
       <Link
         href="/"
-        className="mb-8 flex items-center justify-center gap-2 text-slate-900"
+        className="mb-8 flex items-center justify-center gap-2 text-ink"
       >
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-600 text-white">
+        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-forest text-paper">
           <BoltIcon />
         </span>
         <span className="text-xl font-bold tracking-tight">Vigorfit</span>
       </Link>
 
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+        <h1 className="text-2xl font-bold tracking-tight text-ink">
           Account
         </h1>
         <Link
           href={home}
-          className="text-sm font-medium text-slate-500 hover:text-slate-800"
+          className="text-sm font-medium text-ink-muted hover:text-ink"
         >
           ← Back
         </Link>
@@ -54,9 +54,9 @@ export default async function AccountPage() {
         </CardBody>
       </Card>
 
-      <p className="mt-4 text-center text-sm text-slate-500">
+      <p className="mt-4 text-center text-sm text-ink-muted">
         Signed in as{" "}
-        <span className="font-medium text-slate-700">
+        <span className="font-medium text-ink">
           {profile.username ?? profile.full_name}
         </span>
       </p>

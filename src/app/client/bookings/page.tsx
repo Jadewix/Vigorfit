@@ -44,7 +44,7 @@ export default async function ClientBookingsPage({
         action={
           <Link
             href="/"
-            className="label text-crimson transition-colors hover:text-crimson-lift"
+            className="tag text-sage transition-colors hover:text-bone"
           >
             ← Back home
           </Link>
@@ -52,7 +52,7 @@ export default async function ClientBookingsPage({
       />
 
       {booked && (
-        <p className="mb-6 border border-crimson/40 bg-crimson/10 px-4 py-3 text-sm text-crimson-lift">
+        <p className="mb-6 border border-oxblood/60 bg-oxblood/15 px-4 py-3 text-sm text-red-lift">
           Your booking request was sent! Your coach will confirm it shortly.
         </p>
       )}

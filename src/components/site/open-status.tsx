@@ -2,25 +2,29 @@
 
 import { useEffect, useState } from "react";
 import { getOpenStatus } from "@/lib/studio";
+import { cn } from "@/lib/utils";
 
 type Status = ReturnType<typeof getOpenStatus>;
 
 /**
- * "Open now until 5pm" while the studio is open, and nothing at all while it's
- * closed, so the hero never leads with "Closed".
+ * The live "Open now until 5pm" / "Closed, opens tomorrow at 9am" readout.
  *
  * The page passes the status it rendered with, so the first paint is already
  * right and hydration matches. After that it re-checks every minute, so a tab
- * left open past closing time drops the line.
+ * left open past closing time updates itself.
+ *
+ * Unlike the previous version this renders in both states rather than
+ * disappearing when the studio is closed: it now sits in the hero's ledger,
+ * where a row that vanishes reads as a broken layout rather than as tact. The
+ * closed state is the one place on the marketing page that carries red, which
+ * is the palette's single meaning for "you cannot train right now".
  */
 export function OpenStatus({
   initial,
   className,
-  style,
 }: {
   initial: Status;
   className?: string;
-  style?: React.CSSProperties;
 }) {
   const [status, setStatus] = useState(initial);
 
@@ -29,10 +33,29 @@ export function OpenStatus({
     return () => clearInterval(id);
   }, []);
 
-  if (!status.open) return null;
   return (
-    <div className={className} style={style}>
-      <p className="label text-crimson">{status.text}</p>
-    </div>
+    <span
+      className={cn(
+        "inline-flex items-center gap-2",
+        status.open ? "text-sage" : "text-red-lift",
+        className,
+      )}
+    >
+      {/*
+        The dot is a second, non-colour signal for the same state: filled
+        while open, hollow while closed, so the distinction survives for
+        anyone who cannot separate the two hues.
+      */}
+      <span
+        aria-hidden
+        className={cn(
+          "h-1.5 w-1.5 shrink-0 rounded-full border",
+          status.open
+            ? "border-sage bg-sage"
+            : "border-red-lift bg-transparent",
+        )}
+      />
+      {status.text}
+    </span>
   );
 }

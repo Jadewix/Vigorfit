@@ -5,12 +5,27 @@ import { PageHeading } from "@/components/dashboard-shell";
 import { CreateAccountPanel } from "./create-account-panel";
 import { UsersManager } from "./users-manager";
 import type { AdminUser } from "./user-card";
-import type { Coach, Profile } from "@/lib/types";
+import type { Coach, Profile, Role } from "@/lib/types";
 
-export default async function AdminUsersPage() {
+/**
+ * `?role=coach` seeds the roster's filter so the Overview stat cards can point
+ * straight at the accounts they counted. Anything unrecognised falls back to
+ * "all", since this value comes from a URL a person can type.
+ */
+function parseRole(value: string | string[] | undefined): Role | "all" {
+  const v = Array.isArray(value) ? value[0] : value;
+  return v === "admin" || v === "coach" || v === "client" ? v : "all";
+}
+
+export default async function AdminUsersPage(
+  props: PageProps<"/admin/users">,
+) {
   await requireRole(["admin"]);
   const supabase = await createClient();
   const me = await getCurrentProfile();
+
+  // `searchParams` is a promise in this version of Next; it must be awaited.
+  const initialFilter = parseRole((await props.searchParams).role);
 
   const [{ data: profileData }, { data: coachData }] = await Promise.all([
     supabase
@@ -64,10 +79,14 @@ export default async function AdminUsersPage() {
 
       {/* Section 2 — view & edit */}
       <section>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
+        <h2 className="tag mb-3 text-ink-muted">
           All accounts
         </h2>
-        <UsersManager users={users} meId={me?.id ?? ""} />
+        <UsersManager
+          users={users}
+          meId={me?.id ?? ""}
+          initialFilter={initialFilter}
+        />
       </section>
     </>
   );

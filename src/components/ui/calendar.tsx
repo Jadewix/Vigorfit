@@ -35,30 +35,30 @@ export function Calendar({
         month: "flex flex-col gap-3",
         month_caption: "flex h-9 items-center justify-center px-9",
         caption_label:
-          "text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-crimson",
+          "text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-sage",
 
         nav: "absolute inset-x-0 top-0 flex h-9 items-center justify-between",
         button_previous:
-          "flex h-8 w-8 shrink-0 items-center justify-center border border-line text-mist transition-colors hover:border-crimson hover:text-crimson disabled:pointer-events-none disabled:opacity-40",
+          "flex h-8 w-8 shrink-0 items-center justify-center border border-line text-sage-dim transition-colors hover:border-sage hover:text-sage disabled:pointer-events-none disabled:opacity-40",
         button_next:
-          "flex h-8 w-8 shrink-0 items-center justify-center border border-line text-mist transition-colors hover:border-crimson hover:text-crimson disabled:pointer-events-none disabled:opacity-40",
+          "flex h-8 w-8 shrink-0 items-center justify-center border border-line text-sage-dim transition-colors hover:border-sage hover:text-sage disabled:pointer-events-none disabled:opacity-40",
         chevron: "h-4 w-4 fill-current",
 
         month_grid: "w-full border-collapse",
         weekdays: "flex w-full",
         weekday:
-          "min-w-0 flex-1 basis-0 text-[0.625rem] font-semibold uppercase tracking-[0.14em] text-mist",
+          "min-w-0 flex-1 basis-0 text-[0.625rem] font-semibold uppercase tracking-[0.14em] text-sage-dim",
         week: "mt-1 flex w-full",
 
         day: "aspect-square min-w-0 flex-1 basis-0 p-0 text-center text-[13px] sm:text-sm",
         day_button:
-          "flex h-full w-full items-center justify-center border border-transparent tabular-nums text-bone transition-colors hover:border-crimson hover:text-crimson focus-visible:outline-none focus-visible:border-crimson",
+          "flex h-full w-full items-center justify-center border border-transparent tabular-nums text-bone transition-colors hover:border-sage hover:text-sage focus-visible:outline-none focus-visible:border-sage",
 
-        today: "text-crimson",
-        outside: "text-mist/40",
-        disabled: "text-mist/25 line-through",
+        today: "text-sage",
+        outside: "text-sage-dim/40",
+        disabled: "text-sage-dim/25 line-through",
         hidden: "invisible",
-        selected: "[&>button]:border-crimson [&>button]:bg-crimson [&>button]:text-white [&>button]:hover:text-white",
+        selected: "[&>button]:border-sage [&>button]:bg-sage [&>button]:text-ink [&>button]:hover:text-ink",
 
         ...classNames,
       }}
