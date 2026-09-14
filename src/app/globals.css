@@ -235,10 +235,11 @@ html {
 }
 
 /*
-  Ledger row — the signature device: label left, figure right, leader dots
-  spanning whatever space is left. Alignment like this only works in a
-  monospaced face, and it encodes real information (a key and its value)
-  rather than decorating the page.
+  Ledger row — the signature device: label left, figure right, the gap between
+  them left open. Alignment like this only works in a monospaced face, and it
+  encodes real information (a key and its value) rather than decorating the
+  page. Leader dots used to bridge the gap; they read as clutter on a phone,
+  where the rows are already close enough to pair a label with its figure.
 */
 .ledger {
   display: flex;
@@ -250,25 +251,12 @@ html {
   align-items: baseline;
   gap: 0.75ch;
 }
-/*
-  The leader dots are an ::after on the term rather than an element of their
-  own, so the markup stays a valid <dl>: a `div` grouping `dt` + `dd` is
-  allowed, but a stray `span` between them is not.
-*/
+/* The term still takes the free space, which is what holds the figure to the
+   right edge now that nothing is drawn across the gap. */
 .ledger-row > dt {
-  display: flex;
   flex: 1 1 auto;
-  align-items: baseline;
-  gap: 0.75ch;
   min-width: 0;
   white-space: nowrap;
-}
-.ledger-row > dt::after {
-  content: "";
-  flex: 1 1 auto;
-  min-width: 1.5ch;
-  border-bottom: 1px dotted var(--rule);
-  transform: translateY(-0.3em);
 }
 .ledger-row > dd {
   flex: none;

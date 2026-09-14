@@ -104,8 +104,8 @@ const detailLink =
 export const viewport: Viewport = { themeColor: "#16281b" };
 
 /**
- * One row of the hero's ledger: term on the left, value on the right, leader
- * dots bridging the gap. The dots come from CSS (`.ledger-row > dt::after`),
+ * One row of the hero's ledger: term on the left, value on the right, the gap
+ * between them left open. All of the alignment comes from CSS (`.ledger-row`),
  * so the markup stays a plain definition list.
  */
 function LedgerRow({

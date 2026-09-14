@@ -62,8 +62,13 @@ export function SiteNav({ isClient }: { isClient: boolean }) {
           right. That rule is the whole difference between a logo floating in
           a bar and a bar that is divided into fields — the same joinery the
           bands below use.
+
+          It earns that only from `md`, where the section index sits on the
+          other side of it. Below that the index is hidden and the rule ends
+          up dividing the mark from an empty spacer: a line with nothing on
+          its far side, which is just a mark in the middle of the bar.
         */}
-        <div className="flex items-center border-r border-rule pl-5 pr-5 sm:pl-8 sm:pr-8">
+        <div className="flex items-center pl-5 pr-5 sm:pl-8 sm:pr-8 md:border-r md:border-rule">
           <Wordmark onClick={close} />
         </div>
 

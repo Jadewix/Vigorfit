@@ -124,9 +124,10 @@ export function SiteFooter() {
           </p>
 
           {/*
-            One wrapped line, not the ledger. The leader dots upstairs need the
-            full measure to line their figures up; down here the hours are a
-            reminder rather than a table, and three short pairs read fine.
+            One wrapped line, not the ledger. The ledger upstairs needs the
+            full measure to hold its figures against the right edge; down here
+            the hours are a reminder rather than a table, and three short pairs
+            read fine.
           */}
           <ul className="flex flex-wrap gap-x-4 gap-y-1">
             {STUDIO_HOURS.map(({ label, hours }) => (
