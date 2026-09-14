@@ -36,9 +36,31 @@ Outside `src/`:
 
 | Path            | Holds                                                                    |
 | --------------- | ------------------------------------------------------------------------ |
+| `public/`       | The two photographs the landing page uses. See below.                    |
 | `supabase/`     | SQL migrations, applied by hand in the Supabase SQL editor.              |
 | `scripts/`      | One-off tooling: seeding, the timezone regression suite, a WhatsApp ping. |
 | `cron-worker/`  | A tiny separate Worker that holds the cron trigger and calls the app's reminders endpoint. |
+
+### The landing page's photographs
+
+The landing page expects two files in `public/`. They are declared once in
+`src/frontend/site/photos.ts`, which is the only place to change a filename or
+a pixel size.
+
+| File                    | What it is                        | Needs                         |
+| ----------------------- | --------------------------------- | ----------------------------- |
+| `hero-dumbbell.webp`    | The weight floating in the hero   | **A transparent background**  |
+| `gym-interior.jpg`      | The training floor, booking band  | Landscape, roughly 16:9       |
+
+The hero file must be a cut-out with real alpha. The bloom and contact shadow
+behind it are what seat it on the olive ground, and they only work against
+transparency — a version with its own backdrop baked in reads as a pasted
+rectangle.
+
+Neither file is required for the page to work. When one is missing the
+component falls back to a ruled placeholder of exactly the same size (the
+wireframe plate in the hero, a hairline grid in the booking band), so the
+layout never shifts and nothing shows a broken image.
 
 ### Two things worth knowing
 

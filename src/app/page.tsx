@@ -9,6 +9,8 @@ import { SiteNav } from "@/frontend/site/site-nav";
 import { Reveal } from "@/frontend/site/reveal";
 import { OpenStatus } from "@/frontend/site/open-status";
 import { HeroObject } from "@/frontend/site/hero-object";
+import { SitePhoto } from "@/frontend/site/site-photo";
+import { GYM_INTERIOR, HERO_OBJECT } from "@/frontend/site/photos";
 import { SiteFooter } from "@/frontend/site/site-footer";
 import {
   STUDIO_ADDRESS,
@@ -136,6 +138,21 @@ export default async function Home() {
   const bookLabel = isClient ? copy.hero.primary : copy.hero.primaryGuest;
   const whatsappHref = waLink(WHATSAPP_GREETING);
 
+  /*
+    The page is a stack of full-bleed bands, and the order of their grounds is
+    the structure a reader feels before they read a word:
+
+        olive   hero      — the brand's own colour, the object, the facts
+        olive   team      — raised a step on --panel so it separates
+        bone    booking   — the one light band; the process, and the room
+        olive   contact   — back to the brand to close the argument
+        black   closing   — the deepest well on the page under the last CTA
+        black   footer    — continuous with it, parted by one hairline
+
+    Each band sets its own ground and its own text colour via `.brand-dark`,
+    `.brand-light` or `.brand-black`, so nothing inside a band needs to know
+    which surface it is on.
+  */
   return (
     <div className="brand-dark relative flex min-h-screen flex-col overflow-x-hidden font-sans">
       <SiteNav isClient={isClient} />
@@ -156,9 +173,14 @@ export default async function Home() {
           }}
         />
 
-        {/* The reserved layer for the 3D dumbbell. Sits behind the type at
-            every size; see hero-object.tsx for how to drop the asset in. */}
-        <HeroObject style={{ ["--ho-y" as string]: "-2%" }} />
+        {/* The weight. Behind the type on phones, in its own column from lg,
+            and drifting against the scroll on both. */}
+        <HeroObject
+          src={HERO_OBJECT.src}
+          width={HERO_OBJECT.width}
+          height={HERO_OBJECT.height}
+          style={{ ["--ho-y" as string]: "-2%" }}
+        />
 
         <div className="relative z-10 mx-auto w-full max-w-[1400px] px-5 py-20 sm:px-8 lg:px-12">
           {/*
@@ -277,11 +299,18 @@ export default async function Home() {
               </Link>
             </div>
           ) : (
-            <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            /*
+              One ruled block, not a row of separate cards: the grid's own
+              1px gaps show the `bg-line` behind it, so the coaches are
+              divided by hairlines rather than floated apart by whitespace.
+              That is the same joinery the booking steps below use, and it is
+              what keeps the page reading as a single ruled sheet.
+            */
+            <div className="mt-12 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
               {coaches.map((c) => (
                 <div
                   key={c.id}
-                  className="flex h-full flex-col border border-line bg-ground/50 p-6 transition-colors hover:border-sage"
+                  className="flex h-full flex-col bg-ground p-6 transition-colors hover:bg-panel/60"
                 >
                   <div className="flex items-center gap-3.5">
                     <CoachAvatar
@@ -318,50 +347,87 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ── Booking ────────────────────────────────────────── */}
+      {/*
+        ── Booking ──────────────────────────────────────────
+
+        The one light band. It carries the process and the room itself, which
+        is the right content to put on paper: the steps are a list of
+        instructions, and instructions belong on a page rather than on a wall.
+
+        Two rows. The first splits the argument from the photograph — text
+        left, the floor bleeding off the right edge — and the second runs the
+        three steps across the full width beneath it. On a phone both rows
+        collapse to one column and the photograph spans edge to edge, which is
+        the only place on the page anything touches both margins.
+      */}
       <section
         id="booking"
-        className="relative border-t border-line px-5 py-24 sm:px-8 lg:py-32"
+        className="brand-light relative border-t border-line"
       >
-        <div className="mx-auto max-w-6xl">
-          <Reveal className="max-w-3xl">
-            <h2 className="display d-lg text-sage">{copy.booking.heading}</h2>
-            <p className="measure mt-5 text-base leading-relaxed text-sage-dim sm:text-lg">
-              {copy.booking.lead}
-            </p>
-          </Reveal>
+        <div className="mx-auto max-w-[1400px]">
+          <div className="grid items-stretch lg:grid-cols-12">
+            <Reveal className="flex flex-col justify-center px-5 py-20 sm:px-8 lg:col-span-5 lg:py-28 lg:pl-12 lg:pr-10">
+              <h2 className="display d-lg text-ink">{copy.booking.heading}</h2>
+              <p className="measure mt-5 text-base leading-relaxed text-ink-muted sm:text-lg">
+                {copy.booking.lead}
+              </p>
 
-          <ol className="mt-12 grid gap-px border border-line bg-line sm:grid-cols-3">
-            {steps.map((s) => (
-              <li key={s.n} className="bg-ground">
-                <div className="flex h-full flex-col p-8 transition-colors hover:bg-panel/50">
-                  <span className="display block text-[clamp(3rem,5.5vw,4.5rem)] leading-[0.8] text-sage">
-                    {s.n}
-                  </span>
-                  <h3 className="display mt-7 border-t border-rule pt-5 text-[clamp(1.25rem,2vw,1.625rem)] text-bone">
-                    {s.title}
-                  </h3>
-                  <p className="mt-3 text-sm leading-relaxed text-sage-dim">
-                    {s.body}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ol>
+              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+                <Link
+                  href={bookHref}
+                  className={buttonClasses("primary", "lg", "tag px-8")}
+                >
+                  {bookLabel}
+                </Link>
+                <a
+                  href="#team"
+                  className={buttonClasses("hairline", "lg", "tag px-8")}
+                >
+                  {copy.booking.browse}
+                </a>
+              </div>
+            </Reveal>
 
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <Link
-              href={bookHref}
-              className={buttonClasses("primary", "lg", "tag px-8")}
-            >
-              {bookLabel}
-            </Link>
-            <a
-              href="#team"
-              className={buttonClasses("hairline", "lg", "tag px-8")}
-            >
-              {copy.booking.browse}
-            </a>
+            {/*
+              The photograph runs to the right edge of the band and, from lg,
+              to the full height of the row beside it — so it is a wall of the
+              room rather than a picture hung on the page. `lg:aspect-auto`
+              releases the reserved ratio once the row's height is what sizes
+              it.
+            */}
+            <SitePhoto
+              src={GYM_INTERIOR.src}
+              alt={GYM_INTERIOR.alt}
+              width={GYM_INTERIOR.width}
+              height={GYM_INTERIOR.height}
+              ratio="4 / 3"
+              className="bleed-right lg:col-span-7 lg:aspect-auto lg:h-full"
+            />
+          </div>
+
+          {/*
+            The steps. A ruled strip in the same joinery as the team block:
+            one border around the group, 1px gaps showing through as the
+            dividing rules.
+          */}
+          <div className="px-5 pb-20 sm:px-8 lg:px-12 lg:pb-28">
+            <ol className="grid gap-px border border-line-light bg-line-light sm:grid-cols-3">
+              {steps.map((s) => (
+                <li key={s.n} className="bg-paper-panel">
+                  <div className="flex h-full flex-col p-8">
+                    <span className="display block text-[clamp(3rem,5.5vw,4.5rem)] leading-[0.8] text-forest">
+                      {s.n}
+                    </span>
+                    <h3 className="display mt-7 border-t border-line-light pt-5 text-[clamp(1.25rem,2vw,1.625rem)] text-ink">
+                      {s.title}
+                    </h3>
+                    <p className="mt-3 text-sm leading-relaxed text-ink-muted">
+                      {s.body}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ol>
           </div>
         </div>
       </section>
@@ -448,14 +514,20 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ── Closing CTA ────────────────────────────────────── */}
-      <section className="relative overflow-hidden border-t border-rule px-5 py-24 sm:px-8 lg:py-28">
+      {/*
+        ── Closing CTA ──────────────────────────────────────
+
+        Black, and the only band that is. The page has argued on olive and
+        explained itself on paper; the last ask sits in the deepest well on
+        the page so there is nothing else to look at.
+      */}
+      <section className="brand-black relative overflow-hidden px-5 py-24 sm:px-8 lg:py-32">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 z-0"
           style={{
             background:
-              "radial-gradient(80% 120% at 50% 120%, rgba(151,176,140,0.16), transparent 62%)",
+              "radial-gradient(80% 120% at 50% 120%, rgba(151,176,140,0.20), transparent 62%)",
           }}
         />
         <Reveal className="relative z-10 mx-auto max-w-4xl text-center">

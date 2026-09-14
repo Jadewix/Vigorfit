@@ -13,9 +13,22 @@
   The name is kept despite now covering both surfaces, because it is already
   spelled across ~130 call sites and renaming it would be churn without a
   behavioural gain.
+
+  `.brand-light` is the escape hatch. The landing page alternates bands now —
+  olive, bone, olive, black — but the bone band still sits *inside* the
+  `.brand-dark` wrapper, so without this every Button and Card in it would
+  render its dark treatment on a light ground. Marking that one band
+  `.brand-light` stops the variant matching inside it, and the shared
+  components fall back to their light-paper styling with no per-call-site
+  overrides. Written with `:where()` so the specificity stays 0, as before.
 */
 @custom-variant app-dark (
-  &:where(.app-dark, .app-dark *, .brand-dark, .brand-dark *)
+  &:where(
+      :is(.app-dark, .app-dark *, .brand-dark, .brand-dark *):not(
+          .brand-light,
+          .brand-light *
+        )
+    )
 );
 
 /*
@@ -117,6 +130,24 @@ body {
 /* Dark brand shell for public/marketing surfaces. */
 .brand-dark {
   background: var(--ground);
+  color: var(--bone);
+}
+
+/*
+  The three grounds the landing page alternates between. Each one sets its own
+  background AND foreground, so a band is switched by changing one class on the
+  <section> and nothing inside it needs to know which ground it is sitting on.
+
+  `.brand-light` additionally cancels the `app-dark:` variant (see the top of
+  this file), which is what lets Button, Card and StatCard cross into the bone
+  band unmodified.
+*/
+.brand-light {
+  background: var(--paper);
+  color: var(--ink);
+}
+.brand-black {
+  background: var(--ink);
   color: var(--bone);
 }
 
@@ -279,6 +310,94 @@ html {
   animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
+/*
+  Hero parallax.
+
+  The scroll handler writes one number, `--par` (0 at the top of the page,
+  1 when the hero has fully scrolled away). Everything the motion does is
+  derived from it here in CSS, so the JS never touches style properties
+  directly and the whole effect is disabled by the reduced-motion block below
+  without the script knowing.
+
+  The object drifts *down* as the page moves up — travelling slower than the
+  scroll — which is what reads as depth. `--par-travel` is the distance.
+*/
+.parallax {
+  --par: 0;
+  --par-travel: 7rem;
+  transform: translate3d(0, calc(var(--par) * var(--par-travel)), 0);
+  will-change: transform;
+}
+
+/*
+  Photographs.
+
+  Hard-edged, never rounded: the whole system is built from hairlines and
+  right angles, and a radius here would be the one soft corner on the page.
+  `--photo-ratio` keeps the box reserved before the file loads, so a slow
+  connection shifts nothing.
+*/
+.photo {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: var(--photo-ratio, 16 / 9);
+  background: var(--panel);
+}
+.photo > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*
+  Bleeds an element out of a centred container to the viewport's right edge.
+
+  The booking band's photograph has to touch the edge of the screen — a
+  photograph that stops 200px short of it at wide sizes reads as a mistake
+  rather than as a frame. But the band's text and steps must stay aligned with
+  the rest of the page, so the container itself has to keep its max-width.
+
+  This cancels the right-hand margin that centring created: nothing at all
+  until the viewport is wider than the container, and from there a pull of half
+  the overflow.
+
+  It overshoots by the width of the scrollbar, because `100vw` counts the
+  scrollbar gutter and the container centres against the layout width, which
+  does not. That is the direction to err in: the surplus is clipped by the
+  page's `overflow-x-hidden` and costs a few pixels off the edge of an image
+  that is `object-fit: cover` anyway, whereas erring the other way would leave
+  a visible strip of the band's ground beside the photograph at wide sizes.
+*/
+.bleed-right {
+  margin-right: min(0px, calc((var(--container-max, 1400px) - 100vw) / 2));
+}
+
+/*
+  The hero object's own opacity, derived from the same `--par` the drift uses
+  so the weight recedes as the hero leaves rather than tracking the page all
+  the way down.
+
+  It lives here rather than as a Tailwind `opacity-*` utility because the
+  value is a calc() over two breakpoints: behind the type on phones, where it
+  must never compete with the headline, and full strength from `lg` where it
+  has its own column.
+*/
+.hero-object {
+  --ho-op: 0.22;
+  opacity: calc(var(--ho-op) * (1 - var(--par, 0) * 0.65));
+}
+@media (min-width: 1024px) {
+  .hero-object {
+    --ho-op: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-object {
+    opacity: var(--ho-op);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -289,6 +408,11 @@ html {
     opacity: 1;
     animation: none;
     transform: none;
+  }
+  /* The parallax collapses to a still object rather than a shortened drift. */
+  .parallax {
+    transform: none;
+    will-change: auto;
   }
 }
 

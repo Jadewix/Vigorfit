@@ -1,72 +1,131 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import { useImageFallback } from "@/frontend/site/use-image-fallback";
+
 /**
- * HeroObject — the reserved layer for the hero's 3D dumbbell.
+ * HeroObject — the hero's floating weight, and the one piece of motion on the
+ * page that responds to scrolling.
  *
- * The point of this component is that the hero's layout does not care what
- * ends up inside it. Drop in an <img> (a transparent WebP/PNG render), a
- * <canvas> (three.js / R3F), a <video> loop, or an <iframe> embed, and the
- * type, spacing and safe area around it stay exactly as they are. Nothing
- * here needs to be undone to swap the asset in.
+ * Layout. On phones the object sits *behind* the type across the full hero, at
+ * low opacity, so the headline always wins; from `lg` it moves into its own
+ * column starting past where the text column ends (`lg:left-[62%]`), and comes
+ * up to full strength. Both treatments come from `.hero-object` in globals.css.
  *
- * Placement is tunable from the outside via three custom properties rather
- * than by editing this file:
+ * Motion. The scroll handler writes exactly one number — `--par`, 0 at the top
+ * of the page and 1 once the hero has scrolled away — and every visible effect
+ * is derived from it in CSS (`.parallax` for the drift, `.hero-object` for the
+ * fade). That split is deliberate: `prefers-reduced-motion` switches the whole
+ * effect off in the stylesheet, and this component needs no branch for it
+ * beyond declining to start the listener.
  *
- *   <HeroObject style={{ "--ho-x": "8%", "--ho-y": "-4%", "--ho-scale": 1.1 }} />
+ * Asset. `src` is expected to be a *transparent* PNG/WebP cut-out — the bloom
+ * and contact shadow below only seat the object on the olive if the file has
+ * no background of its own. Until that file exists the component falls back to
+ * the wireframe plate, so a missing asset degrades to a deliberate graphic
+ * rather than a broken image icon.
  *
- * Until an asset arrives it renders a wireframe weight plate — concentric
- * rings are what a plate actually looks like head-on, so the placeholder
- * reads as a deliberate graphic rather than a missing image. Delete nothing
- * when the render lands: pass it as children and the placeholder steps aside.
- *
- * The object is decorative, so the whole layer is aria-hidden and never
- * intercepts pointer events aimed at the hero's buttons behind it.
+ * The object is decorative: the layer is aria-hidden and never intercepts
+ * pointer events aimed at the hero's buttons behind it.
  */
 export function HeroObject({
-  children,
+  src,
+  width,
+  height,
   className,
   style,
 }: {
-  children?: React.ReactNode;
+  /** Transparent cut-out. Omit (or let it 404) to render the plate instead. */
+  src?: string;
+  /** The file's intrinsic pixel size; it is what shapes the box. */
+  width?: number;
+  height?: number;
   className?: string;
   style?: React.CSSProperties;
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const image = useImageFallback();
+  const showImage = Boolean(src) && !image.failed;
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    // Reduced motion is honoured by not running at all. The CSS also nulls the
+    // transform, so the two agree even if this check were ever missed.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    // Measure against the hero section rather than the viewport height: the
+    // hero is `min-h-[100svh]` but grows taller than that whenever the copy
+    // needs it, and a viewport-height assumption would finish the animation
+    // early on small phones in landscape.
+    const section = el.closest("section");
+    if (!section) return;
+
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const { top, height } = section.getBoundingClientRect();
+      const progress = Math.min(Math.max(-top / Math.max(height, 1), 0), 1);
+      el.style.setProperty("--par", progress.toFixed(4));
+    };
+    const onScroll = () => {
+      // Coalesce to one write per frame; scroll fires far more often than that.
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+
   return (
     <div
+      ref={ref}
       aria-hidden
       className={[
-        // The layer itself. `grid place-items-center` centres whatever asset
-        // is handed in, at any aspect ratio, without further positioning.
-        "pointer-events-none absolute z-0 grid place-items-center",
-        // Safe area: on phones the object sits behind the ledger at low
-        // opacity so the type is never competing with it. From `lg` it moves
-        // into its own column, starting past where the hero's text column
-        // ends — an opaque render dropped in here must not land on the type.
-        "inset-0 opacity-[0.18]",
-        "lg:inset-y-0 lg:left-[62%] lg:right-0 lg:opacity-100",
+        "hero-object parallax pointer-events-none absolute z-0 grid place-items-center",
+        "inset-0",
+        "lg:inset-y-0 lg:left-[62%] lg:right-0",
         className,
       ]
         .filter(Boolean)
         .join(" ")}
       style={{
-        // Defaults the caller can override. Kept as custom properties so
-        // nudging the render's position later is a one-line change in the
-        // hero rather than a rewrite of this component.
+        // Defaults the caller can override, so nudging the render later is a
+        // one-line change in the hero rather than a rewrite of this file.
         ["--ho-x" as string]: "0%",
         ["--ho-y" as string]: "0%",
         ["--ho-scale" as string]: "1",
         ...style,
       }}
     >
+      {/*
+        The box takes its aspect ratio from the asset rather than assuming one.
+        A dumbbell photographed lying down is wide, and forcing it into a square
+        would letterbox it — the object would render smaller than its column
+        allows, with dead space above and below that the bloom still lights.
+
+        The placeholder falls back to square, because the wireframe plate it
+        draws is a set of concentric circles and only reads correctly in one.
+      */}
       <div
-        className="relative aspect-square w-[min(84%,30rem)]"
+        className="relative w-[min(84%,30rem)]"
         style={{
+          aspectRatio: showImage && width && height ? `${width} / ${height}` : "1 / 1",
           transform:
             "translate(var(--ho-x), var(--ho-y)) scale(var(--ho-scale))",
         }}
       >
         {/*
-          Light bloom. This stays even once a render is dropped in: it is what
-          seats the object on the olive ground instead of leaving it floating
-          as a cut-out.
+          Light bloom. This stays once a render is dropped in: it is what seats
+          the object on the olive ground instead of leaving it floating as a
+          cut-out.
         */}
         <div
           className="absolute inset-0 rounded-full"
@@ -76,7 +135,29 @@ export function HeroObject({
           }}
         />
 
-        {children ?? <PlatePlaceholder />}
+        {showImage ? (
+          /*
+            A plain <img>, not next/image. This project deploys to Cloudflare
+            Workers through vinext, where next/image has no build-time pipeline
+            and renders an <img> with a srcSet anyway; with a single fixed-size
+            local asset that buys nothing and costs a dependency on an
+            optimizer that is not configured here.
+
+            Eager, and not lazy-loaded: it is above the fold on every screen.
+          */
+          // eslint-disable-next-line @next/next/no-img-element -- see above
+          <img
+            src={src}
+            alt=""
+            width={width}
+            height={height}
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-contain"
+            {...image.props}
+          />
+        ) : (
+          <PlatePlaceholder />
+        )}
 
         {/*
           Contact shadow, sitting below the object's base. A render with a
@@ -97,7 +178,7 @@ export function HeroObject({
 
 /**
  * Wireframe weight plate, drawn in CSS so it costs no request and no
- * dependency. Replaced the moment a real asset is passed as children.
+ * dependency. Stands in whenever the real cut-out is absent or fails to load.
  */
 function PlatePlaceholder() {
   // Ring diameters as a share of the layer, outermost first, each with the

@@ -7,6 +7,12 @@ import type { LoginState } from "@/shared/types";
 
 const initial: LoginState = {};
 
+// One definition for both fields. 48px tall: the same touch target the site's
+// large buttons use, since this is a form people fill in on a phone at the
+// door of the gym.
+const field =
+  "h-12 w-full border border-line bg-ground/60 px-3.5 text-sm text-bone placeholder:text-sage-dim/60 outline-none transition focus:border-sage focus:ring-2 focus:ring-sage/30";
+
 export function LoginForm({
   action,
   title,
@@ -21,7 +27,7 @@ export function LoginForm({
   const [state, formAction, pending] = useActionState(action, initial);
 
   return (
-    <main className="brand-dark grain relative flex min-h-screen items-center justify-center overflow-hidden px-4 font-sans">
+    <main className="brand-dark grain relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-12 font-sans">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 z-0"
@@ -33,16 +39,21 @@ export function LoginForm({
       <div className="relative z-10 w-full max-w-sm">
         <Wordmark className="mb-8 justify-center" />
 
-        <div className="border border-line bg-panel/70 p-8 backdrop-blur">
-          <h1 className="display text-3xl text-bone">{title}</h1>
-          <p className="mt-1.5 text-sm text-sage-dim">{subtitle}</p>
+        {/*
+          A ruled panel rather than a floating card: the heading sits in its
+          own cell closed by a hairline, the way the site's nav and bands are
+          divided. Nothing here is rounded or shadowed — on the dark surface
+          the whole system is built from right angles and 1px rules.
+        */}
+        <div className="border border-line bg-panel/70 backdrop-blur">
+          <div className="border-b border-line px-7 py-6">
+            <h1 className="display text-3xl text-bone">{title}</h1>
+            <p className="mt-1.5 text-sm text-sage-dim">{subtitle}</p>
+          </div>
 
-          <form action={formAction} className="mt-6 space-y-4">
+          <form action={formAction} className="space-y-5 px-7 py-7">
             <div>
-              <label
-                htmlFor="username"
-                className="mb-1.5 block text-sm font-medium text-bone"
-              >
+              <label htmlFor="username" className="tag mb-2 block text-sage-dim">
                 Username
               </label>
               <input
@@ -53,16 +64,13 @@ export function LoginForm({
                 autoCapitalize="none"
                 spellCheck={false}
                 required
-                className="h-11 w-full border border-line bg-ground/60 px-3.5 text-sm text-bone placeholder:text-sage-dim/60 outline-none transition focus:border-sage focus:ring-2 focus:ring-sage/30"
+                className={field}
                 placeholder="yourusername"
               />
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="mb-1.5 block text-sm font-medium text-bone"
-              >
+              <label htmlFor="password" className="tag mb-2 block text-sage-dim">
                 Password
               </label>
               <input
@@ -71,7 +79,7 @@ export function LoginForm({
                 type="password"
                 autoComplete="current-password"
                 required
-                className="h-11 w-full border border-line bg-ground/60 px-3.5 text-sm text-bone placeholder:text-sage-dim/60 outline-none transition focus:border-sage focus:ring-2 focus:ring-sage/30"
+                className={field}
                 placeholder="••••••••"
               />
             </div>
@@ -86,7 +94,7 @@ export function LoginForm({
               type="submit"
               size="lg"
               disabled={pending}
-              className="w-full"
+              className="tag w-full"
             >
               {pending ? "Signing in…" : "Sign in"}
             </Button>
@@ -94,7 +102,9 @@ export function LoginForm({
         </div>
 
         {footNote && (
-          <div className="mt-6 text-center text-xs text-sage-dim">{footNote}</div>
+          <div className="mt-6 text-center text-xs leading-relaxed text-sage-dim">
+            {footNote}
+          </div>
         )}
       </div>
     </main>

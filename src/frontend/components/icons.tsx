@@ -45,6 +45,32 @@ export function CalendarIcon(props: IconProps) {
   );
 }
 
+/** Map pin, for the studio's address wherever it links out to Maps. */
+export function MapPinIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+  );
+}
+
+/**
+ * Message bubble, for the studio's WhatsApp number.
+ *
+ * Deliberately the bubble silhouette only, with no handset inside: at the 15px
+ * this is used at in the footer, interior detail turns to mush. The word
+ * "WhatsApp" sits beside it and does the naming, so the glyph only has to say
+ * "a conversation".
+ */
+export function WhatsAppIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 8.6 8.6 0 0 1-3.8-.9L3 21l1.9-5.6A8.4 8.4 0 0 1 4 11.5a8.5 8.5 0 0 1 17 0z" />
+    </svg>
+  );
+}
+
 export function ClockIcon(props: IconProps) {
   return (
     <svg {...base(props)}>

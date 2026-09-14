@@ -62,12 +62,21 @@ export function MobileNav({
 
   return (
     <div className="md:hidden">
-      <header className="flex items-center justify-between border-b border-line-light bg-paper-panel px-4 py-3 app-dark:border-rule app-dark:bg-ground">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-forest text-paper app-dark:rounded-none app-dark:bg-sage">
+      {/*
+        On the dark client surface this bar is dimensioned to match the public
+        site's nav exactly — 64px tall, the mark in a cell closed by a hairline,
+        and a flush sage block on the right holding the toggle — so a client
+        arriving from the landing page sees the same bar, not a second one.
+      */}
+      <header className="flex items-center justify-between border-b border-line-light bg-paper-panel px-4 py-3 app-dark:h-16 app-dark:items-stretch app-dark:border-rule app-dark:bg-ground app-dark:p-0">
+        <Link
+          href="/"
+          className="flex items-center gap-2 app-dark:border-r app-dark:border-rule app-dark:px-5"
+        >
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-forest text-paper app-dark:h-8 app-dark:w-8 app-dark:rounded-none app-dark:bg-sage app-dark:text-ink">
             <BoltIcon width={16} height={16} />
           </span>
-          <span className="font-bold text-ink app-dark:font-display app-dark:text-lg app-dark:font-normal app-dark:uppercase app-dark:text-bone">
+          <span className="font-bold text-ink app-dark:font-display app-dark:text-xl app-dark:font-bold app-dark:uppercase app-dark:tracking-[-0.05em] app-dark:text-bone">
             Vigorfit
           </span>
         </Link>
@@ -76,7 +85,7 @@ export function MobileNav({
           onClick={() => setOpen(true)}
           aria-label="Open menu"
           aria-expanded={open}
-          className="flex h-9 w-9 items-center justify-center rounded-lg text-ink transition-colors hover:bg-paper app-dark:rounded-none app-dark:text-bone app-dark:hover:bg-panel-2"
+          className="flex h-9 w-9 items-center justify-center rounded-lg text-ink transition-colors hover:bg-paper app-dark:h-auto app-dark:w-16 app-dark:rounded-none app-dark:bg-sage app-dark:text-ink app-dark:hover:bg-bone"
         >
           <MenuIcon />
         </button>

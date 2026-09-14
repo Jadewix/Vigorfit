@@ -13,6 +13,14 @@ const sections = [
   { id: "booking", href: "#booking", label: "Booking" },
 ];
 
+/**
+ * The site's top bar, in three zones: the mark in its own ruled cell on the
+ * left, the section index centred, and the actions flush to the right edge.
+ *
+ * The bar stays olive over every band, including the light one — it is the
+ * frame the page scrolls inside rather than part of any section, and letting
+ * it invert on the bone band would make it read as page content.
+ */
 export function SiteNav({ isClient }: { isClient: boolean }) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState("top");
@@ -48,40 +56,48 @@ export function SiteNav({ isClient }: { isClient: boolean }) {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-rule bg-ground">
-      <div className="flex h-16 items-stretch justify-between pl-5 sm:pl-8 lg:h-[72px]">
-        <div className="flex items-center">
+      <div className="flex h-16 items-stretch lg:h-[72px]">
+        {/*
+          The mark sits in a cell of its own, closed by a hairline on its
+          right. That rule is the whole difference between a logo floating in
+          a bar and a bar that is divided into fields — the same joinery the
+          bands below use.
+        */}
+        <div className="flex items-center border-r border-rule pl-5 pr-5 sm:pl-8 sm:pr-8">
           <Wordmark onClick={close} />
         </div>
 
-        <div className="flex items-stretch">
-          {/* Desktop section links */}
-          <nav className="hidden items-stretch md:flex">
-            {sections.map((s) => (
-              <a
-                key={s.id}
-                href={s.href}
+        {/* Section index, centred between the mark and the actions. */}
+        <nav className="hidden flex-1 items-stretch justify-center md:flex">
+          {sections.map((s) => (
+            <a
+              key={s.id}
+              href={s.href}
+              aria-current={active === s.id ? "true" : undefined}
+              className={cn(
+                "tag relative flex items-center px-6 transition-colors",
+                active === s.id ? "text-sage" : "text-sage-dim hover:text-bone",
+              )}
+            >
+              {s.label}
+              <span
+                aria-hidden
                 className={cn(
-                  "tag relative flex items-center px-6 transition-colors",
-                  active === s.id
-                    ? "text-sage"
-                    : "text-sage-dim hover:text-bone",
+                  "absolute inset-x-5 bottom-0 h-0.5 bg-sage transition-opacity",
+                  active === s.id ? "opacity-100" : "opacity-0",
                 )}
-              >
-                {s.label}
-                <span
-                  aria-hidden
-                  className={cn(
-                    "absolute inset-x-5 bottom-0 h-0.5 bg-sage transition-opacity",
-                    active === s.id ? "opacity-100" : "opacity-0",
-                  )}
-                />
-              </a>
-            ))}
-          </nav>
+              />
+            </a>
+          ))}
+        </nav>
 
+        {/* Spacer that keeps the actions right when the centre nav is hidden. */}
+        <div className="flex-1 md:hidden" />
+
+        <div className="flex items-stretch">
           {/* Signed-in controls keep the existing booking app reachable */}
           {isClient && (
-            <div className="hidden items-center gap-5 pl-4 pr-6 md:flex">
+            <div className="hidden items-center gap-5 border-l border-rule px-6 md:flex">
               <Link
                 href="/client/bookings"
                 className="tag text-sage-dim transition-colors hover:text-bone"
@@ -139,7 +155,7 @@ export function SiteNav({ isClient }: { isClient: boolean }) {
       {/* Mobile drawer */}
       <div
         className={cn(
-          "fixed inset-0 top-16 z-40 bg-ground transition-[opacity,transform] duration-300 md:hidden",
+          "fixed inset-0 top-16 z-40 overflow-y-auto bg-ground transition-[opacity,transform] duration-300 md:hidden",
           open
             ? "pointer-events-auto opacity-100"
             : "pointer-events-none -translate-y-2 opacity-0",
@@ -164,7 +180,7 @@ export function SiteNav({ isClient }: { isClient: boolean }) {
             Contact
           </a>
 
-          <div className="mt-8 flex flex-col gap-3">
+          <div className="mt-8 flex flex-col gap-3 pb-8">
             {isClient ? (
               <>
                 <Link

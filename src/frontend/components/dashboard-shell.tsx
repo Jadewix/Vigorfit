@@ -7,6 +7,16 @@ import { RoleBadge } from "@/frontend/ui/badge";
 import { BoltIcon } from "@/frontend/components/icons";
 import type { Profile } from "@/shared/types";
 
+/**
+ * The signed-in chrome, on both surfaces.
+ *
+ * On the light paper dashboards (/coach, /admin) it stays as it was: a padded
+ * sidebar of rounded rows. Inside the dark client area it takes the marketing
+ * site's joinery instead — the sidebar becomes a column of ruled cells, its
+ * brand cell matching the height and hairline of the public nav's, so moving
+ * from the landing page into the booking flow does not feel like crossing
+ * into a different product.
+ */
 export function DashboardShell({
   profile,
   navItems,
@@ -22,22 +32,29 @@ export function DashboardShell({
   const initials = initialsOf(profile.full_name || profile.username || "?");
 
   return (
-    <div className={cn("flex min-h-screen bg-paper app-dark:bg-ground", className)}>
+    <div
+      className={cn("flex min-h-screen bg-paper app-dark:bg-ground", className)}
+    >
       {/* Sidebar */}
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-line-light bg-paper-panel p-4 md:flex app-dark:border-rule app-dark:bg-panel/40">
-        <Link href="/" className="mb-6 flex items-center gap-2 px-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-forest text-paper app-dark:rounded-none app-dark:bg-sage">
+      <aside className="hidden w-64 shrink-0 flex-col border-r border-line-light bg-paper-panel p-4 md:flex app-dark:border-rule app-dark:bg-panel/40 app-dark:p-0">
+        <Link
+          href="/"
+          className="mb-6 flex items-center gap-2 px-2 app-dark:mb-0 app-dark:h-[72px] app-dark:border-b app-dark:border-rule app-dark:px-5"
+        >
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-forest text-paper app-dark:h-9 app-dark:w-9 app-dark:rounded-none app-dark:bg-sage app-dark:text-ink">
             <BoltIcon width={18} height={18} />
           </span>
-          <span className="text-lg font-bold tracking-tight text-ink app-dark:font-display app-dark:text-xl app-dark:font-normal app-dark:uppercase app-dark:tracking-normal app-dark:text-bone">
+          <span className="text-lg font-bold tracking-tight text-ink app-dark:font-display app-dark:text-2xl app-dark:font-bold app-dark:uppercase app-dark:tracking-[-0.05em] app-dark:text-bone">
             Vigorfit
           </span>
         </Link>
 
-        <NavLinks items={navItems} />
+        <div className="app-dark:flex-1 app-dark:p-3">
+          <NavLinks items={navItems} />
+        </div>
 
-        <div className="mt-auto border-t border-line-light pt-4 app-dark:border-line">
-          <div className="flex items-center gap-3 px-2 pb-2">
+        <div className="mt-auto border-t border-line-light pt-4 app-dark:border-line app-dark:p-3 app-dark:pt-3">
+          <div className="flex items-center gap-3 px-2 pb-2 app-dark:px-1">
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-line-light text-sm font-semibold text-ink-muted app-dark:rounded-none app-dark:bg-sage app-dark:text-ink">
               {initials}
             </span>
@@ -50,7 +67,7 @@ export function DashboardShell({
           </div>
           <Link
             href="/account"
-            className="block rounded-lg px-3 py-2 text-sm font-medium text-ink-muted transition-colors hover:bg-paper hover:text-ink app-dark:rounded-none app-dark:text-sage-dim app-dark:hover:bg-panel-2 app-dark:hover:text-bone"
+            className="block rounded-lg px-3 py-2 text-sm font-medium text-ink-muted transition-colors hover:bg-paper hover:text-ink app-dark:rounded-none app-dark:px-3 app-dark:py-2.5 app-dark:text-[0.6875rem] app-dark:font-semibold app-dark:uppercase app-dark:tracking-[0.1em] app-dark:text-sage-dim app-dark:hover:bg-panel-2 app-dark:hover:text-bone"
           >
             Account
           </Link>
@@ -80,7 +97,7 @@ export function PageHeading({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+    <div className="mb-6 flex flex-wrap items-end justify-between gap-4 app-dark:mb-9 app-dark:border-b app-dark:border-rule app-dark:pb-6">
       <div>
         <h1 className="page-heading text-2xl font-bold tracking-tight text-ink">
           {title}
