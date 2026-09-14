@@ -360,50 +360,6 @@ html {
 }
 
 /*
-  Photographs.
-
-  Hard-edged, never rounded: the whole system is built from hairlines and
-  right angles, and a radius here would be the one soft corner on the page.
-  `--photo-ratio` keeps the box reserved before the file loads, so a slow
-  connection shifts nothing.
-*/
-.photo {
-  position: relative;
-  overflow: hidden;
-  aspect-ratio: var(--photo-ratio, 16 / 9);
-  background: var(--panel);
-}
-.photo > img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/*
-  Bleeds an element out of a centred container to the viewport's right edge.
-
-  The booking band's photograph has to touch the edge of the screen — a
-  photograph that stops 200px short of it at wide sizes reads as a mistake
-  rather than as a frame. But the band's text and steps must stay aligned with
-  the rest of the page, so the container itself has to keep its max-width.
-
-  This cancels the right-hand margin that centring created: nothing at all
-  until the viewport is wider than the container, and from there a pull of half
-  the overflow.
-
-  It overshoots by the width of the scrollbar, because `100vw` counts the
-  scrollbar gutter and the container centres against the layout width, which
-  does not. That is the direction to err in: the surplus is clipped by the
-  page's `overflow-x-hidden` and costs a few pixels off the edge of an image
-  that is `object-fit: cover` anyway, whereas erring the other way would leave
-  a visible strip of the band's ground beside the photograph at wide sizes.
-*/
-.bleed-right {
-  margin-right: min(0px, calc((var(--container-max, 1400px) - 100vw) / 2));
-}
-
-/*
   The hero object's own opacity, derived from the same `--par` the drift uses
   so the weight recedes as the hero leaves rather than tracking the page all
   the way down.

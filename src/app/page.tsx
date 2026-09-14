@@ -9,8 +9,7 @@ import { SiteNav } from "@/frontend/site/site-nav";
 import { Reveal } from "@/frontend/site/reveal";
 import { OpenStatus } from "@/frontend/site/open-status";
 import { HeroObject } from "@/frontend/site/hero-object";
-import { SitePhoto } from "@/frontend/site/site-photo";
-import { GYM_INTERIOR, HERO_OBJECT } from "@/frontend/site/photos";
+import { HERO_OBJECT } from "@/frontend/site/photos";
 import { SiteFooter } from "@/frontend/site/site-footer";
 import {
   STUDIO_ADDRESS,
@@ -350,60 +349,42 @@ export default async function Home() {
       {/*
         ── Booking ──────────────────────────────────────────
 
-        The one light band. It carries the process and the room itself, which
-        is the right content to put on paper: the steps are a list of
-        instructions, and instructions belong on a page rather than on a wall.
+        The one light band. It carries the process, which is the right content
+        to put on paper: the steps are a list of instructions, and instructions
+        belong on a page rather than on a wall.
 
-        Two rows. The first splits the argument from the photograph — text
-        left, the floor bleeding off the right edge — and the second runs the
-        three steps across the full width beneath it. On a phone both rows
-        collapse to one column and the photograph spans edge to edge, which is
-        the only place on the page anything touches both margins.
+        Two rows, both full width — the argument, then the three steps beneath
+        it. The first row used to be a 5/7 split against a photograph of the
+        floor; the photograph was never supplied, and a band that is half empty
+        reads worse than one that is simply narrower than the grid allows. The
+        text holds its own measure, so running it full width costs nothing.
       */}
       <section
         id="booking"
         className="brand-light relative border-t border-line"
       >
         <div className="mx-auto max-w-[1400px]">
-          <div className="grid items-stretch lg:grid-cols-12">
-            <Reveal className="flex flex-col justify-center px-5 py-20 sm:px-8 lg:col-span-5 lg:py-28 lg:pl-12 lg:pr-10">
-              <h2 className="display d-lg text-ink">{copy.booking.heading}</h2>
-              <p className="measure mt-5 text-base leading-relaxed text-ink-muted sm:text-lg">
-                {copy.booking.lead}
-              </p>
+          <Reveal className="flex flex-col px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
+            <h2 className="display d-lg text-ink">{copy.booking.heading}</h2>
+            <p className="measure mt-5 text-base leading-relaxed text-ink-muted sm:text-lg">
+              {copy.booking.lead}
+            </p>
 
-              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                <Link
-                  href={bookHref}
-                  className={buttonClasses("primary", "lg", "tag px-8")}
-                >
-                  {bookLabel}
-                </Link>
-                <a
-                  href="#team"
-                  className={buttonClasses("hairline", "lg", "tag px-8")}
-                >
-                  {copy.booking.browse}
-                </a>
-              </div>
-            </Reveal>
-
-            {/*
-              The photograph runs to the right edge of the band and, from lg,
-              to the full height of the row beside it — so it is a wall of the
-              room rather than a picture hung on the page. `lg:aspect-auto`
-              releases the reserved ratio once the row's height is what sizes
-              it.
-            */}
-            <SitePhoto
-              src={GYM_INTERIOR.src}
-              alt={GYM_INTERIOR.alt}
-              width={GYM_INTERIOR.width}
-              height={GYM_INTERIOR.height}
-              ratio="4 / 3"
-              className="bleed-right lg:col-span-7 lg:aspect-auto lg:h-full"
-            />
-          </div>
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href={bookHref}
+                className={buttonClasses("primary", "lg", "tag px-8")}
+              >
+                {bookLabel}
+              </Link>
+              <a
+                href="#team"
+                className={buttonClasses("hairline", "lg", "tag px-8")}
+              >
+                {copy.booking.browse}
+              </a>
+            </div>
+          </Reveal>
 
           {/*
             The steps. A ruled strip in the same joinery as the team block:
