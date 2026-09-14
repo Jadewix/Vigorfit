@@ -1,11 +1,11 @@
-import { requireRole } from "@/lib/auth";
-import { DashboardShell } from "@/components/dashboard-shell";
+import { requireRole } from "@/backend/auth";
+import { DashboardShell } from "@/frontend/components/dashboard-shell";
 import {
   CalendarIcon,
   GridIcon,
   UsersIcon,
   WhistleIcon,
-} from "@/components/icons";
+} from "@/frontend/components/icons";
 
 export default async function CoachLayout({
   children,

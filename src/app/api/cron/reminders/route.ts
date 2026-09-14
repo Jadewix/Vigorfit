@@ -1,11 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient } from "@/backend/supabase/admin";
 import {
   notifyReminder,
   notifySubscriptionExpiring,
-} from "@/lib/notifications";
-import { EXPIRY_REMINDER_DAYS } from "@/lib/booking";
-import { shiftDate, zonedToday } from "@/lib/timezone";
+} from "@/backend/notifications";
+import { EXPIRY_REMINDER_DAYS } from "@/shared/booking";
+import { shiftDate, zonedToday } from "@/shared/timezone";
 
 export const dynamic = "force-dynamic";
 

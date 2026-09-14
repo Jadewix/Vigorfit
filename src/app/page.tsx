@@ -1,25 +1,25 @@
 import type { Viewport } from "next";
 import Link from "next/link";
-import { getCurrentProfile } from "@/lib/auth";
-import { getPublicCoaches } from "@/lib/public-coaches";
-import { SESSION_LABEL } from "@/lib/booking";
-import { buttonClasses } from "@/components/ui/button";
-import { CoachAvatar } from "@/components/coach-avatar";
-import { SiteNav } from "@/components/site/site-nav";
-import { Reveal } from "@/components/site/reveal";
-import { OpenStatus } from "@/components/site/open-status";
-import { HeroObject } from "@/components/site/hero-object";
-import { SiteFooter } from "@/components/site/site-footer";
+import { getCurrentProfile } from "@/backend/auth";
+import { getPublicCoaches } from "@/backend/public-coaches";
+import { SESSION_LABEL } from "@/shared/booking";
+import { buttonClasses } from "@/frontend/ui/button";
+import { CoachAvatar } from "@/frontend/components/coach-avatar";
+import { SiteNav } from "@/frontend/site/site-nav";
+import { Reveal } from "@/frontend/site/reveal";
+import { OpenStatus } from "@/frontend/site/open-status";
+import { HeroObject } from "@/frontend/site/hero-object";
+import { SiteFooter } from "@/frontend/site/site-footer";
 import {
   STUDIO_ADDRESS,
   STUDIO_HOURS,
   STUDIO_MAPS_URL,
   STUDIO_WHATSAPP_DISPLAY,
   WHATSAPP_GREETING,
-  formatTime,
+  formatClock,
   getOpenStatus,
   waLink,
-} from "@/lib/studio";
+} from "@/shared/studio";
 
 /*
   ─────────────────────────────────────────────────────────────
@@ -424,7 +424,7 @@ export default async function Home() {
                           }
                         >
                           {hours
-                            ? `${formatTime(hours.open)} – ${formatTime(hours.close)}`
+                            ? `${formatClock(hours.open)} – ${formatClock(hours.close)}`
                             : "Closed"}
                         </dd>
                       </div>

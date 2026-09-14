@@ -1,10 +1,11 @@
-import { createClient } from "@/lib/supabase/server";
-import { PageHeading } from "@/components/dashboard-shell";
-import { BookingList } from "@/components/booking-list";
-import { EmptyState } from "@/components/empty-state";
-import { StatCard } from "@/components/ui/stat-card";
-import { CalendarIcon, ClockIcon, UsersIcon, WhistleIcon } from "@/components/icons";
-import type { Booking } from "@/lib/types";
+import { createClient } from "@/backend/supabase/server";
+import { loadNames } from "@/backend/profile-names";
+import { PageHeading } from "@/frontend/components/dashboard-shell";
+import { BookingList } from "@/frontend/components/booking-list";
+import { EmptyState } from "@/frontend/components/empty-state";
+import { StatCard } from "@/frontend/ui/stat-card";
+import { CalendarIcon, ClockIcon, UsersIcon, WhistleIcon } from "@/frontend/components/icons";
+import type { Booking } from "@/shared/types";
 
 export default async function AdminOverview() {
   const supabase = await createClient();
@@ -29,18 +30,10 @@ export default async function AdminOverview() {
     ]);
 
   const recent = (recentRes.data ?? []) as Booking[];
-  const ids = [
-    ...new Set(recent.flatMap((b) => [b.client_id, b.coach_id])),
-  ];
-  const { data: profs } =
-    ids.length > 0
-      ? await supabase.from("profiles").select("id, full_name, username").in("id", ids)
-      : { data: [] };
-
-  const nameMap = new Map<string, string>(
-    (profs ?? []).map((p) => [p.id, p.full_name || p.username || "Unknown"]),
+  const getName = await loadNames(
+    supabase,
+    recent.flatMap((b) => [b.client_id, b.coach_id]),
   );
-  const getName = (id: string) => nameMap.get(id) ?? "Unknown";
 
   return (
     <>

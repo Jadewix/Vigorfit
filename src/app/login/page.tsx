@@ -1,5 +1,5 @@
 import type { Viewport } from "next";
-import { LoginForm } from "@/components/login-form";
+import { LoginForm } from "@/frontend/components/login-form";
 import { loginAction } from "./actions";
 
 // Dark page: match the phone browser's toolbar to it.

@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
-import { PageHeading } from "@/components/dashboard-shell";
-import { EmptyState } from "@/components/empty-state";
-import { buttonClasses } from "@/components/ui/button";
-import { UsersIcon } from "@/components/icons";
-import { CoachAvatar } from "@/components/coach-avatar";
-import type { Coach, Profile } from "@/lib/types";
+import { createClient } from "@/backend/supabase/server";
+import { PageHeading } from "@/frontend/components/dashboard-shell";
+import { EmptyState } from "@/frontend/components/empty-state";
+import { buttonClasses } from "@/frontend/ui/button";
+import { UsersIcon } from "@/frontend/components/icons";
+import { CoachAvatar } from "@/frontend/components/coach-avatar";
+import type { Coach, Profile } from "@/shared/types";
 
 export default async function BrowseCoachesPage() {
   const supabase = await createClient();

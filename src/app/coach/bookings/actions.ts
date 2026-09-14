@@ -1,10 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireRole } from "@/lib/auth";
-import { createClient } from "@/lib/supabase/server";
-import { notifyBookingUpdate } from "@/lib/notifications";
-import type { BookingStatus } from "@/lib/types";
+import { requireRole } from "@/backend/auth";
+import { createClient } from "@/backend/supabase/server";
+import { notifyBookingUpdate } from "@/backend/notifications";
+import type { BookingStatus } from "@/shared/types";
 
 const ALLOWED: BookingStatus[] = [
   "pending",

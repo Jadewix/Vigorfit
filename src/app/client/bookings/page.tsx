@@ -1,13 +1,14 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
-import { getCurrentProfile } from "@/lib/auth";
-import { PageHeading } from "@/components/dashboard-shell";
-import { BookingList } from "@/components/booking-list";
-import { EmptyState } from "@/components/empty-state";
-import { ConfirmSubmit } from "@/components/confirm-button";
-import { CalendarIcon } from "@/components/icons";
+import { createClient } from "@/backend/supabase/server";
+import { loadNames } from "@/backend/profile-names";
+import { getCurrentProfile } from "@/backend/auth";
+import { PageHeading } from "@/frontend/components/dashboard-shell";
+import { BookingList } from "@/frontend/components/booking-list";
+import { EmptyState } from "@/frontend/components/empty-state";
+import { ConfirmSubmit } from "@/frontend/components/confirm-button";
+import { CalendarIcon } from "@/frontend/components/icons";
 import { cancelBookingAction } from "./actions";
-import type { Booking } from "@/lib/types";
+import type { Booking } from "@/shared/types";
 
 export default async function ClientBookingsPage({
   searchParams,
@@ -26,15 +27,10 @@ export default async function ClientBookingsPage({
     .order("starts_at", { ascending: false });
 
   const bookings = (data ?? []) as Booking[];
-  const ids = [...new Set(bookings.map((b) => b.coach_id))];
-  const { data: profs } =
-    ids.length > 0
-      ? await supabase.from("profiles").select("id, full_name, username").in("id", ids)
-      : { data: [] };
-  const nameMap = new Map<string, string>(
-    (profs ?? []).map((p) => [p.id, p.full_name || p.username || "Unknown"]),
+  const getName = await loadNames(
+    supabase,
+    bookings.map((b) => b.coach_id),
   );
-  const getName = (id: string) => nameMap.get(id) ?? "Unknown";
 
   return (
     <>

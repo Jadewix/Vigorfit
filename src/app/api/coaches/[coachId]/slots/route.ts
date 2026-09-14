@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/backend/supabase/server";
+import { createAdminClient } from "@/backend/supabase/admin";
 import {
   TRACKS,
   capacityFor,
@@ -8,17 +8,17 @@ import {
   isTrackDay,
   slotAvailability,
   slotTimesFor,
-} from "@/lib/booking";
+} from "@/shared/booking";
 import {
   getSubscription,
   hasFreeSessionAvailable,
-} from "@/lib/subscription";
+} from "@/backend/subscription";
 import {
   utcToZonedTime,
   weekdayOf,
   zonedDayRange,
   zonedTimeToUtc,
-} from "@/lib/timezone";
+} from "@/shared/timezone";
 
 export const dynamic = "force-dynamic";
 

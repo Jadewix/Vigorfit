@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { buttonClasses } from "@/components/ui/button";
+import { buttonClasses } from "@/frontend/ui/button";
 import { resetPasswordAction } from "./actions";
 
 /**

@@ -249,12 +249,6 @@ html {
   max-width: 62ch;
 }
 
-/* Vertical rail label. */
-.vertical {
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-}
-
 /* One orchestrated entrance, used deliberately — the hero load only. */
 @keyframes rise {
   from {

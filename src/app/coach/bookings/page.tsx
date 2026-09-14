@@ -1,20 +1,21 @@
-import { createClient } from "@/lib/supabase/server";
-import { getCurrentProfile } from "@/lib/auth";
-import { PageHeading } from "@/components/dashboard-shell";
-import { BookingList } from "@/components/booking-list";
-import { EmptyState } from "@/components/empty-state";
-import { Button } from "@/components/ui/button";
-import { ConfirmSubmit } from "@/components/confirm-button";
-import { CalendarIcon } from "@/components/icons";
-import { FilterChips, type FilterOption } from "@/components/ui/filter-chips";
+import { createClient } from "@/backend/supabase/server";
+import { loadNames } from "@/backend/profile-names";
+import { getCurrentProfile } from "@/backend/auth";
+import { PageHeading } from "@/frontend/components/dashboard-shell";
+import { BookingList } from "@/frontend/components/booking-list";
+import { EmptyState } from "@/frontend/components/empty-state";
+import { Button } from "@/frontend/ui/button";
+import { ConfirmSubmit } from "@/frontend/components/confirm-button";
+import { CalendarIcon } from "@/frontend/components/icons";
+import { FilterChips, type FilterOption } from "@/frontend/ui/filter-chips";
 import {
   filterBookings,
   filterHref,
   parseStatus,
   parseWhen,
-} from "@/lib/booking-filters";
+} from "@/shared/booking-filters";
 import { setBookingStatusAction } from "./actions";
-import type { Booking } from "@/lib/types";
+import type { Booking } from "@/shared/types";
 
 function StatusButton({
   id,
@@ -99,15 +100,10 @@ export default async function CoachBookingsPage(
 
   // Names are looked up for every booking, not just the filtered ones, so
   // switching filters doesn't re-fetch profiles.
-  const ids = [...new Set(all.map((b) => b.client_id))];
-  const { data: profs } =
-    ids.length > 0
-      ? await supabase.from("profiles").select("id, full_name, username").in("id", ids)
-      : { data: [] };
-  const nameMap = new Map<string, string>(
-    (profs ?? []).map((p) => [p.id, p.full_name || p.username || "Unknown"]),
+  const getName = await loadNames(
+    supabase,
+    all.map((b) => b.client_id),
   );
-  const getName = (id: string) => nameMap.get(id) ?? "Unknown";
 
   return (
     <>

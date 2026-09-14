@@ -1,11 +1,12 @@
-import { createClient } from "@/lib/supabase/server";
-import { getCurrentProfile } from "@/lib/auth";
-import { PageHeading } from "@/components/dashboard-shell";
-import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
+import { createClient } from "@/backend/supabase/server";
+import { getCurrentProfile } from "@/backend/auth";
+import { PageHeading } from "@/frontend/components/dashboard-shell";
+import { Card, CardBody, CardHeader, CardTitle } from "@/frontend/ui/card";
 import { CoachProfileForm } from "./coach-profile-form";
 import { CoachPhotoForm } from "./coach-photo-form";
-import { PLANS, STUDIO_HOURS_DISPLAY, SESSION_LABEL } from "@/lib/booking";
-import type { Coach } from "@/lib/types";
+import { PLANS, SESSION_LABEL } from "@/shared/booking";
+import { STUDIO_HOURS_DISPLAY } from "@/shared/studio";
+import type { Coach } from "@/shared/types";
 
 export default async function CoachProfilePage() {
   const supabase = await createClient();

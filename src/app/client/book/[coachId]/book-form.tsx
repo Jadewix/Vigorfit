@@ -2,8 +2,8 @@
 
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import { createBookingAction, type BookingState } from "./actions";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+import { Button } from "@/frontend/ui/button";
+import { Calendar } from "@/frontend/ui/calendar";
 import {
   SESSION_LABEL,
   SESSION_MINUTES,
@@ -11,7 +11,7 @@ import {
   capacityFor,
   type Plan,
   type ScheduleTrack,
-} from "@/lib/booking";
+} from "@/shared/booking";
 import { SlotCell, slotStateOf, label12h } from "./slot-cell";
 
 const initial: BookingState = {};

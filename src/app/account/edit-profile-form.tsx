@@ -2,8 +2,8 @@
 
 import { useActionState } from "react";
 import { updateMyProfileAction, type ProfileState } from "./actions";
-import { Button } from "@/components/ui/button";
-import type { Profile } from "@/lib/types";
+import { Button } from "@/frontend/ui/button";
+import type { Profile } from "@/shared/types";
 
 const initial: ProfileState = {};
 const inputClass =

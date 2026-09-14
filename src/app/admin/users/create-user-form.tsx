@@ -2,14 +2,14 @@
 
 import { useActionState, useState } from "react";
 import { createUserAction, type CreateUserState } from "./actions";
-import { Button } from "@/components/ui/button";
-import type { Role } from "@/lib/types";
+import { Button } from "@/frontend/ui/button";
+import type { Role } from "@/shared/types";
 import {
   PLANS,
   PLAN_VALUES,
   TRACKS,
   TRACK_VALUES,
-} from "@/lib/booking";
+} from "@/shared/booking";
 
 const initialState: CreateUserState = {};
 

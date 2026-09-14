@@ -248,14 +248,14 @@ async function child() {
   // Stand-ins for everything that would reach the network, the session or
   // Next's request context. Everything else is the app's real code.
   const mocks = {
-    "@/lib/auth": `
+    "@/backend/auth": `
       export async function requireRole() {}
       export async function getCurrentProfile() { return { id: ${JSON.stringify(ME)} }; }`,
-    "@/lib/supabase/server": `
+    "@/backend/supabase/server": `
       export async function createClient() { return globalThis.__checkTimezones.supabase(); }`,
-    "@/lib/supabase/admin": `
+    "@/backend/supabase/admin": `
       export function createAdminClient() { return globalThis.__checkTimezones.supabase(); }`,
-    "@/lib/whatsapp": `
+    "@/backend/whatsapp": `
       export const WA_TEMPLATES = { bookingRequest: "booking_request", bookingUpdate: "booking_update", sessionReminder: "session_reminder" };
       export async function sendWhatsAppTemplate(message) { globalThis.__checkTimezones.send(message); return { ok: true }; }`,
     "next/navigation": `
@@ -294,13 +294,13 @@ async function child() {
   const load = (file) =>
     runner.import(path.join(root, file).replaceAll("\\", "/"));
 
-  const tz = await load("src/lib/timezone.ts");
-  const utils = await load("src/lib/utils.ts");
+  const tz = await load("src/shared/timezone.ts");
+  const utils = await load("src/shared/utils.ts");
   const { createBookingAction } = await load(
     "src/app/client/book/[coachId]/actions.ts",
   );
   const { GET } = await load("src/app/api/coaches/[coachId]/slots/route.ts");
-  const { BookingList } = await load("src/components/booking-list.tsx");
+  const { BookingList } = await load("src/frontend/components/booking-list.tsx");
 
   function reset(now, bookings = []) {
     state.now = Date.parse(now);

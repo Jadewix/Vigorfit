@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/backend/supabase/server";
+import { createAdminClient } from "@/backend/supabase/admin";
 
 export type PasswordState = { error?: string; success?: string };
 export type ProfileState = { error?: string; success?: string };

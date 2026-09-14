@@ -1,19 +1,20 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { PageHeading } from "@/components/dashboard-shell";
-import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
-import { CoachAvatar } from "@/components/coach-avatar";
+import { createClient } from "@/backend/supabase/server";
+import { PageHeading } from "@/frontend/components/dashboard-shell";
+import { Card, CardBody, CardHeader, CardTitle } from "@/frontend/ui/card";
+import { CoachAvatar } from "@/frontend/components/coach-avatar";
 import { BookForm } from "./book-form";
-import { PLANS, STUDIO_HOURS_DISPLAY, TRACKS } from "@/lib/booking";
-import { getCurrentProfile } from "@/lib/auth";
+import { PLANS, TRACKS } from "@/shared/booking";
+import { STUDIO_HOURS_DISPLAY } from "@/shared/studio";
+import { getCurrentProfile } from "@/backend/auth";
 import {
   getAllowance,
   getSubscription,
   hasFreeSessionAvailable,
-} from "@/lib/subscription";
-import { zonedToday } from "@/lib/timezone";
-import { type Coach, type Profile } from "@/lib/types";
+} from "@/backend/subscription";
+import { zonedToday } from "@/shared/timezone";
+import { type Coach, type Profile } from "@/shared/types";
 
 export default async function BookCoachPage({
   params,

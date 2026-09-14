@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
-import { getCurrentProfile } from "@/lib/auth";
-import { formatInAppTimezone } from "@/lib/utils";
-import { PageHeading } from "@/components/dashboard-shell";
-import { EmptyState } from "@/components/empty-state";
-import { CoachAvatar } from "@/components/coach-avatar";
-import { UsersIcon } from "@/components/icons";
-import type { Booking, Profile } from "@/lib/types";
+import { createClient } from "@/backend/supabase/server";
+import { getCurrentProfile } from "@/backend/auth";
+import { formatInAppTimezone } from "@/shared/utils";
+import { PageHeading } from "@/frontend/components/dashboard-shell";
+import { EmptyState } from "@/frontend/components/empty-state";
+import { CoachAvatar } from "@/frontend/components/coach-avatar";
+import { UsersIcon } from "@/frontend/components/icons";
+import type { Booking, Profile } from "@/shared/types";
 
 /**
  * The coach's client roster.

@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
-import { CheckIcon, SlashIcon } from "@/components/icons";
+import { cn } from "@/shared/utils";
+import { CheckIcon, SlashIcon } from "@/frontend/components/icons";
 
 /**
  * One cell in the availability grid, and the single place the three slot

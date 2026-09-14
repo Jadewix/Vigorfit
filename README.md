@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vigorfit
 
-## Getting Started
+Booking and coaching site for a gym in Zgharta, Lebanon. Next.js App Router on
+React Server Components, Supabase for auth and data, WhatsApp for notifications,
+deployed to Cloudflare Workers via [vinext](https://www.npmjs.com/package/vinext).
 
-First, run the development server:
+## Getting started
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Environment variables and the database schema are covered in [SETUP.md](SETUP.md);
+the WhatsApp Cloud API templates are in [WHATSAPP.md](WHATSAPP.md).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project structure
 
-## Learn More
+Application code lives under `src/`, split into four layers. The dependency
+arrow only ever points downward — `shared` imports nothing above it, and
+`backend` never reaches into UI.
 
-To learn more about Next.js, take a look at the following resources:
+| Folder          | Holds                                                                                   |
+| --------------- | --------------------------------------------------------------------------------------- |
+| `src/app`       | Routing only: pages, layouts, server actions and API route handlers. Next.js owns these file names. |
+| `src/frontend`  | Everything that renders. `components/` (shared app chrome), `ui/` (primitives), `site/` (public marketing page). |
+| `src/backend`   | Server-side data access and domain logic: Supabase clients, auth, subscriptions, notifications, WhatsApp. |
+| `src/shared`    | Used by both sides: types, date/time helpers, booking rules and constants, studio details. |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`src/app` stays put because the router is a framework convention — a route is
+defined by its folder path, so pages cannot be moved out of it. Everything a
+route needs is imported from the three layers below it.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Outside `src/`:
 
-## Deploy on Vercel
+| Path            | Holds                                                                    |
+| --------------- | ------------------------------------------------------------------------ |
+| `supabase/`     | SQL migrations, applied by hand in the Supabase SQL editor.              |
+| `scripts/`      | One-off tooling: seeding, the timezone regression suite, a WhatsApp ping. |
+| `cron-worker/`  | A tiny separate Worker that holds the cron trigger and calls the app's reminders endpoint. |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Two things worth knowing
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Times are on the studio's clock, never the server's.** Workers run in UTC and
+the studio keeps Beirut time, so anything going through the server's local zone
+lands 2–3 hours off. `src/shared/timezone.ts` is the only place that converts;
+`scripts/check-timezones.mjs` runs the real booking code under four different
+server timezones and fails if any of them disagree.
+
+```bash
+node scripts/check-timezones.mjs
+```
+
+**Opening hours are written down once,** in `HOURS` in `src/shared/booking.ts`.
+The booking grid sells slots straight from it, and every hours list on the site
+is derived from it in `src/shared/studio.ts`.
+
+## Scripts
+
+| Command                  | Does                                               |
+| ------------------------ | -------------------------------------------------- |
+| `npm run dev`            | Next dev server on :3000                           |
+| `npm run build`          | Production build                                   |
+| `npm run lint`           | ESLint                                             |
+| `npm run dev:vinext`     | Dev server on the Cloudflare runtime (:3001)       |
+| `npm run build:vinext`   | Build for Cloudflare                               |
+| `npm run deploy:vinext`  | Deploy to Cloudflare Workers                       |

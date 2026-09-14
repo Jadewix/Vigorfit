@@ -1,10 +1,10 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { dashboardPathForRole, getCurrentProfile } from "@/lib/auth";
-import { usernameToEmail } from "@/lib/username";
-import type { LoginState } from "@/lib/types";
+import { createClient } from "@/backend/supabase/server";
+import { dashboardPathForRole, getCurrentProfile } from "@/backend/auth";
+import { usernameToEmail } from "@/backend/username";
+import type { LoginState } from "@/shared/types";
 
 /**
  * Single sign-in for everyone. After authenticating, users are routed by role:

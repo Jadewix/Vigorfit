@@ -1,14 +1,14 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
-import { Button, buttonClasses } from "@/components/ui/button";
-import { RoleBadge } from "@/components/ui/badge";
-import { ConfirmSubmit } from "@/components/confirm-button";
-import { PencilIcon, CloseIcon } from "@/components/icons";
-import { cn } from "@/lib/utils";
+import { Button, buttonClasses } from "@/frontend/ui/button";
+import { RoleBadge } from "@/frontend/ui/badge";
+import { ConfirmSubmit } from "@/frontend/components/confirm-button";
+import { PencilIcon, CloseIcon } from "@/frontend/components/icons";
+import { cn, initialsOf } from "@/shared/utils";
 import { ResetPasswordButton } from "./reset-password-button";
 import { updateUserAction, deleteUserAction, type UpdateUserState } from "./actions";
-import type { Role } from "@/lib/types";
+import type { Role } from "@/shared/types";
 import {
   PLANS,
   PLAN_VALUES,
@@ -16,7 +16,7 @@ import {
   TRACK_VALUES,
   type Plan,
   type ScheduleTrack,
-} from "@/lib/booking";
+} from "@/shared/booking";
 
 export type AdminUser = {
   id: string;
@@ -42,18 +42,6 @@ export type AdminUser = {
 const inputClass =
   "h-10 w-full rounded-lg border border-line-light bg-paper-panel px-3 text-sm text-ink outline-none transition-colors focus:border-forest focus:ring-2 focus:ring-forest/20";
 const labelClass = "mb-1.5 block text-sm font-medium text-ink";
-
-function initialsOf(name: string): string {
-  return (
-    name
-      .split(" ")
-      .map((s) => s[0])
-      .filter(Boolean)
-      .slice(0, 2)
-      .join("")
-      .toUpperCase() || "?"
-  );
-}
 
 const initialState: UpdateUserState = {};
 

@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { dashboardPathForRole, getCurrentProfile } from "@/lib/auth";
-import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
-import { BoltIcon } from "@/components/icons";
+import { dashboardPathForRole, getCurrentProfile } from "@/backend/auth";
+import { Card, CardBody, CardHeader, CardTitle } from "@/frontend/ui/card";
+import { BoltIcon } from "@/frontend/components/icons";
 import { ChangePasswordForm } from "./change-password-form";
 import { EditProfileForm } from "./edit-profile-form";
 

@@ -1,6 +1,6 @@
-import { requireRole } from "@/lib/auth";
-import { DashboardShell } from "@/components/dashboard-shell";
-import { CalendarIcon, GridIcon, UsersIcon } from "@/components/icons";
+import { requireRole } from "@/backend/auth";
+import { DashboardShell } from "@/frontend/components/dashboard-shell";
+import { CalendarIcon, GridIcon, UsersIcon } from "@/frontend/components/icons";
 
 export default async function AdminLayout({
   children,

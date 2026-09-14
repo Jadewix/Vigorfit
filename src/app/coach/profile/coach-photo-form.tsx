@@ -1,9 +1,9 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
-import { CoachAvatar } from "@/components/coach-avatar";
+import { createClient } from "@/backend/supabase/client";
+import { Button } from "@/frontend/ui/button";
+import { CoachAvatar } from "@/frontend/components/coach-avatar";
 import { saveCoachPhotoAction, type FormState } from "./actions";
 
 const BUCKET = "coach-photos";

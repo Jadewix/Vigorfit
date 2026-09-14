@@ -1,16 +1,20 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireRole, getCurrentProfile } from "@/lib/auth";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { isPlan, isTrack } from "@/lib/booking";
+import { requireRole, getCurrentProfile } from "@/backend/auth";
+import { createAdminClient } from "@/backend/supabase/admin";
+import { isPlan, isTrack } from "@/shared/booking";
+import {
+  isValidUsername,
+  normalizeUsername,
+  usernameToEmail,
+} from "@/backend/username";
+import type { Role } from "@/shared/types";
 
 /** "YYYY-MM-DD" as produced by <input type="date">. */
 function isDateOnly(value: string): boolean {
-  return /^d{4}-d{2}-d{2}$/.test(value);
+  return /^\d{4}-\d{2}-\d{2}$/.test(value);
 }
-import { isValidUsername, normalizeUsername, usernameToEmail } from "@/lib/username";
-import type { Role } from "@/lib/types";
 
 export type CreateUserState = { error?: string; success?: string };
 

@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireRole, getCurrentProfile } from "@/lib/auth";
-import { createClient } from "@/lib/supabase/server";
+import { requireRole, getCurrentProfile } from "@/backend/auth";
+import { createClient } from "@/backend/supabase/server";
 
 export type FormState = { error?: string; success?: string };
 

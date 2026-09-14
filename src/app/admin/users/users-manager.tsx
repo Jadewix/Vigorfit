@@ -1,10 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { SearchIcon } from "@/components/icons";
-import { cn } from "@/lib/utils";
+import { SearchIcon } from "@/frontend/components/icons";
+import { cn } from "@/shared/utils";
 import { UserCard, type AdminUser } from "./user-card";
-import type { Role } from "@/lib/types";
+import type { Role } from "@/shared/types";
 
 type Filter = "all" | Role;
 

@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireRole } from "@/lib/auth";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { requireRole } from "@/backend/auth";
+import { createAdminClient } from "@/backend/supabase/admin";
 
 /**
  * Permanently remove a booking row. Admin-only: `requireRole` is the

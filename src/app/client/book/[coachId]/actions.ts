@@ -1,10 +1,10 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { requireRole, getCurrentProfile } from "@/lib/auth";
-import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { notifyNewBooking } from "@/lib/notifications";
+import { requireRole, getCurrentProfile } from "@/backend/auth";
+import { createClient } from "@/backend/supabase/server";
+import { createAdminClient } from "@/backend/supabase/admin";
+import { notifyNewBooking } from "@/backend/notifications";
 import {
   SESSION_MINUTES,
   TRACKS,
@@ -12,13 +12,13 @@ import {
   isTrackDay,
   slotAvailability,
   slotTimesFor,
-} from "@/lib/booking";
+} from "@/shared/booking";
 import {
   getAllowance,
   getSubscription,
   hasFreeSessionAvailable,
-} from "@/lib/subscription";
-import { weekdayOf, zonedTimeToUtc } from "@/lib/timezone";
+} from "@/backend/subscription";
+import { weekdayOf, zonedTimeToUtc } from "@/shared/timezone";
 
 export type BookingState = { error?: string };
 

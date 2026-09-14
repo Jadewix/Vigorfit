@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardBody } from "@/components/ui/card";
-import { buttonClasses } from "@/components/ui/button";
-import { PlusIcon, CloseIcon } from "@/components/icons";
+import { Card, CardBody } from "@/frontend/ui/card";
+import { buttonClasses } from "@/frontend/ui/button";
+import { PlusIcon, CloseIcon } from "@/frontend/components/icons";
 import { CreateUserForm } from "./create-user-form";
 
 /**

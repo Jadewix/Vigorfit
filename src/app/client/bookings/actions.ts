@@ -1,9 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireRole } from "@/lib/auth";
-import { createClient } from "@/lib/supabase/server";
-import { notifyBookingUpdate } from "@/lib/notifications";
+import { requireRole } from "@/backend/auth";
+import { createClient } from "@/backend/supabase/server";
+import { notifyBookingUpdate } from "@/backend/notifications";
 
 /**
  * A client cancels their own booking. RLS restricts the update to bookings

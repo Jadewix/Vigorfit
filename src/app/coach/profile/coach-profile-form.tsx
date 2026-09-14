@@ -2,8 +2,8 @@
 
 import { useActionState } from "react";
 import { updateCoachProfileAction, type FormState } from "./actions";
-import { Button } from "@/components/ui/button";
-import type { Coach } from "@/lib/types";
+import { Button } from "@/frontend/ui/button";
+import type { Coach } from "@/shared/types";
 
 const initial: FormState = {};
 const inputClass =

@@ -1,11 +1,11 @@
-import { createClient } from "@/lib/supabase/server";
-import { getCurrentProfile, requireRole } from "@/lib/auth";
-import { formatInAppTimezone } from "@/lib/utils";
-import { PageHeading } from "@/components/dashboard-shell";
+import { createClient } from "@/backend/supabase/server";
+import { getCurrentProfile, requireRole } from "@/backend/auth";
+import { formatInAppTimezone } from "@/shared/utils";
+import { PageHeading } from "@/frontend/components/dashboard-shell";
 import { CreateAccountPanel } from "./create-account-panel";
 import { UsersManager } from "./users-manager";
 import type { AdminUser } from "./user-card";
-import type { Coach, Profile, Role } from "@/lib/types";
+import type { Coach, Profile, Role } from "@/shared/types";
 
 /**
  * `?role=coach` seeds the roster's filter so the Overview stat cards can point

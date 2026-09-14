@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { changePasswordAction, type PasswordState } from "./actions";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/frontend/ui/button";
 
 const initial: PasswordState = {};
 const inputClass =
