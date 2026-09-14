@@ -1,0 +1,219 @@
+<!doctype html>
+<!--
+  Source for public/hero-dumbbell.webp — the hero's weight.
+
+  The model in source/ is the object; this page is only the camera and the
+  lights. It loads the FBX, poses it, and renders one frame to a transparent
+  WebP that ships as a plain image. The site never loads three.js.
+
+  This one needs a server, unlike the render it replaced — FBXLoader fetches,
+  and fetch is blocked on file:// URLs. From the repo root:
+
+      npx serve scripts/hero-dumbbell
+
+  then open the URL it prints and press the download button. Drop the result
+  in public/. If you change SIZE, update HERO_OBJECT in
+  src/frontend/site/photos.ts to match.
+
+  Two things the olive ground dictates, both found the hard way:
+
+  - There is a dead zone. On phones HeroObject draws the layer at 0.22
+    opacity over #16281b, so anything at roughly the ground's own luminance
+    disappears into it. The object has to sit clearly below that (a dark
+    silhouette, which is what this model does) or clearly above it (bright
+    metal). Lifting this texture to a mid grey is the one thing that does not
+    work — see LIFT below.
+  - Metal only reads as metal against a mostly black environment with
+    hard-edged bright panels. A smooth gradient environment plus strong
+    directional lights renders as matte clay.
+-->
+<meta charset="utf-8" />
+<title>hero dumbbell — render source</title>
+<style>
+  html,body{margin:0;background:#16281b;display:grid;place-items:center;height:100%}
+  canvas{width:min(70vmin,520px);height:min(70vmin,520px)}
+  button{position:fixed;bottom:24px;left:50%;translate:-50% 0;font:inherit;
+    padding:10px 18px;border:1px solid #97b08c;background:#1e3324;color:#ecefe8;cursor:pointer}
+  #log{position:fixed;top:8px;left:8px;color:#7e9476;font:12px monospace;white-space:pre}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/fflate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
+<script>
+  const SIZE = 1024;
+
+  /*
+    Texture lift, as brightness/contrast applied to the scan before it becomes
+    the map. The scan is nearly black; a little lift keeps the cast-iron
+    grain legible without pushing the object into the dead zone described
+    above. Values near 2.5 wash it out into pale concrete — don't.
+  */
+  const LIFT = { brightness: 1.18, contrast: 1.14 };
+
+  /* The three-quarter pose, applied after the bar is squared to the X axis. */
+  const POSE = { x: 0.1, y: 0.42, z: -0.3 };
+
+  const log = m => { const el = document.getElementById("log"); if (el) el.textContent += m + "\n"; };
+
+  const renderer = new THREE.WebGLRenderer({
+    antialias: true, alpha: true, preserveDrawingBuffer: true,
+  });
+  renderer.setPixelRatio(1);
+  renderer.setSize(SIZE, SIZE, false);
+  renderer.setClearAlpha(0);
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.3;
+  addEventListener("DOMContentLoaded", () =>
+    document.body.appendChild(renderer.domElement));
+
+  const scene = new THREE.Scene();
+
+  /* ── Environment: a dark studio with hard-edged panels to reflect. ── */
+  function envTexture() {
+    const c = document.createElement("canvas");
+    c.width = 1024; c.height = 512;
+    const g = c.getContext("2d");
+
+    const sky = g.createLinearGradient(0, 0, 0, 512);
+    sky.addColorStop(0.00, "#2b332a");
+    sky.addColorStop(0.48, "#131a13");
+    sky.addColorStop(0.52, "#0b100c"); // horizon break
+    sky.addColorStop(1.00, "#040604"); // floor
+    g.fillStyle = sky;
+    g.fillRect(0, 0, 1024, 512);
+
+    const box = (x, y, w, h, col) => {
+      g.save(); g.filter = "blur(6px)"; g.fillStyle = col;
+      g.fillRect(x, y, w, h); g.restore();
+    };
+    box(150, 40, 420, 120, "#ffffff");   // key panel, upper left
+    box(700, 70, 120, 300, "#eef3e8");   // tall side panel
+    box(880, 150, 46, 190, "#97b08c");   // sage kicker — the brand colour
+    box(0, 250, 1024, 8, "#7f8f78");     // horizon line
+
+    const t = new THREE.CanvasTexture(c);
+    t.mapping = THREE.EquirectangularReflectionMapping;
+    t.encoding = THREE.sRGBEncoding;
+    return t;
+  }
+
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  pmrem.compileEquirectangularShader();
+  scene.environment = pmrem.fromEquirectangular(envTexture()).texture;
+
+  /* The rim is the strongest light: on an object this dark it is the edge
+     highlights, not the body, that survive the hero's low opacity. */
+  const key = new THREE.DirectionalLight(0xf6f9f0, 3.6);
+  key.position.set(-3.5, 5, 4);
+  scene.add(key);
+  const rim = new THREE.DirectionalLight(0x97b08c, 6.0);
+  rim.position.set(4, -2.5, -3);
+  scene.add(rim);
+  const fill = new THREE.DirectionalLight(0x9fb597, 0.7);
+  fill.position.set(2, 1, 5);
+  scene.add(fill);
+
+  const cam = new THREE.PerspectiveCamera(26, 1, 0.1, 1000);
+  cam.position.set(0, 0.55, 10.4);
+  cam.lookAt(0, 0, 0);
+
+  /*
+    The scan, lifted. Drawing it through a canvas filter rather than tweaking
+    material.color, because color multiplies the map and cannot brighten it —
+    white is already the identity.
+  */
+  function liftedTexture(img) {
+    const c = document.createElement("canvas");
+    c.width = img.width; c.height = img.height;
+    const g = c.getContext("2d");
+    g.filter = `brightness(${LIFT.brightness}) contrast(${LIFT.contrast})`;
+    g.drawImage(img, 0, 0);
+    const t = new THREE.CanvasTexture(c);
+    t.encoding = THREE.sRGBEncoding;
+    t.flipY = false;                      // FBX UVs are already bottom-up
+    return t;
+  }
+
+  /*
+    The bar's axis in model space.
+
+    The FBX arrives tumbled — its axis is roughly (0.23, -0.69, 0.69), which
+    is not any of the cardinal axes and is not worth hand-tuning. Recovering
+    it by power iteration on the vertex covariance finds the long axis of the
+    cloud, which for a dumbbell is unambiguously the bar. Do this rather than
+    guessing an Euler triple: it stays correct if the model is ever re-exported
+    from a different package with different axis conventions.
+  */
+  function barAxis(root) {
+    const pts = [];
+    root.updateWorldMatrix(true, true);
+    root.traverse(n => {
+      if (!n.isMesh) return;
+      const p = n.geometry.attributes.position;
+      for (let i = 0; i < p.count; i += 7) {
+        pts.push(new THREE.Vector3().fromBufferAttribute(p, i).applyMatrix4(n.matrixWorld));
+      }
+    });
+    const centre = pts
+      .reduce((a, v) => a.add(v), new THREE.Vector3())
+      .multiplyScalar(1 / pts.length);
+    const dev = pts.map(v => v.clone().sub(centre));
+
+    let axis = new THREE.Vector3(1, 0.3, 0.2).normalize();
+    for (let i = 0; i < 40; i++) {
+      const next = new THREE.Vector3();
+      for (const v of dev) next.addScaledVector(v, v.dot(axis));
+      axis.copy(next.normalize());
+    }
+    return axis;
+  }
+
+  new THREE.TextureLoader().load("textures/dumbbell.png", image => {
+    const map = liftedTexture(image.image);
+
+    new THREE.FBXLoader().load("source/dumbbells.fbx", obj => {
+      obj.traverse(n => {
+        if (!n.isMesh) return;
+        n.material = new THREE.MeshStandardMaterial({
+          map, metalness: 0.62, roughness: 0.42, envMapIntensity: 2.6,
+        });
+      });
+
+      // Normalise: centre on the origin, longest side to 4.6 units.
+      const box = new THREE.Box3().setFromObject(obj);
+      const size = box.getSize(new THREE.Vector3());
+      const centre = box.getCenter(new THREE.Vector3());
+      const scale = 4.6 / Math.max(size.x, size.y, size.z);
+      obj.scale.setScalar(scale);
+      obj.position.copy(centre).multiplyScalar(-scale);
+
+      // Square the bar to X in its own group, then pose the group. Two levels,
+      // so the pose stays readable as three angles instead of a quaternion.
+      const align = new THREE.Group();
+      align.add(obj);
+      align.quaternion.setFromUnitVectors(barAxis(obj), new THREE.Vector3(1, 0, 0));
+
+      const holder = new THREE.Group();
+      holder.add(align);
+      holder.rotation.set(POSE.x, POSE.y, POSE.z);
+      scene.add(holder);
+
+      renderer.render(scene, cam);
+      log("rendered");
+    }, undefined, e => log("FBX failed: " + e));
+  }, undefined, () => log("texture failed"));
+
+  addEventListener("DOMContentLoaded", () => {
+    const b = document.createElement("button");
+    b.textContent = "Download hero-dumbbell.webp";
+    b.onclick = () => {
+      const a = document.createElement("a");
+      a.download = "hero-dumbbell.webp";
+      a.href = renderer.domElement.toDataURL("image/webp", 0.92);
+      a.click();
+    };
+    document.body.appendChild(b);
+  });
+</script>
+<div id="log"></div>
