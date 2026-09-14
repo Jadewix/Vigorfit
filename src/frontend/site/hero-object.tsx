@@ -12,12 +12,18 @@ import { useImageFallback } from "@/frontend/site/use-image-fallback";
  * column starting past where the text column ends (`lg:left-[62%]`), and comes
  * up to full strength. Both treatments come from `.hero-object` in globals.css.
  *
- * Motion. The scroll handler writes exactly one number — `--par`, 0 at the top
- * of the page and 1 once the hero has scrolled away — and every visible effect
- * is derived from it in CSS (`.parallax` for the drift, `.hero-object` for the
- * fade). That split is deliberate: `prefers-reduced-motion` switches the whole
- * effect off in the stylesheet, and this component needs no branch for it
- * beyond declining to start the listener.
+ * Motion, in two kinds. The scroll handler writes exactly one number — `--par`,
+ * 0 at the top of the page and 1 once the hero has scrolled away — and every
+ * scroll-driven effect is derived from it in CSS (`.parallax` for the drift,
+ * `.hero-object` for the fade, `--ho-turn` here for the turn). On top of that
+ * the weight keeps a slow idle float of its own, which is a keyframe animation
+ * and knows nothing about scrolling (`.hero-weight` in globals.css).
+ *
+ * The two never share an element: the float owns `transform` on the weight, the
+ * scroll turn owns `transform` on the box around it. Putting both on one
+ * element would let the animation silently win. `prefers-reduced-motion`
+ * switches all of it off in the stylesheet, so this component needs no branch
+ * for it beyond declining to start the listener.
  *
  * Asset. `src` is expected to be a *transparent* PNG/WebP cut-out — the bloom
  * and contact shadow below only seat the object on the olive if the file has
@@ -102,6 +108,10 @@ export function HeroObject({
         ["--ho-x" as string]: "0%",
         ["--ho-y" as string]: "0%",
         ["--ho-scale" as string]: "1",
+        // How far the weight turns across the hero. Derived from `--par` like
+        // every other scroll effect, so it stops with them under reduced
+        // motion without this component testing for it twice.
+        ["--ho-turn" as string]: "calc(var(--par, 0) * -8deg)",
         ...style,
       }}
     >
@@ -119,7 +129,7 @@ export function HeroObject({
         style={{
           aspectRatio: showImage && width && height ? `${width} / ${height}` : "1 / 1",
           transform:
-            "translate(var(--ho-x), var(--ho-y)) scale(var(--ho-scale))",
+            "translate(var(--ho-x), var(--ho-y)) scale(var(--ho-scale)) rotate(var(--ho-turn))",
         }}
       >
         {/*
@@ -152,7 +162,7 @@ export function HeroObject({
             width={width}
             height={height}
             decoding="async"
-            className="absolute inset-0 h-full w-full object-contain"
+            className="hero-weight absolute inset-0 h-full w-full object-contain"
             {...image.props}
           />
         ) : (
@@ -165,7 +175,7 @@ export function HeroObject({
           this behind it, and as a sticker without it.
         */}
         <div
-          className="absolute bottom-[6%] left-1/2 h-[7%] w-[62%] -translate-x-1/2 rounded-[50%] blur-md"
+          className="hero-weight-shadow absolute bottom-[6%] left-1/2 h-[7%] w-[62%] -translate-x-1/2 rounded-[50%] blur-md"
           style={{
             background:
               "radial-gradient(ellipse at center, rgba(11,13,11,0.55), transparent 72%)",
@@ -193,7 +203,7 @@ function PlatePlaceholder() {
   ];
 
   return (
-    <div className="absolute inset-0">
+    <div className="hero-weight absolute inset-0">
       {rings.map(([size, alpha]) => (
         <div
           key={size}

@@ -174,11 +174,18 @@
   /* ── The dumbbell ── */
   const bell = new THREE.Group();
 
-  // Handle: a plain shaft with a knurled grip over its middle.
+  /*
+    Handle: a plain shaft with a knurled grip sleeve over its middle.
+
+    Do not add a second rotation to the grip. `cyl` has already laid the
+    cylinder along X with rotation.z; a further rotation.y is composed on top
+    of that (Euler XYZ), which swings the sleeve round to point at the camera
+    and puts its flat end cap through the middle of the bar as a disc. The
+    knurl needs no help — CylinderGeometry already wraps U around the
+    circumference, which is the direction the map repeats in.
+  */
   bell.add(cyl(0.2, 3.9, steel));
-  const g1 = cyl(0.215, 1.9, grip);
-  g1.rotation.y = Math.PI / 2;             // run the knurl around the shaft
-  bell.add(g1);
+  bell.add(cyl(0.215, 1.9, grip));
 
   // Per side: inner collar, three plates stepping down, end nut.
   for (const s of [1, -1]) {

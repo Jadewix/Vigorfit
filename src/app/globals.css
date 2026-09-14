@@ -318,6 +318,48 @@ html {
 }
 
 /*
+  Hero weight — the object's own motion, in two parts that must not fight.
+
+  The idle float lives here on the weight itself; the scroll drift and the
+  scroll turn live on the layers above it (`.parallax`, and `--ho-turn` on the
+  placement box). Splitting them across elements is what lets a keyframe
+  animation and a scroll-driven transform both run: one `transform` per
+  element, so neither has to win.
+
+  The shadow deliberately animates the *opposite* way and on `opacity`/`scale`
+  rather than `transform` — it has a Tailwind translate holding it centred,
+  and standalone `scale` composes with that instead of replacing it. A weight
+  that rises while its contact shadow tightens reads as lifting off the page;
+  a shadow that floats with it reads as a sticker.
+*/
+@keyframes hero-float {
+  0%,
+  100% {
+    transform: translate3d(0, 1.4%, 0) rotate(-0.7deg);
+  }
+  50% {
+    transform: translate3d(0, -1.8%, 0) rotate(0.8deg);
+  }
+}
+@keyframes hero-float-shadow {
+  0%,
+  100% {
+    opacity: 1;
+    scale: 1 1;
+  }
+  50% {
+    opacity: 0.55;
+    scale: 0.88 0.8;
+  }
+}
+.hero-weight {
+  animation: hero-float 8s ease-in-out infinite;
+}
+.hero-weight-shadow {
+  animation: hero-float-shadow 8s ease-in-out infinite;
+}
+
+/*
   Photographs.
 
   Hard-edged, never rounded: the whole system is built from hairlines and
@@ -401,6 +443,14 @@ html {
   .parallax {
     transform: none;
     will-change: auto;
+  }
+  /*
+    The float stops outright. The scroll turn needs no rule: the handler never
+    starts under reduced motion, so `--par` stays 0 and `--ho-turn` is 0deg.
+  */
+  .hero-weight,
+  .hero-weight-shadow {
+    animation: none;
   }
 }
 
