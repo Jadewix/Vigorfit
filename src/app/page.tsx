@@ -271,7 +271,7 @@ export default async function Home() {
                   brighter than the sentence around it, because once the whole
                   line is one colour that weight difference is the only thing
                   marking it as a link. Brighter within the burgundy, not on
-                  --red-lift: that is the "closed" red, and a link wearing it
+                  --wine-status: that is the site's "closed" red, and a link wearing it
                   would read as a status.
                 */}
                 <Link href="/login" className="text-wine-lift hover:underline">
@@ -479,7 +479,7 @@ export default async function Home() {
                           className={
                             hours
                               ? "tabular-nums text-bone"
-                              : "tabular-nums text-red-lift"
+                              : "tabular-nums text-wine-status"
                           }
                         >
                           {hours

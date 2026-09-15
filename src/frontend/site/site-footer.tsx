@@ -133,7 +133,7 @@ export function SiteFooter() {
             {STUDIO_HOURS.map(({ label, hours }) => (
               <li key={label} className="whitespace-nowrap">
                 {label}{" "}
-                <span className={hours ? "text-bone" : "text-red-lift"}>
+                <span className={hours ? "text-bone" : "text-wine-status"}>
                   {hours
                     ? `${formatClock(hours.open)}–${formatClock(hours.close)}`
                     : "Closed"}

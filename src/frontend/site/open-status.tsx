@@ -37,7 +37,7 @@ export function OpenStatus({
     <span
       className={cn(
         "inline-flex items-center gap-2",
-        status.open ? "text-sage" : "text-red-lift",
+        status.open ? "text-sage" : "text-wine-status",
         className,
       )}
     >
@@ -52,7 +52,7 @@ export function OpenStatus({
           "h-1.5 w-1.5 shrink-0 rounded-full border",
           status.open
             ? "border-sage bg-sage"
-            : "border-red-lift bg-transparent",
+            : "border-wine-status bg-transparent",
         )}
       />
       {status.text}
