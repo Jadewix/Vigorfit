@@ -106,6 +106,10 @@ export const viewport: Viewport = { themeColor: "#16281b" };
  * One row of the hero's ledger: term on the left, value on the right, the gap
  * between them left open. All of the alignment comes from CSS (`.ledger-row`),
  * so the markup stays a plain definition list.
+ *
+ * The terms are wine rather than sage. Note this is the hero's ledger only —
+ * the opening hours in the Contact band use `.ledger-row` directly and keep
+ * the sage terms, so the red stays one band's device.
  */
 function LedgerRow({
   term,
@@ -116,7 +120,7 @@ function LedgerRow({
 }) {
   return (
     <div className="ledger-row">
-      <dt className="tag text-sage-dim">{term}</dt>
+      <dt className="tag text-wine">{term}</dt>
       <dd className="text-bone">{children}</dd>
     </div>
   );
@@ -258,11 +262,17 @@ export default async function Home() {
             </div>
             {!isClient && (
               <p
-                className="load-rise mt-4 text-xs text-sage-dim"
+                className="load-rise mt-4 text-xs text-wine"
                 style={{ animationDelay: "480ms" }}
               >
                 Already training with us?{" "}
-                <Link href="/login" className="text-sage hover:underline">
+                {/*
+                  The link keeps the underline on hover and is set a step
+                  brighter than the sentence around it, because once the whole
+                  line is one colour that weight difference is the only thing
+                  marking it as a link.
+                */}
+                <Link href="/login" className="text-red-lift hover:underline">
                   Log in
                 </Link>
               </p>

@@ -51,6 +51,8 @@
 
     --oxblood on --ground   1.42:1  FAIL — fills and borders ONLY, never text
     --red-lift on --ground  5.78:1  PASS — every red glyph uses this
+    --wine on --ground      4.71:1  PASS — the hero's labels, and the floor:
+                                     no red darker than this reads on olive
     --sage on --paper       1.94:1  FAIL — never sage text on the light surface
     --forest on --paper     6.54:1  PASS — green text/CTA on the light surface
 
@@ -75,6 +77,14 @@
 
   --oxblood: #7b0f14; /* red fills and borders only */
   --red-lift: #e87f87; /* red text and icons on dark */
+  /*
+    Wine — the hero's label colour. It is as dark as a red can be set on this
+    ground and still be read: --oxblood, the actual burgundy, measures 1.42:1
+    here and is invisible as text, and everything down to #d2666d lands under
+    the 4.5:1 floor. This is the deepest tone that clears it, which is why the
+    hero's labels read as wine rather than as a true burgundy.
+  */
+  --wine: #d76e75;
 
   /* ── Light paper surfaces ────────────────────────────── */
   --paper: #e8eae2;
@@ -109,6 +119,7 @@
 
   --color-oxblood: var(--oxblood);
   --color-red-lift: var(--red-lift);
+  --color-wine: var(--wine);
 
   --color-paper: var(--paper);
   --color-paper-panel: var(--paper-panel);
