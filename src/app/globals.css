@@ -51,8 +51,9 @@
 
     --oxblood on --ground   1.42:1  FAIL — fills and borders ONLY, never text
     --red-lift on --ground  5.78:1  PASS — every red glyph uses this
-    --wine on --ground      4.71:1  PASS — the hero's labels, and the floor:
-                                     no red darker than this reads on olive
+    --wine on --ground      2.34:1  FAIL — knowingly. The hero's labels are
+                                     burgundy by instruction; see the token.
+    --wine-lift on --ground 3.72:1  FAIL for text — the sign-in link only
     --sage on --paper       1.94:1  FAIL — never sage text on the light surface
     --forest on --paper     6.54:1  PASS — green text/CTA on the light surface
 
@@ -78,13 +79,27 @@
   --oxblood: #7b0f14; /* red fills and borders only */
   --red-lift: #e87f87; /* red text and icons on dark */
   /*
-    Wine — the hero's label colour. It is as dark as a red can be set on this
-    ground and still be read: --oxblood, the actual burgundy, measures 1.42:1
-    here and is invisible as text, and everything down to #d2666d lands under
-    the 4.5:1 floor. This is the deepest tone that clears it, which is why the
-    hero's labels read as wine rather than as a true burgundy.
+    Burgundy — the hero's labels and its sign-in line.
+
+    This is a deliberate exception to the contrast rules above, made on the
+    user's instruction after the legible alternative was tried and rejected as
+    not burgundy enough. It measures 2.34:1 on --ground, under the 4.5:1 that
+    small text is meant to clear, so these labels are dimmer than everything
+    else in the hero. That is the trade: red goes dark enough to read as
+    burgundy, or it stays light enough to clear AA, and on this ground it
+    cannot do both. --oxblood, one step darker again, is 1.42:1 and genuinely
+    invisible — that remains the hard floor.
+
+    The second reason it is this dark is separation. --red-lift is the studio's
+    "closed" red and sits 2.46:1 away from this, which is what keeps a label
+    from being mistaken for a status. Lightening the burgundy closes that gap
+    fast: by #c85862 the two are only 1.55:1 apart.
+
+    Do not reuse these for status. Red still means blocked; these two mean
+    nothing but themselves, and only in the hero.
   */
-  --wine: #d76e75;
+  --wine: #a63341; /* hero labels and the sign-in sentence */
+  --wine-lift: #c85862; /* the sign-in link — brighter, still not --red-lift */
 
   /* ── Light paper surfaces ────────────────────────────── */
   --paper: #e8eae2;
@@ -120,6 +135,7 @@
   --color-oxblood: var(--oxblood);
   --color-red-lift: var(--red-lift);
   --color-wine: var(--wine);
+  --color-wine-lift: var(--wine-lift);
 
   --color-paper: var(--paper);
   --color-paper-panel: var(--paper-panel);

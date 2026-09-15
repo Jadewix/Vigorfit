@@ -270,9 +270,11 @@ export default async function Home() {
                   The link keeps the underline on hover and is set a step
                   brighter than the sentence around it, because once the whole
                   line is one colour that weight difference is the only thing
-                  marking it as a link.
+                  marking it as a link. Brighter within the burgundy, not on
+                  --red-lift: that is the "closed" red, and a link wearing it
+                  would read as a status.
                 */}
-                <Link href="/login" className="text-red-lift hover:underline">
+                <Link href="/login" className="text-wine-lift hover:underline">
                   Log in
                 </Link>
               </p>
