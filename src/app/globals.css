@@ -53,6 +53,9 @@
     --red-lift on --ground  5.78:1  PASS — every red glyph uses this
     --sage on --paper       1.94:1  FAIL — never sage text on the light surface
     --forest on --paper     6.54:1  PASS — green text/CTA on the light surface
+
+  The landing page's one light band runs a step greyer than `--paper` and
+  redefines these tokens locally; its own figures are noted at `.brand-light`.
 */
 :root {
   /* ── Dark olive surfaces ─────────────────────────────── */
@@ -142,7 +145,35 @@ body {
   this file), which is what lets Button, Card and StatCard cross into the bone
   band unmodified.
 */
+/*
+  The band runs a step greyer than the dashboards do. It is the only light
+  surface a visitor sees, sitting between two olive bands, and at the
+  dashboards' near-white it read as a hole punched in the page rather than as
+  one of the grounds the page alternates between.
+
+  The three tokens are redefined *here* rather than at `:root`, so the change
+  stops at this band: /coach, /admin and the account forms keep their paper.
+  That works because `@theme inline` substitutes the theme variables at the
+  use site, so `bg-paper-panel` and `border-line-light` inside the band resolve
+  against these values and the same utilities elsewhere resolve against the
+  originals — no per-call-site overrides anywhere.
+
+  All three move together by necessity. Lifting the ground alone would leave
+  `--line-light` at 1.03:1 against it, which is not a hairline but nothing at
+  all, and the cards at their old near-white would then read as white chips on
+  grey rather than as a surface raised off it.
+
+  Contrast against the new ground, same standard as the palette above:
+
+    --ink        on band  13.25:1  PASS
+    --ink-muted  on band   5.44:1  PASS
+    --forest     on band   5.40:1  PASS — green text and the primary CTA
+    --forest     on card   6.19:1  PASS
+*/
 .brand-light {
+  --paper: #d3d6cd; /* the band's ground */
+  --paper-panel: #e2e4dc; /* cards raised off it — the step strip */
+  --line-light: #b6bcac; /* hairlines, dark enough to show on both */
   background: var(--paper);
   color: var(--ink);
 }
