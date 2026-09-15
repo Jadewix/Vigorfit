@@ -163,17 +163,26 @@ body {
   all, and the cards at their old near-white would then read as white chips on
   grey rather than as a surface raised off it.
 
-  Contrast against the new ground, same standard as the palette above:
+  The three keep fixed relationships to each other, so darkening the band is a
+  matter of moving all three together: the card sits 1.18:1 above the ground
+  and the hairline 1.34:1 below it. Those two ratios are the band's look —
+  change the ground alone and it comes apart.
 
-    --ink        on band  13.25:1  PASS
-    --ink-muted  on band   5.44:1  PASS
-    --forest     on band   5.40:1  PASS — green text and the primary CTA
-    --forest     on card   6.19:1  PASS
+  Contrast against the ground, same standard as the palette above:
+
+    --ink        on band  12.24:1  PASS
+    --ink-muted  on band   5.02:1  PASS
+    --forest     on band   4.98:1  PASS — green text and the primary CTA
+    --forest     on card   5.89:1  PASS
+
+  --forest is the floor here, and it is what limits how much further this can
+  go: another step of the same size puts it under 4.5:1 and the green CTA
+  stops passing AA.
 */
 .brand-light {
-  --paper: #d3d6cd; /* the band's ground */
-  --paper-panel: #e2e4dc; /* cards raised off it — the step strip */
-  --line-light: #b6bcac; /* hairlines, dark enough to show on both */
+  --paper: #cbcec5; /* the band's ground */
+  --paper-panel: #dcdfd6; /* cards raised off it — the step strip */
+  --line-light: #aeb4a4; /* hairlines, dark enough to show on both */
   background: var(--paper);
   color: var(--ink);
 }
