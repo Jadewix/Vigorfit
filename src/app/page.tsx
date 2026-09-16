@@ -172,9 +172,14 @@ export const viewport: Viewport = { themeColor: "#16281b" };
  * between them left open. All of the alignment comes from CSS (`.ledger-row`),
  * so the markup stays a plain definition list.
  *
- * The terms are burgundy rather than sage. Note this is the hero's ledger
- * only — the opening hours in the Contact band use `.ledger-row` directly and
- * keep their sage terms, so the red stays one band's device.
+ * The terms are sage. They spent a while in red — first wine, then the
+ * accent — and at 3.19:1 on this ground they were the dimmest text in the
+ * hero while also being the part that names what every figure beside them
+ * means. Sage reads them at 6.58:1.
+ *
+ * Red has not left the hero: the mark in the bar above it, the booking
+ * button and the sign-in line all still carry it. It is no longer doing the
+ * one job it was worst at.
  */
 function LedgerRow({
   term,
@@ -185,7 +190,7 @@ function LedgerRow({
 }) {
   return (
     <div className="ledger-row">
-      <dt className="tag text-brick">{term}</dt>
+      <dt className="tag text-sage">{term}</dt>
       <dd className="text-bone">{children}</dd>
     </div>
   );
