@@ -488,6 +488,28 @@ html {
 }
 
 /*
+  Hours the studio does not sell, in the coach's week grid.
+
+  A flat fill cannot carry this. The only tones available between the grid's
+  own panel colour and its hairlines sit about 1.06:1 apart, which reads as a
+  rendering artefact rather than as "we are shut" — measured, --paper on
+  --paper-panel is exactly that, and it is what this replaced.
+
+  Hatching is the calendar convention for an unavailable hour, and drawing it
+  in --line-light keeps it in the same hairline family as the rules boxing
+  the cells in, so it reads as part of the ruling rather than as a new
+  texture on the page.
+*/
+.hours-closed {
+  background-color: var(--paper);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0 5px,
+    var(--line-light) 5px 6px
+  );
+}
+
+/*
   Dashboard headings. On the light paper surface these stay quiet and
   readable; inside the dark client area they take the same display treatment
   as the marketing sections, so the booking flow reads as one piece with the

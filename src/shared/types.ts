@@ -65,5 +65,9 @@ export interface Booking {
   /** The subscription this session was booked under, snapshotted at
    *  booking time so a later plan change doesn't rewrite history. */
   plan?: Plan | null;
+  /** The client's one free first session. The booking action writes it; rows
+   *  made before the column existed simply lack it, so read it as falsy
+   *  rather than as a recorded "not a trial". */
+  is_free?: boolean | null;
   created_at: string;
 }

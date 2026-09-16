@@ -45,6 +45,23 @@ export function CalendarIcon(props: IconProps) {
   );
 }
 
+/**
+ * A week laid out in columns, for the coach's schedule.
+ *
+ * Deliberately not CalendarIcon with a tweak: "My sessions" already owns that
+ * glyph three rows away in the same sidebar, and two calendars side by side
+ * make a list you have to read rather than scan. The ruled columns say "a
+ * week at a glance" where the other says "a list of dates".
+ */
+export function WeekIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <rect x="3" y="4" width="18" height="17" rx="2" />
+      <path d="M3 9h18M9 9v12M15 9v12" />
+    </svg>
+  );
+}
+
 /** Map pin, for the studio's address wherever it links out to Maps. */
 export function MapPinIcon(props: IconProps) {
   return (

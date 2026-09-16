@@ -207,6 +207,22 @@ export function daysUntil(date: string, from: string): number | null {
 }
 
 /**
+ * Monday's date ("YYYY-MM-DD") of the week containing `date`. Null if `date`
+ * is malformed.
+ *
+ * Weeks run Monday to Sunday throughout the app — the opening-hours sign, the
+ * weekly session allowance and the coach's schedule all agree on that — while
+ * the underlying day numbering starts at Sunday. That mismatch is the whole
+ * subtlety here, and it is why this is one function rather than a line
+ * repeated at each call site.
+ */
+export function weekStartOf(date: string): string | null {
+  const weekday = weekdayOf(date); // 0 = Sunday
+  // Sunday is the last day of the week here, so it counts back six days.
+  return weekday < 0 ? null : shiftDate(date, -((weekday + 6) % 7));
+}
+
+/**
  * The calendar week (Monday 00:00 up to the next Monday 00:00, studio clock)
  * containing `date`, as a half-open [start, end) instant range. Null if
  * `date` is malformed.
@@ -215,10 +231,7 @@ export function zonedWeekRange(
   date: string,
   timeZone: string = APP_TIMEZONE,
 ): { start: Date; end: Date } | null {
-  const weekday = weekdayOf(date); // 0 = Sunday
-  if (weekday < 0) return null;
-  // Sunday is the last day of the week here, so it counts back six days.
-  const monday = shiftDate(date, -((weekday + 6) % 7));
+  const monday = weekStartOf(date);
   if (!monday) return null;
   const nextMonday = shiftDate(monday, 7)!;
   return {
