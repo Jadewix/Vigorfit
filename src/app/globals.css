@@ -63,9 +63,9 @@
     --red-lift on --ground  5.78:1  PASS — every red glyph in the booking app
     --sage on --paper       1.94:1  FAIL — never sage text on the light surface
     --forest on --paper     6.54:1  PASS — green text/CTA on the light surface
-    --oxblood on --paper    6.86:1  PASS — the step numerals on the bone band
+    --oxblood on --paper    6.38:1  PASS — the step numerals on the bone band
 
-  The landing page's one light band runs a step greyer than `--paper` and
+  The landing page's one light band runs two steps greyer than `--paper` and
   redefines these tokens locally; its own figures are noted at `.brand-light`.
 */
 :root {
@@ -183,10 +183,12 @@ body {
   band unmodified.
 */
 /*
-  The band runs a step greyer than the dashboards do. It is the only light
-  surface a visitor sees, sitting between two olive bands, and at the
+  The band runs two steps greyer than the dashboards do. It is the only
+  light surface a visitor sees, sitting between two olive bands, and at the
   dashboards' near-white it read as a hole punched in the page rather than as
-  one of the grounds the page alternates between.
+  one of the grounds the page alternates between. One step down still read as
+  white on a phone, where the step strip fills the screen and there is no
+  olive left in view to measure it against; this is the second.
 
   The three tokens are redefined *here* rather than at `:root`, so the change
   stops at this band: /coach, /admin and the account forms keep their paper.
@@ -201,25 +203,27 @@ body {
   grey rather than as a surface raised off it.
 
   The three keep fixed relationships to each other, so darkening the band is a
-  matter of moving all three together: the card sits 1.18:1 above the ground
-  and the hairline 1.34:1 below it. Those two ratios are the band's look —
+  matter of moving all three together: the card sits 1.16:1 above the ground
+  and the hairline 1.35:1 below it. Those two ratios are the band's look —
   change the ground alone and it comes apart.
 
   Contrast against the ground, same standard as the palette above:
 
-    --ink        on band  12.24:1  PASS
-    --ink-muted  on band   5.02:1  PASS
-    --forest     on band   4.98:1  PASS — green text and the primary CTA
-    --forest     on card   5.89:1  PASS
+    --ink        on band  11.38:1  PASS
+    --ink-muted  on band   4.67:1  PASS — the band's body copy
+    --forest     on band   4.63:1  PASS — hairline hover, focus rings
+    --forest     on card   5.39:1  PASS
 
-  --forest is the floor here, and it is what limits how much further this can
-  go: another step of the same size puts it under 4.5:1 and the green CTA
-  stops passing AA.
+  This second step has all but spent the band's headroom. --ink-muted and
+  --forest are the floor, a tenth apart at 4.6:1, and a third step of the same
+  size puts both under 4.5:1 — at which point the paragraph under the heading,
+  not just a hover colour, stops passing AA. Greyer than this means lightening
+  the type, not darkening the ground.
 */
 .brand-light {
-  --paper: #cbcec5; /* the band's ground */
-  --paper-panel: #dcdfd6; /* cards raised off it — the step strip */
-  --line-light: #aeb4a4; /* hairlines, dark enough to show on both */
+  --paper: #c4c7bd; /* the band's ground */
+  --paper-panel: #d3d6cc; /* cards raised off it — the step strip */
+  --line-light: #a7ad9c; /* hairlines, dark enough to show on both */
   background: var(--paper);
   color: var(--ink);
 }
