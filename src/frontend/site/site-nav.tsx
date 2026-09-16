@@ -121,10 +121,15 @@ export function SiteNav({ isClient }: { isClient: boolean }) {
             </div>
           )}
 
-          {/* Flush-right sage block, anchoring the nav to the right edge. */}
+          {/*
+            Flush-right burgundy block, anchoring the nav to the right edge.
+            With the mark's cell filled the same way at the other end, the bar
+            now opens and closes on the same red — which is how the studio's
+            reference sheet balances its own top bar.
+          */}
           <a
             href="#contact"
-            className="tag hidden items-center bg-sage px-8 text-ink transition-colors hover:bg-bone md:flex"
+            className="tag hidden items-center bg-oxblood px-8 text-bone transition-colors hover:bg-oxblood/85 md:flex"
           >
             Contact us
           </a>
@@ -135,7 +140,7 @@ export function SiteNav({ isClient }: { isClient: boolean }) {
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-label={open ? "Close menu" : "Open menu"}
-            className="flex w-16 items-center justify-center bg-sage text-ink md:hidden"
+            className="flex w-16 items-center justify-center bg-oxblood text-bone md:hidden"
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
               {open ? (

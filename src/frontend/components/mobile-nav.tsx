@@ -64,9 +64,11 @@ export function MobileNav({
     <div className="md:hidden">
       {/*
         On the dark client surface this bar is dimensioned to match the public
-        site's nav — 64px tall, and a flush sage block on the right holding the
-        toggle — so a client arriving from the landing page sees the same bar,
-        not a second one.
+        site's nav — 64px tall, and a flush burgundy block on the right holding
+        the toggle — so a client arriving from the landing page sees the same
+        bar, not a second one. The colour of that block has to track the public
+        nav's: the two sit either side of a single navigation, and a client
+        crossing between them should not watch it change.
 
         The mark is no longer closed by a hairline on its right. On the public
         nav that rule separates the mark from the section index; this bar has
@@ -90,7 +92,7 @@ export function MobileNav({
           onClick={() => setOpen(true)}
           aria-label="Open menu"
           aria-expanded={open}
-          className="flex h-9 w-9 items-center justify-center rounded-lg text-ink transition-colors hover:bg-paper app-dark:h-auto app-dark:w-16 app-dark:rounded-none app-dark:bg-sage app-dark:text-ink app-dark:hover:bg-bone"
+          className="flex h-9 w-9 items-center justify-center rounded-lg text-ink transition-colors hover:bg-paper app-dark:h-auto app-dark:w-16 app-dark:rounded-none app-dark:bg-oxblood app-dark:text-bone app-dark:hover:bg-oxblood/85"
         >
           <MenuIcon />
         </button>
