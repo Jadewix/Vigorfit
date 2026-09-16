@@ -42,7 +42,7 @@ const copy = {
     trade: "Gym & Coaching",
     lead: "Train on your own with a membership, or book one-to-one sessions with a coach who programs for your goals.",
     primary: "Book a session",
-    primaryGuest: "Book your first session free",
+    primaryGuest: "Claim your free session",
     secondary: "Message on WhatsApp",
   },
   team: {
