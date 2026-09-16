@@ -51,7 +51,7 @@ const sections = [
  * the page ends on one unbroken block rather than on two dark stripes.
  *
  * The hairline parting it from the CTA is burgundy — the last red on the
- * page, closing it on the colour the logo in the top bar opened it with.
+ * page, closing it on the colour the buttons above it were filled with.
  *
  * Deliberately short. Everything here is a repeat of something stated more
  * fully further up the page, so it earns a few lines rather than a screen:

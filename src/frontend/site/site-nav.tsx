@@ -123,9 +123,11 @@ export function SiteNav({ isClient }: { isClient: boolean }) {
 
           {/*
             Flush-right burgundy block, anchoring the nav to the right edge.
-            With the mark's cell filled the same way at the other end, the bar
-            now opens and closes on the same red — which is how the studio's
-            reference sheet balances its own top bar.
+            The bar opens and closes on a red — which is how the studio's
+            reference sheet balances its own top bar — though since the logo
+            went in they are two different reds: the mark's own at the left
+            edge, --oxblood at this one. They are far enough apart, at either
+            end of a 1400px bar, not to be compared.
           */}
           <a
             href="#contact"

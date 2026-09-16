@@ -5,7 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NavLinks, type NavItem } from "@/frontend/components/nav-links";
 import { RoleBadge } from "@/frontend/ui/badge";
-import { BoltIcon, CloseIcon, MenuIcon } from "@/frontend/components/icons";
+import { CloseIcon, MenuIcon } from "@/frontend/components/icons";
+import { Logo } from "@/frontend/components/logo";
 import { signOutAction } from "@/app/login/actions";
 import { cn, initialsOf } from "@/shared/utils";
 import type { Profile } from "@/shared/types";
@@ -76,16 +77,8 @@ export function MobileNav({
         drawn around it.
       */}
       <header className="flex items-center justify-between border-b border-line-light bg-paper-panel px-4 py-3 app-dark:h-16 app-dark:items-stretch app-dark:border-rule app-dark:bg-ground app-dark:p-0">
-        <Link
-          href="/"
-          className="flex items-center gap-2 app-dark:px-5"
-        >
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-forest text-paper app-dark:h-8 app-dark:w-8 app-dark:rounded-none app-dark:bg-oxblood app-dark:text-bone">
-            <BoltIcon width={16} height={16} />
-          </span>
-          <span className="font-bold text-ink app-dark:font-display app-dark:text-xl app-dark:font-bold app-dark:uppercase app-dark:tracking-[-0.05em] app-dark:text-bone">
-            Vigorfit
-          </span>
+        <Link href="/" className="flex items-center app-dark:px-5">
+          <Logo className="h-7 text-ink app-dark:h-9 app-dark:text-bone" />
         </Link>
         <button
           type="button"

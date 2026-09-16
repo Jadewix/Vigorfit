@@ -43,9 +43,9 @@
   app it still does: "full", "cancelled" and every error are red, and nothing
   else there may be. On the marketing site it now means the opposite. It is the
   colour of the invitation, carrying the booking buttons, the step numerals,
-  the logo cell, the contact glyphs and the rule above the footer. The two
-  readings never share a screen, which is the whole reason one hue can do both
-  jobs — see the note on the `cta` and `danger` button variants.
+  the nav's flush block, the contact glyphs and the rule above the footer.
+  The two readings never share a screen, which is the whole reason one hue can
+  do both jobs — see the note on the `cta` and `danger` button variants.
 
   Palette proportions follow the brief — green dominant, grey for structure,
   black for the deepest wells, red as the single sharp accent.
@@ -111,6 +111,23 @@
     read, and they are not worth 3.19:1 for the look of them.
   */
   --brick: #c5463d;
+
+  /*
+    The logo's own red, and the only colour on the site that is not chosen
+    here: it is whatever the studio's SVG is drawn in, and it stays that way
+    so the mark matches their printed and posted versions of it.
+
+    It is neither of the two burgundies and should not be used as if it were
+    one. Nothing but the logo may take it — the moment a button or a rule
+    picks it up, the site has two unrelated reds arguing a few pixels apart,
+    which is exactly what the single-accent rule above exists to prevent.
+
+    It sits at 3.21:1 on the olive, 3.98:1 on the dashboards' paper and
+    4.04:1 in the black footer. A logotype carries no contrast minimum at
+    all under WCAG, so those figures are recorded as a description of how it
+    reads rather than as a bar it has to clear.
+  */
+  --logo-red: #e30241;
 
   /* ── Light paper surfaces ────────────────────────────── */
   --paper: #e8eae2;

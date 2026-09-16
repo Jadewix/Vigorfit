@@ -1,10 +1,10 @@
 import Link from "next/link";
+import { Logo } from "@/frontend/components/logo";
 import { cn, initialsOf } from "@/shared/utils";
 import { NavLinks, type NavItem } from "@/frontend/components/nav-links";
 import { MobileNav } from "@/frontend/components/mobile-nav";
 import { SignOutButton } from "@/frontend/components/sign-out-button";
 import { RoleBadge } from "@/frontend/ui/badge";
-import { BoltIcon } from "@/frontend/components/icons";
 import type { Profile } from "@/shared/types";
 
 /**
@@ -46,18 +46,15 @@ export function DashboardShell({
       <aside className="hidden w-64 shrink-0 flex-col border-r border-line-light bg-paper-panel p-4 md:flex app-dark:border-rule app-dark:bg-panel/40 app-dark:p-0">
         <Link
           href="/"
-          className="mb-6 flex items-center gap-2 px-2 app-dark:mb-0 app-dark:h-[72px] app-dark:px-5"
+          className="mb-6 flex items-center px-2 app-dark:mb-0 app-dark:h-[72px] app-dark:px-5"
         >
-          {/* Burgundy on the dark surface, matching the public nav's mark, so
-              the client area opens on the same logo the landing page did.
-              /coach and /admin keep the green one: they are a different
-              product to the person using them. */}
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-forest text-paper app-dark:h-9 app-dark:w-9 app-dark:rounded-none app-dark:bg-oxblood app-dark:text-bone">
-            <BoltIcon width={18} height={18} />
-          </span>
-          <span className="text-lg font-bold tracking-tight text-ink app-dark:font-display app-dark:text-2xl app-dark:font-bold app-dark:uppercase app-dark:tracking-[-0.05em] app-dark:text-bone">
-            Vigorfit
-          </span>
+          {/* The studio's logo, the same one the landing page opens with, so
+              a client walking into the booking area meets the mark they just
+              came from. /coach and /admin used to carry a green version of the
+              placeholder — a different product to the person using them — but
+              a logo is not a theme and there is only one of it. The letters
+              take the surface's own text colour; the mark keeps its red. */}
+          <Logo className="h-8 text-ink app-dark:h-9 app-dark:text-bone" />
         </Link>
 
         <div className="app-dark:flex-1 app-dark:p-3">

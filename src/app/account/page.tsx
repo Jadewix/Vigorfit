@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { dashboardPathForRole, getCurrentProfile } from "@/backend/auth";
 import { Card, CardBody, CardHeader, CardTitle } from "@/frontend/ui/card";
-import { BoltIcon } from "@/frontend/components/icons";
+import { Logo } from "@/frontend/components/logo";
 import { ChangePasswordForm } from "./change-password-form";
 import { EditProfileForm } from "./edit-profile-form";
 
@@ -16,12 +16,9 @@ export default async function AccountPage() {
     <main className="mx-auto w-full max-w-lg px-4 py-10">
       <Link
         href="/"
-        className="mb-8 flex items-center justify-center gap-2 text-ink"
+        className="mb-8 flex justify-center text-ink"
       >
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-forest text-paper">
-          <BoltIcon />
-        </span>
-        <span className="text-xl font-bold tracking-tight">Vigorfit</span>
+        <Logo className="h-9" />
       </Link>
 
       <div className="mb-4 flex items-center justify-between">
