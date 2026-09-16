@@ -21,8 +21,11 @@ const detailRow =
 
 // 3px of top margin rather than `items-center`: the glyph should sit on the
 // first line's optical centre and stay there if the text wraps on a phone.
-const detailIcon =
-  "mt-[3px] shrink-0 text-sage-dim transition-colors group-hover:text-sage";
+//
+// Burgundy, and it holds that colour through the row's hover while the words
+// beside it go sage. The glyph is a mark rather than part of the label, and at
+// 3.19:1 it is comfortably past the 3:1 an icon is held to.
+const detailIcon = "mt-[3px] shrink-0 text-brick";
 
 const detailValue =
   "text-bone underline decoration-line underline-offset-4 transition-colors group-hover:text-sage group-hover:decoration-sage";
@@ -47,6 +50,9 @@ const sections = [
  * straight on from the closing CTA above it, parted by a single hairline, so
  * the page ends on one unbroken block rather than on two dark stripes.
  *
+ * The hairline parting it from the CTA is burgundy — the last red on the
+ * page, closing it on the colour the logo in the top bar opened it with.
+ *
  * Deliberately short. Everything here is a repeat of something stated more
  * fully further up the page, so it earns a few lines rather than a screen:
  * the mark and the index on one row, the address, the number and the hours
@@ -54,7 +60,7 @@ const sections = [
  */
 export function SiteFooter() {
   return (
-    <footer className="brand-black border-t border-line px-5 pb-6 pt-10 sm:px-8">
+    <footer className="brand-black border-t border-oxblood px-5 pb-6 pt-10 sm:px-8">
       <div className="mx-auto max-w-6xl">
         <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-2">
           <Wordmark />
@@ -133,7 +139,7 @@ export function SiteFooter() {
             {STUDIO_HOURS.map(({ label, hours }) => (
               <li key={label} className="whitespace-nowrap">
                 {label}{" "}
-                <span className={hours ? "text-bone" : "text-wine-status"}>
+                <span className={hours ? "text-bone" : "text-brick"}>
                   {hours
                     ? `${formatClock(hours.open)}–${formatClock(hours.close)}`
                     : "Closed"}

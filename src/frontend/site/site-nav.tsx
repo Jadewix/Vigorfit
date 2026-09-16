@@ -6,6 +6,7 @@ import { cn } from "@/shared/utils";
 import { buttonClasses } from "@/frontend/ui/button";
 import { signOutAction } from "@/app/login/actions";
 import { Wordmark } from "@/frontend/site/wordmark";
+import { FREE_SESSION_GREETING, waLink } from "@/shared/studio";
 
 const sections = [
   { id: "top", href: "#top", label: "Home" },
@@ -191,7 +192,7 @@ export function SiteNav({ isClient }: { isClient: boolean }) {
                 <Link
                   href="/client/coaches"
                   onClick={close}
-                  className={buttonClasses("primary", "lg", "w-full")}
+                  className={buttonClasses("cta", "lg", "w-full")}
                 >
                   Book a session
                 </Link>
@@ -213,13 +214,23 @@ export function SiteNav({ isClient }: { isClient: boolean }) {
               </>
             ) : (
               <>
-                <Link
-                  href="/login"
+                {/*
+                  Booking and logging in used to be two buttons to the same
+                  page, which is not a choice. A visitor has no account yet, so
+                  the booking one opens WhatsApp with the free-session request
+                  written — the same thing every "Book a session" on the site
+                  does for them — and only the second still goes to /login, for
+                  the client who already has an account and is signed out.
+                */}
+                <a
+                  href={waLink(FREE_SESSION_GREETING)}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   onClick={close}
-                  className={buttonClasses("primary", "lg", "w-full")}
+                  className={buttonClasses("cta", "lg", "w-full")}
                 >
                   Book a session
-                </Link>
+                </a>
                 <Link
                   href="/login"
                   onClick={close}

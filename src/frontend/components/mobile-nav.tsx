@@ -64,16 +64,21 @@ export function MobileNav({
     <div className="md:hidden">
       {/*
         On the dark client surface this bar is dimensioned to match the public
-        site's nav exactly — 64px tall, the mark in a cell closed by a hairline,
-        and a flush sage block on the right holding the toggle — so a client
-        arriving from the landing page sees the same bar, not a second one.
+        site's nav — 64px tall, and a flush sage block on the right holding the
+        toggle — so a client arriving from the landing page sees the same bar,
+        not a second one.
+
+        The mark is no longer closed by a hairline on its right. On the public
+        nav that rule separates the mark from the section index; this bar has
+        no index, so it divided the logo from empty space and read as a box
+        drawn around it.
       */}
       <header className="flex items-center justify-between border-b border-line-light bg-paper-panel px-4 py-3 app-dark:h-16 app-dark:items-stretch app-dark:border-rule app-dark:bg-ground app-dark:p-0">
         <Link
           href="/"
-          className="flex items-center gap-2 app-dark:border-r app-dark:border-rule app-dark:px-5"
+          className="flex items-center gap-2 app-dark:px-5"
         >
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-forest text-paper app-dark:h-8 app-dark:w-8 app-dark:rounded-none app-dark:bg-sage app-dark:text-ink">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-forest text-paper app-dark:h-8 app-dark:w-8 app-dark:rounded-none app-dark:bg-oxblood app-dark:text-bone">
             <BoltIcon width={16} height={16} />
           </span>
           <span className="font-bold text-ink app-dark:font-display app-dark:text-xl app-dark:font-bold app-dark:uppercase app-dark:tracking-[-0.05em] app-dark:text-bone">

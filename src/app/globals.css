@@ -37,7 +37,15 @@
   A gym's real records are numbers in columns: times, capacities, counts. That
   is what earns a monospace face as the product's whole voice rather than as
   decoration on small labels. Deep olive is the ground the record is kept on,
-  and red carries exactly one meaning: blocked.
+  and burgundy is what marks it.
+
+  Red used to carry exactly one meaning here — blocked — and inside the booking
+  app it still does: "full", "cancelled" and every error are red, and nothing
+  else there may be. On the marketing site it now means the opposite. It is the
+  colour of the invitation, carrying the booking buttons, the step numerals,
+  the logo cell, the contact glyphs and the rule above the footer. The two
+  readings never share a screen, which is the whole reason one hue can do both
+  jobs — see the note on the `cta` and `danger` button variants.
 
   Palette proportions follow the brief — green dominant, grey for structure,
   black for the deepest wells, red as the single sharp accent.
@@ -49,13 +57,13 @@
   CONTRAST RULES, measured against these grounds. Do not collapse these into
   fewer tokens; each pair below exists because its alternative fails WCAG AA:
 
-    --oxblood on --ground   1.42:1  FAIL — fills and borders ONLY, never text
-    --red-lift on --ground  5.78:1  PASS — every red glyph uses this
-    --wine on --ground      1.73:1  FAIL — knowingly. The site's reds are
-    --wine-lift on --ground 2.34:1  FAIL   burgundy by instruction, as a
-    --wine-status on --grnd 2.92:1  FAIL   three-step scale; see the tokens.
+    --oxblood on --ground   1.42:1  FAIL — a fill and a border, never text
+    --bone on --oxblood     9.41:1  PASS — which is what makes it a CTA fill
+    --brick on --ground     3.19:1  PASS as an icon or a mark, FAIL as prose
+    --red-lift on --ground  5.78:1  PASS — every red glyph in the booking app
     --sage on --paper       1.94:1  FAIL — never sage text on the light surface
     --forest on --paper     6.54:1  PASS — green text/CTA on the light surface
+    --oxblood on --paper    6.86:1  PASS — the step numerals on the bone band
 
   The landing page's one light band runs a step greyer than `--paper` and
   redefines these tokens locally; its own figures are noted at `.brand-light`.
@@ -79,30 +87,30 @@
   --oxblood: #7b0f14; /* red fills and borders only */
   --red-lift: #e87f87; /* red text and icons on dark */
   /*
-    Burgundy — every red on the marketing site, as a three-step scale.
+    Burgundy, in two steps, read off the reference sheet the studio supplied:
+    a deep #7b1511 under everything filled, and a bright #c5463d for everything
+    drawn. --oxblood was already within a few counts of the first, so it stays
+    exactly as it was and --brick is the one genuinely new colour here.
 
-    These are a deliberate exception to the contrast rules above, chosen on the
-    user's instruction over legible alternatives that were tried first and
-    rejected as not burgundy enough. On --ground they measure 1.73:1, 2.34:1
-    and 2.92:1, all under the 4.5:1 that small text is meant to clear, so this
-    text is dimmer than anything else on the page. That is the trade: red goes
-    dark enough to read as burgundy, or light enough to clear AA, and on olive
-    it cannot do both. --oxblood at 1.42:1 remains the hard floor — invisible
-    rather than merely dim.
+    --brick is a MARK colour, not a text colour: icons, ledger labels, the
+    "Closed" line, the sign-in link, a hairline. At 3.19:1 on the olive it
+    clears the 3:1 that icons and UI edges are held to, and misses the 4.5:1
+    that small text needs — so it may letter a label or a link, where the
+    shape, the position or an underline is already carrying the meaning, and
+    never a sentence someone has to read to understand the page.
 
-    Three steps rather than one flat colour, because two things still have to
-    be told apart at a glance: a label is not a status, and a link is not
-    either. The scale preserves that ordering — the labels sit deepest, the
-    sign-in link a step up, and "Closed" brightest, so the alert is still the
-    loudest red on the page even with the salmon gone.
+    This replaces the three-step --wine / --wine-lift / --wine-status scale.
+    Those were split so that a label, a link and a status could be told apart
+    by shade alone, across 1.73:1 to 2.92:1 — a distinction that cost three
+    tokens and was never really legible on the ground it sat on. One accent at
+    3.19:1 separates them better, because now all three can be seen at all.
 
-    Scope: the marketing site only. The booking app keeps --red-lift for its
-    errors, full slots and cancelled badges — those are messages a client has
-    to be able to read, and they are not worth 1.7:1 for the look of them.
+    Scope: the marketing site, the site chrome and the client booking area's
+    brand marks. The booking app itself keeps --red-lift for its errors, full
+    slots and cancelled badges — those are messages a client has to be able to
+    read, and they are not worth 3.19:1 for the look of them.
   */
-  --wine: #8c1f28; /* hero labels and the sign-in sentence — the deepest */
-  --wine-lift: #a63341; /* the sign-in link, one step up so it reads as a link */
-  --wine-status: #b8434f; /* "Closed" on the site — the brightest of the three */
+  --brick: #c5463d;
 
   /* ── Light paper surfaces ────────────────────────────── */
   --paper: #e8eae2;
@@ -137,9 +145,7 @@
 
   --color-oxblood: var(--oxblood);
   --color-red-lift: var(--red-lift);
-  --color-wine: var(--wine);
-  --color-wine-lift: var(--wine-lift);
-  --color-wine-status: var(--wine-status);
+  --color-brick: var(--brick);
 
   --color-paper: var(--paper);
   --color-paper-panel: var(--paper-panel);

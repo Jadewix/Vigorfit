@@ -12,10 +12,17 @@ import type { Profile } from "@/shared/types";
  *
  * On the light paper dashboards (/coach, /admin) it stays as it was: a padded
  * sidebar of rounded rows. Inside the dark client area it takes the marketing
- * site's joinery instead — the sidebar becomes a column of ruled cells, its
- * brand cell matching the height and hairline of the public nav's, so moving
- * from the landing page into the booking flow does not feel like crossing
- * into a different product.
+ * site's joinery instead — the sidebar becomes a column of ruled cells, and
+ * its brand cell keeps the public nav's height, so moving from the landing
+ * page into the booking flow does not feel like crossing into a different
+ * product.
+ *
+ * The brand cell keeps that height but NOT the rule that closed it. On the
+ * public nav that hairline divides the mark from the section index sitting
+ * beside it, so it has something to divide. Here there is nothing on the far
+ * side of it — the nav list below is already spaced away — so the rule only
+ * drew a box around the logo, which is what the sidebar's own right edge was
+ * already doing from the other side.
  */
 export function DashboardShell({
   profile,
@@ -39,9 +46,13 @@ export function DashboardShell({
       <aside className="hidden w-64 shrink-0 flex-col border-r border-line-light bg-paper-panel p-4 md:flex app-dark:border-rule app-dark:bg-panel/40 app-dark:p-0">
         <Link
           href="/"
-          className="mb-6 flex items-center gap-2 px-2 app-dark:mb-0 app-dark:h-[72px] app-dark:border-b app-dark:border-rule app-dark:px-5"
+          className="mb-6 flex items-center gap-2 px-2 app-dark:mb-0 app-dark:h-[72px] app-dark:px-5"
         >
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-forest text-paper app-dark:h-9 app-dark:w-9 app-dark:rounded-none app-dark:bg-sage app-dark:text-ink">
+          {/* Burgundy on the dark surface, matching the public nav's mark, so
+              the client area opens on the same logo the landing page did.
+              /coach and /admin keep the green one: they are a different
+              product to the person using them. */}
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-forest text-paper app-dark:h-9 app-dark:w-9 app-dark:rounded-none app-dark:bg-oxblood app-dark:text-bone">
             <BoltIcon width={18} height={18} />
           </span>
           <span className="text-lg font-bold tracking-tight text-ink app-dark:font-display app-dark:text-2xl app-dark:font-bold app-dark:uppercase app-dark:tracking-[-0.05em] app-dark:text-bone">

@@ -15,9 +15,13 @@ type Status = ReturnType<typeof getOpenStatus>;
  *
  * Unlike the previous version this renders in both states rather than
  * disappearing when the studio is closed: it now sits in the hero's ledger,
- * where a row that vanishes reads as a broken layout rather than as tact. The
- * closed state is the one place on the marketing page that carries red, which
- * is the palette's single meaning for "you cannot train right now".
+ * where a row that vanishes reads as a broken layout rather than as tact.
+ *
+ * "Closed" is burgundy, the same accent the labels and glyphs around it wear.
+ * It used to have a red of its own so that a status could not be mistaken for
+ * a label — but the dot below already carries that distinction, and it carries
+ * it for anyone who cannot separate the two hues at all, which a third shade
+ * of red never did.
  */
 export function OpenStatus({
   initial,
@@ -37,7 +41,7 @@ export function OpenStatus({
     <span
       className={cn(
         "inline-flex items-center gap-2",
-        status.open ? "text-sage" : "text-wine-status",
+        status.open ? "text-sage" : "text-brick",
         className,
       )}
     >
@@ -52,7 +56,7 @@ export function OpenStatus({
           "h-1.5 w-1.5 shrink-0 rounded-full border",
           status.open
             ? "border-sage bg-sage"
-            : "border-wine-status bg-transparent",
+            : "border-brick bg-transparent",
         )}
       />
       {status.text}

@@ -23,11 +23,17 @@ export function Wordmark({
       className={cn("flex items-center gap-2.5", className)}
       aria-label="Vigorfit home"
     >
-      <span className="flex h-9 w-9 items-center justify-center bg-sage text-ink">
+      {/*
+        The mark's cell is the first burgundy a visitor meets, and putting it
+        here rather than on a button is what keeps the colour reading as the
+        brand's own. A red that is only ever a call to action starts to look
+        like an alert; a red that opens on the logo does not.
+      */}
+      <span className="flex h-9 w-9 items-center justify-center bg-oxblood text-bone">
         <BoltIcon width={19} height={19} />
       </span>
       <span className="display text-2xl text-bone">
-        Vigorfit<span className="text-sage">.</span>
+        Vigorfit<span className="text-brick">.</span>
       </span>
     </Link>
   );

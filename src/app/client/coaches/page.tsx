@@ -72,11 +72,7 @@ export default async function BrowseCoachesPage() {
                 <div className="mt-auto border-t border-rule pt-5">
                   <Link
                     href={`/client/book/${c.id}`}
-                    className={buttonClasses(
-                      "primary",
-                      "sm",
-                      "tag w-full px-4",
-                    )}
+                    className={buttonClasses("cta", "sm", "tag w-full px-4")}
                   >
                     Book a session
                   </Link>

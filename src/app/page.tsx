@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getCurrentProfile } from "@/backend/auth";
 import { getPublicCoaches } from "@/backend/public-coaches";
 import { SESSION_LABEL } from "@/shared/booking";
-import { buttonClasses } from "@/frontend/ui/button";
+import { buttonClasses, type Size } from "@/frontend/ui/button";
 import { CoachAvatar } from "@/frontend/components/coach-avatar";
 import { SiteNav } from "@/frontend/site/site-nav";
 import { Reveal } from "@/frontend/site/reveal";
@@ -16,6 +16,7 @@ import {
   STUDIO_HOURS,
   STUDIO_MAPS_URL,
   STUDIO_WHATSAPP_DISPLAY,
+  FREE_SESSION_GREETING,
   WHATSAPP_GREETING,
   formatClock,
   getOpenStatus,
@@ -98,6 +99,70 @@ const steps = [
 const detailLink =
   "text-xl font-medium text-bone underline decoration-rule decoration-2 underline-offset-4 transition-colors hover:text-sage hover:decoration-sage sm:text-2xl";
 
+/*
+  The hero ledger's one link — the same address, and the same treatment the
+  footer gives it: bone, underlined, going sage on the hover phones never get,
+  so the underline is what marks it as pressable.
+
+  The rule colour is the difference. The footer underlines in `--line`, which
+  is the hairline for the black well it sits in; on the hero's olive that is
+  nearly invisible, so this uses `--rule` — exactly what the Contact band's
+  address link uses on the same ground.
+*/
+const ledgerLink =
+  "text-bone underline decoration-rule underline-offset-4 transition-colors hover:text-sage hover:decoration-sage";
+
+/**
+ * A booking button.
+ *
+ * Signed-in clients go to `href`. A visitor does not: they have no account
+ * yet — the studio opens those — so their button opens WhatsApp with the
+ * free-session request already written, which is genuinely the next step for
+ * them rather than a login page they cannot get past.
+ *
+ * That guest branch used to point at `#contact`. It scrolled the whole page
+ * down to a second button the visitor then had to find and press again, and
+ * because an anchor stops wherever the band happens to fall it never landed
+ * squarely on anything. One press, one destination.
+ */
+function BookButton({
+  isClient,
+  href,
+  label,
+  size = "lg",
+  className,
+}: {
+  isClient: boolean;
+  /** Where a signed-in client goes. Guests always go to WhatsApp. */
+  href: string;
+  /** Overrides the default label, which differs by signed-in state. */
+  label?: string;
+  size?: Size;
+  className?: string;
+}) {
+  const classes = buttonClasses("cta", size, className);
+  const text =
+    label ?? (isClient ? copy.hero.primary : copy.hero.primaryGuest);
+
+  if (isClient) {
+    return (
+      <Link href={href} className={classes}>
+        {text}
+      </Link>
+    );
+  }
+  return (
+    <a
+      href={waLink(FREE_SESSION_GREETING)}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={classes}
+    >
+      {text}
+    </a>
+  );
+}
+
 // Phone browsers that tint their toolbars from theme-color get the page's
 // olive instead of their default light bar.
 export const viewport: Viewport = { themeColor: "#16281b" };
@@ -107,9 +172,9 @@ export const viewport: Viewport = { themeColor: "#16281b" };
  * between them left open. All of the alignment comes from CSS (`.ledger-row`),
  * so the markup stays a plain definition list.
  *
- * The terms are wine rather than sage. Note this is the hero's ledger only —
- * the opening hours in the Contact band use `.ledger-row` directly and keep
- * the sage terms, so the red stays one band's device.
+ * The terms are burgundy rather than sage. Note this is the hero's ledger
+ * only — the opening hours in the Contact band use `.ledger-row` directly and
+ * keep their sage terms, so the red stays one band's device.
  */
 function LedgerRow({
   term,
@@ -120,7 +185,7 @@ function LedgerRow({
 }) {
   return (
     <div className="ledger-row">
-      <dt className="tag text-wine">{term}</dt>
+      <dt className="tag text-brick">{term}</dt>
       <dd className="text-bone">{children}</dd>
     </div>
   );
@@ -135,10 +200,6 @@ export default async function Home() {
     getPublicCoaches(),
   ]);
   const isClient = profile?.role === "client";
-  // A newcomer has no account yet (admins create them), so the public CTA
-  // points at Contact rather than a login page they cannot get past.
-  const bookHref = isClient ? "/client/coaches" : "#contact";
-  const bookLabel = isClient ? copy.hero.primary : copy.hero.primaryGuest;
   const whatsappHref = waLink(WHATSAPP_GREETING);
 
   /*
@@ -235,7 +296,16 @@ export default async function Home() {
                 <span className="tabular-nums">{coaches.length}</span>
               </LedgerRow>
               <LedgerRow term="Session">{SESSION_LABEL}</LedgerRow>
-              <LedgerRow term="Place">{STUDIO_ADDRESS[0]}</LedgerRow>
+              <LedgerRow term="Place">
+                <a
+                  href={STUDIO_MAPS_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={ledgerLink}
+                >
+                  {STUDIO_ADDRESS[0]}
+                </a>
+              </LedgerRow>
               <LedgerRow term="Today">
                 <OpenStatus initial={getOpenStatus()} />
               </LedgerRow>
@@ -245,12 +315,11 @@ export default async function Home() {
               className="load-rise mt-10 flex flex-col gap-3 sm:flex-row"
               style={{ animationDelay: "430ms" }}
             >
-              <Link
-                href={bookHref}
-                className={buttonClasses("primary", "lg", "tag px-7")}
-              >
-                {bookLabel}
-              </Link>
+              <BookButton
+                isClient={isClient}
+                href="/client/coaches"
+                className="tag px-7"
+              />
               <a
                 href={whatsappHref}
                 target="_blank"
@@ -262,19 +331,18 @@ export default async function Home() {
             </div>
             {!isClient && (
               <p
-                className="load-rise mt-4 text-xs text-wine"
+                className="load-rise mt-4 text-xs text-brick/70"
                 style={{ animationDelay: "480ms" }}
               >
                 Already training with us?{" "}
                 {/*
-                  The link keeps the underline on hover and is set a step
-                  brighter than the sentence around it, because once the whole
-                  line is one colour that weight difference is the only thing
-                  marking it as a link. Brighter within the burgundy, not on
-                  --wine-status: that is the site's "closed" red, and a link wearing it
-                  would read as a status.
+                  The sentence is held at 70% of the accent and the link at its
+                  full strength, because once the whole line is one colour that
+                  step is the only thing marking the link — a phone has no hover
+                  to do it. Two weights of one token, where this used to spend
+                  two tokens on the same distinction.
                 */}
-                <Link href="/login" className="text-wine-lift hover:underline">
+                <Link href="/login" className="text-brick hover:underline">
                   Log in
                 </Link>
               </p>
@@ -302,12 +370,12 @@ export default async function Home() {
               <p className="mx-auto mt-3 max-w-md text-sage-dim">
                 {copy.team.emptyBody}
               </p>
-              <Link
-                href={bookHref}
-                className={buttonClasses("primary", "md", "tag mt-6")}
-              >
-                {bookLabel}
-              </Link>
+              <BookButton
+                isClient={isClient}
+                href="/client/coaches"
+                size="md"
+                className="tag mt-6"
+              />
             </div>
           ) : (
             /*
@@ -343,13 +411,22 @@ export default async function Home() {
                     </p>
                   )}
 
+                  {/*
+                    The card's own button, so a signed-in client lands on this
+                    coach rather than back at the list. A visitor gets the same
+                    WhatsApp chat every other booking button gives them — it
+                    used to send them to /login, which is a door they have no
+                    key to. The label stays "Book a session": the card above it
+                    is already naming who the session is with.
+                  */}
                   <div className="mt-auto pt-6">
-                    <Link
-                      href={isClient ? `/client/book/${c.id}` : "/login"}
-                      className={buttonClasses("primary", "sm", "tag w-full")}
-                    >
-                      {copy.hero.primary}
-                    </Link>
+                    <BookButton
+                      isClient={isClient}
+                      href={`/client/book/${c.id}`}
+                      label={copy.hero.primary}
+                      size="sm"
+                      className="tag w-full"
+                    />
                   </div>
                 </div>
               ))}
@@ -383,12 +460,11 @@ export default async function Home() {
             </p>
 
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Link
-                href={bookHref}
-                className={buttonClasses("primary", "lg", "tag px-8")}
-              >
-                {bookLabel}
-              </Link>
+              <BookButton
+                isClient={isClient}
+                href="/client/coaches"
+                className="tag px-8"
+              />
               <a
                 href="#team"
                 className={buttonClasses("hairline", "lg", "tag px-8")}
@@ -408,10 +484,20 @@ export default async function Home() {
               {steps.map((s) => (
                 <li key={s.n} className="bg-paper-panel">
                   <div className="flex h-full flex-col p-8">
-                    <span className="display block text-[clamp(3rem,5.5vw,4.5rem)] leading-[0.8] text-forest">
+                    {/*
+                      The numerals are the band's red, and the one place on the
+                      page where burgundy sits on paper rather than on olive —
+                      6.86:1 against this ground, so unlike the site's other
+                      reds these are as readable as they are loud.
+
+                      The rule under each number is tinted to match. It is the
+                      nearest this layout gets to the dashed connector on the
+                      studio's reference sheet, without moving anything.
+                    */}
+                    <span className="display block text-[clamp(3rem,5.5vw,4.5rem)] leading-[0.8] text-oxblood">
                       {s.n}
                     </span>
-                    <h3 className="display mt-7 border-t border-line-light pt-5 text-[clamp(1.25rem,2vw,1.625rem)] text-ink">
+                    <h3 className="display mt-7 border-t border-oxblood/30 pt-5 text-[clamp(1.25rem,2vw,1.625rem)] text-ink">
                       {s.title}
                     </h3>
                     <p className="mt-3 text-sm leading-relaxed text-ink-muted">
@@ -479,7 +565,7 @@ export default async function Home() {
                           className={
                             hours
                               ? "tabular-nums text-bone"
-                              : "tabular-nums text-wine-status"
+                              : "tabular-nums text-brick"
                           }
                         >
                           {hours
@@ -531,12 +617,11 @@ export default async function Home() {
             {copy.closing.lead}
           </p>
           <div className="mt-9 flex justify-center">
-            <Link
-              href={bookHref}
-              className={buttonClasses("primary", "lg", "tag px-10")}
-            >
-              {bookLabel}
-            </Link>
+            <BookButton
+              isClient={isClient}
+              href="/client/coaches"
+              className="tag px-10"
+            />
           </div>
         </Reveal>
       </section>

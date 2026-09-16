@@ -42,6 +42,18 @@ export const WHATSAPP_GREETING =
   "Hi Vigorfit, I'd like to ask about memberships and coaching.";
 
 /**
+ * The line a signed-out visitor's "Book a session" button writes for them.
+ *
+ * They have no account yet — the studio opens those — so the button cannot
+ * send them to a login page or a booking grid. It opens this chat instead,
+ * and the message asks for both of the things that actually have to happen
+ * next, the session and the account, in one sentence the studio can act on
+ * without a reply.
+ */
+export const FREE_SESSION_GREETING =
+  "Hi I would like to claim my free session can you set up my account for me?";
+
+/**
  * Build a WhatsApp click-to-chat link that opens a chat with the studio and
  * pre-fills `text`. Works on mobile (app) and desktop (web/desktop client).
  */
