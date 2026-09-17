@@ -82,7 +82,7 @@ export function SiteNav({ isClient }: { isClient: boolean }) {
               aria-current={active === s.id ? "true" : undefined}
               className={cn(
                 "tag relative flex items-center px-6 transition-colors",
-                active === s.id ? "text-sage" : "text-sage-dim hover:text-bone",
+                active === s.id ? "text-sage" : "text-sage-dim hover:text-grey",
               )}
             >
               {s.label}
@@ -101,19 +101,40 @@ export function SiteNav({ isClient }: { isClient: boolean }) {
         <div className="flex-1 md:hidden" />
 
         <div className="flex items-stretch">
+          {/*
+            Log in, and the one action in this zone that a phone gets too.
+            Everything else out here is desktop-only and folds into the drawer,
+            but signing in is what a returning member opens the site to do, and
+            it was two taps down behind a hamburger. It sits immediately before
+            the burgundy block at the right edge — beside "Contact us" on a
+            desktop, beside the menu button on a phone.
+
+            Signed-in clients never see it: their own controls are in the block
+            below, and the drawer carries them on a phone.
+          */}
+          {!isClient && (
+            <Link
+              href="/login"
+              onClick={close}
+              className="tag flex items-center whitespace-nowrap px-4 text-sage-dim transition-colors hover:text-grey sm:px-6"
+            >
+              Log in
+            </Link>
+          )}
+
           {/* Signed-in controls keep the existing booking app reachable */}
           {isClient && (
             <div className="hidden items-center gap-5 border-l border-rule px-6 md:flex">
               <Link
                 href="/client/bookings"
-                className="tag text-sage-dim transition-colors hover:text-bone"
+                className="tag text-sage-dim transition-colors hover:text-grey"
               >
                 My bookings
               </Link>
               <form action={signOutAction}>
                 <button
                   type="submit"
-                  className="tag text-sage-dim transition-colors hover:text-bone"
+                  className="tag text-sage-dim transition-colors hover:text-grey"
                 >
                   Sign out
                 </button>
@@ -180,7 +201,7 @@ export function SiteNav({ isClient }: { isClient: boolean }) {
               key={s.id}
               href={s.href}
               onClick={close}
-              className="display border-b border-rule py-5 text-4xl text-bone"
+              className="display border-b border-rule py-5 text-4xl text-grey"
             >
               {s.label}
             </a>

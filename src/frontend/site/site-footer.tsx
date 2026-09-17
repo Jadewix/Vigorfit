@@ -28,12 +28,12 @@ const detailRow =
 const detailIcon = "mt-[3px] shrink-0 text-brick";
 
 const detailValue =
-  "text-bone underline decoration-line underline-offset-4 transition-colors group-hover:text-sage group-hover:decoration-sage";
+  "text-grey underline decoration-line underline-offset-4 transition-colors group-hover:text-sage group-hover:decoration-sage";
 
 // 44px tall so it is a real tap target, but laid out in a row rather than a
 // column — stacked, four of these alone were 176px of the footer's height.
 const navLink =
-  "tag inline-flex min-h-11 items-center text-sage-dim transition-colors hover:text-bone";
+  "tag inline-flex min-h-11 items-center text-sage-dim transition-colors hover:text-grey";
 
 // The same anchors the site nav uses. Repeated here rather than shared,
 // because a footer's job is to be the complete index of the page while the
@@ -139,7 +139,7 @@ export function SiteFooter() {
             {STUDIO_HOURS.map(({ label, hours }) => (
               <li key={label} className="whitespace-nowrap">
                 {label}{" "}
-                <span className={hours ? "text-bone" : "text-brick"}>
+                <span className={hours ? "text-grey" : "text-brick"}>
                   {hours
                     ? `${formatClock(hours.open)}–${formatClock(hours.close)}`
                     : "Closed"}

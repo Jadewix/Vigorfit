@@ -7,10 +7,16 @@ import { useImageFallback } from "@/frontend/site/use-image-fallback";
  * HeroObject — the hero's floating weight, and the one piece of motion on the
  * page that responds to scrolling.
  *
- * Layout. On phones the object sits *behind* the type across the full hero, at
- * low opacity, so the headline always wins; from `lg` it moves into its own
- * column starting past where the text column ends (`lg:left-[62%]`), and comes
- * up to full strength. Both treatments come from `.hero-object` in globals.css.
+ * Layout. The component fills whatever box it is given (`absolute inset-0`) and
+ * the caller decides where that box is — the column offset used to be baked in
+ * here, back when the hero was the only place it could appear. On phones it
+ * ends up *behind* the type at low opacity so the heading always wins; from
+ * `lg` the caller moves it clear of the text and it comes up to full strength.
+ * Both opacities come from `.hero-object` in globals.css.
+ *
+ * It now heads the team band rather than the hero. The name is unchanged: it
+ * is still the page's one hero object, and renaming it would touch the three
+ * `.hero-*` rules in the stylesheet for nothing.
  *
  * Motion, in two kinds. The scroll handler writes exactly one number — `--par`,
  * 0 at the top of the page and 1 once the hero has scrolled away — and every
@@ -97,7 +103,6 @@ export function HeroObject({
       className={[
         "hero-object parallax pointer-events-none absolute z-0 grid place-items-center",
         "inset-0",
-        "lg:inset-y-0 lg:left-[62%] lg:right-0",
         className,
       ]
         .filter(Boolean)

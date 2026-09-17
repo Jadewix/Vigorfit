@@ -43,7 +43,6 @@ const copy = {
     lead: "Train on your own with a membership, or book one-to-one sessions with a coach who programs for your goals.",
     primary: "Book a session",
     primaryGuest: "Claim your free session",
-    secondary: "Message on WhatsApp",
   },
   team: {
     heading: "The team",
@@ -97,11 +96,11 @@ const steps = [
 // Contact details that open WhatsApp or Maps. The underline is what marks
 // them as links on phones, where there's no hover.
 const detailLink =
-  "text-xl font-medium text-bone underline decoration-rule decoration-2 underline-offset-4 transition-colors hover:text-sage hover:decoration-sage sm:text-2xl";
+  "text-xl font-medium text-grey underline decoration-rule decoration-2 underline-offset-4 transition-colors hover:text-sage hover:decoration-sage sm:text-2xl";
 
 /*
   The hero ledger's one link — the same address, and the same treatment the
-  footer gives it: bone, underlined, going sage on the hover phones never get,
+  footer gives it: grey, underlined, going sage on the hover phones never get,
   so the underline is what marks it as pressable.
 
   The rule colour is the difference. The footer underlines in `--line`, which
@@ -110,7 +109,7 @@ const detailLink =
   address link uses on the same ground.
 */
 const ledgerLink =
-  "text-bone underline decoration-rule underline-offset-4 transition-colors hover:text-sage hover:decoration-sage";
+  "text-grey underline decoration-rule underline-offset-4 transition-colors hover:text-sage hover:decoration-sage";
 
 /**
  * A booking button.
@@ -191,7 +190,7 @@ function LedgerRow({
   return (
     <div className="ledger-row">
       <dt className="tag text-sage">{term}</dt>
-      <dd className="text-bone">{children}</dd>
+      <dd className="text-grey">{children}</dd>
     </div>
   );
 }
@@ -211,8 +210,8 @@ export default async function Home() {
     The page is a stack of full-bleed bands, and the order of their grounds is
     the structure a reader feels before they read a word:
 
-        olive   hero      — the brand's own colour, the object, the facts
-        olive   team      — raised a step on --panel so it separates
+        olive   hero      — the brand's own colour, and the facts
+        olive   team      — raised a step on --panel; the weight sits here
         bone    booking   — the one light band; the process, and the room
         olive   contact   — back to the brand to close the argument
         black   closing   — the deepest well on the page under the last CTA
@@ -231,8 +230,11 @@ export default async function Home() {
         id="top"
         className="grain relative flex min-h-[100svh] items-center overflow-hidden border-b border-rule pt-16 lg:pt-[72px]"
       >
-        {/* Ground light. Low and off-centre, so the hero object below reads
-            as lit from one direction rather than evenly flooded. */}
+        {/* Ground light. Low and off-centre, so the band is lit from one
+            direction rather than evenly flooded. The weight it used to seat
+            has moved down to the team band; the light stays, because what it
+            is really doing is keeping a full screen of flat olive from
+            reading as a blank. */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 z-0"
@@ -242,27 +244,20 @@ export default async function Home() {
           }}
         />
 
-        {/* The weight. Behind the type on phones, in its own column from lg,
-            and drifting against the scroll on both. */}
-        <HeroObject
-          src={HERO_OBJECT.src}
-          width={HERO_OBJECT.width}
-          height={HERO_OBJECT.height}
-          style={{ ["--ho-y" as string]: "-2%" }}
-        />
-
         <div className="relative z-10 mx-auto w-full max-w-[1400px] px-5 py-20 sm:px-8 lg:px-12">
           {/*
-            Ends before the hero object's column begins (`lg:left-[62%]`), so
-            the two never overlap once a real render is dropped in.
+            No width cap. This column used to stop at 58% so it cleared the
+            weight's column beside it (`lg:left-[62%]`); with the weight now
+            heading the team band there is nothing on the right to clear, and
+            holding the hero to 58% left the other 42% of a full screen empty.
 
-            The width is 58%, not half: the display clamp sizes off the
-            viewport (`6vw`), but this column is a fraction of it, and at
-            exactly the `lg` breakpoint a 50% column left the second headline
-            line 35px short of fitting — which stranded the "&" on its own
-            line. 58% clears it at every width from 1024 up.
+            Nothing here needs the cap to stay readable: the lead carries
+            `.measure`, the ledger its own `max-w-md`, and the display lines
+            size off the viewport with `clamp()` — which is also what the 58%
+            was fighting, since a fraction of the viewport is not the viewport
+            and the second line lost its "&" to a wrap at exactly `lg`.
           */}
-          <div className="lg:max-w-[58%] lg:pr-8">
+          <div>
             {/*
               Two steps, not two equal lines. The place name takes the full
               display size and the trade sits a step below it: at one size the
@@ -271,7 +266,7 @@ export default async function Home() {
             */}
             <h1 className="display">
               <span
-                className="load-rise d-xl block text-bone"
+                className="load-rise d-xl block text-grey"
                 style={{ animationDelay: "60ms" }}
               >
                 {copy.hero.place}
@@ -316,6 +311,13 @@ export default async function Home() {
               </LedgerRow>
             </dl>
 
+            {/*
+              One button, not two. "Message on WhatsApp" sat beside the booking
+              CTA here and went to the same chat the CTA already opens for a
+              visitor — the first screen was asking twice for the same thing.
+              WhatsApp is still the studio's only contact channel: it carries
+              the Contact band's number and CTA, and the footer's row.
+            */}
             <div
               className="load-rise mt-10 flex flex-col gap-3 sm:flex-row"
               style={{ animationDelay: "430ms" }}
@@ -325,14 +327,6 @@ export default async function Home() {
                 href="/client/coaches"
                 className="tag px-7"
               />
-              <a
-                href={whatsappHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={buttonClasses("hairline", "lg", "tag px-7")}
-              >
-                {copy.hero.secondary}
-              </a>
             </div>
             {!isClient && (
               <p
@@ -362,16 +356,37 @@ export default async function Home() {
         className="relative bg-panel/30 px-5 py-24 sm:px-8 lg:py-32"
       >
         <div className="mx-auto max-w-6xl">
-          <Reveal className="max-w-3xl">
-            <h2 className="display d-lg text-sage">{copy.team.heading}</h2>
-            <p className="measure mt-5 text-base leading-relaxed text-sage-dim sm:text-lg">
-              {copy.team.lead}
-            </p>
-          </Reveal>
+          {/*
+            The weight, moved down from the hero to head the coaches.
+
+            It keeps both of its old treatments: behind the type at low
+            opacity on phones, and in a column of its own beside the heading
+            from `lg`. What it needs here that it did not need in the hero is
+            a floor — the heading and its lead are barely 180px tall, and the
+            object is square, so without a minimum this block would be shorter
+            than the thing sitting in it and the weight would spill behind the
+            first row of coaches, which are opaque and would cut it in half.
+          */}
+          <div className="relative flex min-h-[20rem] items-center lg:min-h-[24rem]">
+            <HeroObject
+              src={HERO_OBJECT.src}
+              width={HERO_OBJECT.width}
+              height={HERO_OBJECT.height}
+              className="lg:left-[58%]"
+              style={{ ["--ho-y" as string]: "-2%" }}
+            />
+
+            <Reveal className="relative z-10 max-w-3xl lg:max-w-[54%]">
+              <h2 className="display d-lg text-sage">{copy.team.heading}</h2>
+              <p className="measure mt-5 text-base leading-relaxed text-sage-dim sm:text-lg">
+                {copy.team.lead}
+              </p>
+            </Reveal>
+          </div>
 
           {coaches.length === 0 ? (
             <div className="mt-12 border border-line bg-ground/60 p-10 text-center">
-              <p className="display d-md text-bone">{copy.team.emptyTitle}</p>
+              <p className="display d-md text-grey">{copy.team.emptyTitle}</p>
               <p className="mx-auto mt-3 max-w-md text-sage-dim">
                 {copy.team.emptyBody}
               </p>
@@ -403,7 +418,7 @@ export default async function Home() {
                       className="h-12 w-12 text-lg"
                     />
                     <div className="min-w-0">
-                      <p className="display text-lg text-bone">{c.name}</p>
+                      <p className="display text-lg text-grey">{c.name}</p>
                       {c.specialty && (
                         <p className="tag text-sage">{c.specialty}</p>
                       )}
@@ -523,7 +538,7 @@ export default async function Home() {
       >
         <div className="mx-auto max-w-6xl">
           <Reveal className="max-w-2xl">
-            <h2 className="display d-lg text-bone">{copy.contact.heading}</h2>
+            <h2 className="display d-lg text-grey">{copy.contact.heading}</h2>
             <p className="measure mt-5 text-base leading-relaxed text-sage-dim sm:text-lg">
               {copy.contact.lead}
             </p>
@@ -569,7 +584,7 @@ export default async function Home() {
                         <dd
                           className={
                             hours
-                              ? "tabular-nums text-bone"
+                              ? "tabular-nums text-grey"
                               : "tabular-nums text-brick"
                           }
                         >
