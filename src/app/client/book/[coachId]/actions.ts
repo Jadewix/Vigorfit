@@ -7,9 +7,7 @@ import { createAdminClient } from "@/backend/supabase/admin";
 import { notifyNewBooking } from "@/backend/notifications";
 import {
   SESSION_MINUTES,
-  TRACKS,
   isOpenOn,
-  isTrackDay,
   slotAvailability,
   slotTimesFor,
 } from "@/shared/booking";
@@ -87,10 +85,10 @@ export async function createBookingAction(
         "Your free session has already been used. Ask the studio to set up a subscription.",
     };
   }
-  if (!isTrackDay(weekday, sub.track)) {
-    const days = sub.track ? TRACKS[sub.track].short : "your scheduled days";
-    return { error: `Your plan trains on ${days}.` };
-  }
+  // A day outside their track is no longer refused here. The form marks those
+  // days and asks the member to keep to their plan; the weekly and monthly
+  // allowances below are what actually hold the total down, so nothing is
+  // gained by also forbidding the day a make-up session has to land on.
   if (sub.expired) {
     return {
       error:

@@ -274,6 +274,7 @@ export function planLabel(plan: Plan | null): string {
 const PLAN_SHORT: Record<Plan, string> = {
   semi_private: "Semi",
   classes: "Class",
+  private: "Private",
 };
 
 /** "Semi", "Class", or "Session" — the grid's form of `planLabel`. */

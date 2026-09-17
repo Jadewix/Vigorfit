@@ -2,10 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/backend/supabase/server";
 import { createAdminClient } from "@/backend/supabase/admin";
 import {
-  TRACKS,
   capacityFor,
   isOpenOn,
-  isTrackDay,
   slotAvailability,
   slotTimesFor,
 } from "@/shared/booking";
@@ -111,15 +109,13 @@ export async function GET(
     });
   }
 
-  // Their plan only trains on certain weekdays.
-  if (!isTrackDay(weekday, sub.track)) {
-    return NextResponse.json({
-      slots: [],
-      closed: false,
-      offTrack: true,
-      trackLabel: sub.track ? TRACKS[sub.track].short : null,
-    });
-  }
+  /*
+    A day outside the member's schedule track used to return here with no
+    slots and an `offTrack` flag. It no longer does: the track is a preference
+    now, so every open day is served the same way and the booking form — which
+    already knows the member's track from the page — draws the "preferably
+    stick to your plan" note itself, with the date rather than a fetch later.
+  */
 
   // Who is already in each slot, and whether the viewer is one of them.
   const occupants = new Map<string, { plan?: string | null }[]>();

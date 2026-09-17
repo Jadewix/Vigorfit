@@ -147,7 +147,7 @@ export function CreateUserForm() {
               <option value="">Not set yet</option>
               {PLAN_VALUES.map((p) => (
                 <option key={p} value={p}>
-                  {PLANS[p].label} — ${PLANS[p].priceUsd}/month
+                  {PLANS[p].label} — ${PLANS[p].priceUsd}/month · {PLANS[p].perWeek}&times; a week
                 </option>
               ))}
             </select>
@@ -173,7 +173,8 @@ export function CreateUserForm() {
               ))}
             </select>
             <p className="mt-1 text-xs text-slate-400">
-              They can only book on these days.
+              Their usual days. They can still book outside them — the booking
+              form asks them to keep to the plan rather than refusing the date.
             </p>
           </div>
           <div className="sm:col-span-2">

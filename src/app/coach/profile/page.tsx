@@ -56,9 +56,10 @@ export default async function CoachProfilePage() {
             </ul>
             <p className="mt-4 text-sm text-ink-muted">
               Clients book hourly slots within these hours. Each session is{" "}
-              {SESSION_LABEL}. A semi-private slot seats{" "}
-              {PLANS.semi_private.capacity}; a class seats{" "}
-              {PLANS.classes.capacity}.
+              {SESSION_LABEL}, and clients are asked to arrive 5 to 10 minutes
+              early. A semi-private slot seats {PLANS.semi_private.capacity}; a
+              class seats {PLANS.classes.capacity}; a fully private slot is
+              yours alone.
             </p>
           </CardBody>
         </Card>

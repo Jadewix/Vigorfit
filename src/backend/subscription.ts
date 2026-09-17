@@ -1,6 +1,7 @@
 import { createAdminClient } from "@/backend/supabase/admin";
 import {
   EXPIRY_REMINDER_DAYS,
+  FREE_CHANGES_LIMIT,
   MONTHLY_SESSION_LIMIT,
   WEEKLY_SESSION_LIMIT,
   isPlan,
@@ -200,5 +201,70 @@ export async function getAllowance(
     monthUsed,
     monthLimit: MONTHLY_SESSION_LIMIT,
     monthFull: monthUsed >= MONTHLY_SESSION_LIMIT,
+  };
+}
+
+export type Changes = {
+  /** Cancellations and reschedules the client has spent this month. */
+  used: number;
+  limit: number;
+  /** How many are still free; 0 once every one is spent. */
+  left: number;
+  /** The next change falls outside the free allowance and is charged. */
+  chargeable: boolean;
+};
+
+/**
+ * How many of the month's free cancellations and reschedules a client has
+ * used.
+ *
+ * Counted over the same subscription month the session allowance uses, and
+ * by `cancelled_at` — when the change was made — rather than by `starts_at`.
+ * Cancelling next month's session is a change made today, and the studio
+ * charges for the act, not for the hour that was given back.
+ *
+ * Only the client's own cancellations count. A session the coach or the
+ * studio dropped is `cancelled_by` someone else and must never come out of
+ * the member's three; before `supabase/cancellation-policy.sql` has been run
+ * the column does not exist, and the count comes back as nothing spent rather
+ * than as every cancellation charged to the client.
+ */
+export async function getChanges(
+  clientId: string,
+  endsOn: string | null,
+  date: string = zonedToday(),
+): Promise<Changes> {
+  const empty: Changes = {
+    used: 0,
+    limit: FREE_CHANGES_LIMIT,
+    left: FREE_CHANGES_LIMIT,
+    chargeable: false,
+  };
+
+  const month = subscriptionMonthRange(date, endsOn);
+  if (!month) return empty;
+
+  const { count, error } = await createAdminClient()
+    .from("bookings")
+    .select("id", { count: "exact", head: true })
+    .eq("client_id", clientId)
+    .eq("status", "cancelled")
+    .eq("cancelled_by", clientId)
+    .gte("cancelled_at", month.start.toISOString())
+    .lt("cancelled_at", month.end.toISOString());
+
+  if (error) {
+    // 42703 = cancellation-policy.sql hasn't been run. Nothing is recorded to
+    // count, so nobody is charged for a change the database cannot see.
+    if (error.code !== MISSING_COLUMN) console.error("[changes]", error.message);
+    return empty;
+  }
+
+  const used = count ?? 0;
+  return {
+    used,
+    limit: FREE_CHANGES_LIMIT,
+    left: Math.max(0, FREE_CHANGES_LIMIT - used),
+    chargeable: used >= FREE_CHANGES_LIMIT,
   };
 }

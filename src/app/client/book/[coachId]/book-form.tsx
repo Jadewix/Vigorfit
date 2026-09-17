@@ -5,10 +5,13 @@ import { createBookingAction, type BookingState } from "./actions";
 import { Button } from "@/frontend/ui/button";
 import { Calendar } from "@/frontend/ui/calendar";
 import {
+  ARRIVAL_NOTE,
   SESSION_LABEL,
   SESSION_MINUTES,
   TRACKS,
   capacityFor,
+  isTrackDay,
+  offTrackNote,
   type Plan,
   type ScheduleTrack,
 } from "@/shared/booking";
@@ -55,17 +58,14 @@ export function BookForm({
   // Today is Beirut's date, not the device's: a phone set to another zone would
   // otherwise offer yesterday, or hide today, around midnight.
   const todayDate = useMemo(() => new Date(`${today}T00:00:00`), [today]);
-  // Sunday is always out; a client on a schedule track also cannot pick the
-  // days their plan does not run on, so those are struck from the calendar
-  // rather than offered and then rejected on submit.
-  const disabledDays = useMemo(() => {
-    const offDays = track
-      ? [0, 1, 2, 3, 4, 5, 6].filter(
-          (d) => !TRACKS[track].weekdays.includes(d),
-        )
-      : [0];
-    return [{ before: todayDate }, { dayOfWeek: offDays }];
-  }, [todayDate, track]);
+  // Sunday and the past are the only days that cannot be picked. A member's
+  // schedule track used to be struck out of the calendar as well; it is now a
+  // preference rather than a rule, so their own days stay the ones to take and
+  // the rest are offered with the note below.
+  const disabledDays = useMemo(
+    () => [{ before: todayDate }, { dayOfWeek: [0] }],
+    [todayDate],
+  );
 
   const [date, setDate] = useState("");
   const [slots, setSlots] = useState<Slot[]>([]);
@@ -77,6 +77,13 @@ export function BookForm({
   const isSunday = date
     ? new Date(`${date}T00:00:00`).getDay() === 0
     : false;
+
+  // Whether the chosen day falls outside the member's plan. Worked out here
+  // rather than read off the API response so the note appears with the date,
+  // not a round trip later.
+  const offTrack = Boolean(
+    date && track && !isTrackDay(new Date(`${date}T00:00:00`).getDay(), track),
+  );
 
   // Availability we've already fetched is reused for a minute, so stepping
   // back and forth between dates doesn't pay for the round trip each time.
@@ -149,11 +156,23 @@ export function BookForm({
           />
         </div>
         <p className="mt-2 text-xs text-sage-dim">
-          Each session is {SESSION_LABEL}.{" "}
+          Each session is {SESSION_LABEL}. {ARRIVAL_NOTE}{" "}
           {track
             ? `Your plan trains on ${TRACKS[track].short}.`
             : "Closed Sundays."}
         </p>
+
+        {/*
+          The off-plan note. Sage rather than red: the day is bookable and the
+          booking will go through, so this is the studio's preference being
+          stated, not an error being reported. Red here would read as a
+          rejection of a date the form has just accepted.
+        */}
+        {offTrack && track && (
+          <p className="mt-2 border border-sage/50 bg-panel-green px-3 py-2 text-xs leading-relaxed text-bone">
+            {offTrackNote(track)}
+          </p>
+        )}
       </div>
 
       <div>
@@ -239,8 +258,8 @@ export function BookForm({
             ? `Request ${label12h(time)} session`
             : "Select a time"}
       </Button>
-      <p className="text-center text-xs text-sage-dim/70">
-        Your coach will confirm the session.
+      <p className="text-center text-xs leading-relaxed text-sage-dim/70">
+        Your coach will confirm the session. {ARRIVAL_NOTE}
       </p>
     </form>
   );

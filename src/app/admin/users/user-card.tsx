@@ -242,7 +242,7 @@ export function UserCard({
                   <option value="">Not set</option>
                   {PLAN_VALUES.map((p) => (
                     <option key={p} value={p}>
-                      {PLANS[p].label} — ${PLANS[p].priceUsd}/month
+                      {PLANS[p].label} — ${PLANS[p].priceUsd}/month · {PLANS[p].perWeek}&times; a week
                     </option>
                   ))}
                 </select>
