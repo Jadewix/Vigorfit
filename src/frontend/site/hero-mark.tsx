@@ -4,10 +4,27 @@ import { useEffect, useRef, useState } from "react";
 import type { MarkScene } from "@/frontend/site/hero-mark-scene";
 
 /**
- * The studio's STL of the mark, served exactly as supplied: the same bytes as
- * the file they sent, not a converted or compressed copy.
+ * The studio's STL of the mark, gzipped for the wire by
+ * scripts/hero-mark/compress.mjs (2.2 MB → 350 KB). Unzipped, it is the file
+ * they sent byte for byte; nothing about the model is converted.
  */
-const MODEL_URL = "/hero-mark.stl";
+const MODEL_URL = "/hero-mark.stl.gz";
+
+/**
+ * Fetch the model and undo the gzip. The magic-number check is there because
+ * whether a `.gz` arrives still zipped depends on the server: a static host
+ * that labels it `Content-Encoding: gzip` has the browser unzip it on the
+ * way in, and unzipping twice would fail.
+ */
+async function loadModel(): Promise<ArrayBuffer> {
+  const res = await fetch(MODEL_URL);
+  if (!res.ok) throw new Error(`${MODEL_URL}: ${res.status}`);
+  const bytes = await res.arrayBuffer();
+  const head = new Uint8Array(bytes, 0, 2);
+  if (head[0] !== 0x1f || head[1] !== 0x8b) return bytes;
+  const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"));
+  return new Response(stream).arrayBuffer();
+}
 
 /**
  * The angle the mark rests at with the page at the top: face-on, as the
@@ -123,10 +140,7 @@ export function HeroMark({ className }: { className?: string }) {
 
     Promise.all([
       import("@/frontend/site/hero-mark-scene"),
-      fetch(MODEL_URL).then((res) => {
-        if (!res.ok) throw new Error(`${MODEL_URL}: ${res.status}`);
-        return res.arrayBuffer();
-      }),
+      loadModel(),
     ])
       .then(([{ createMarkScene }, stl]) => {
         if (disposed) return;

@@ -41,7 +41,8 @@ export type MarkScene = {
 const LOGO_RED = "#e30241";
 
 /**
- * @param stl The studio's STL, exactly as supplied — public/hero-mark.stl.
+ * @param stl The studio's STL, exactly as supplied — the unzipped bytes of
+ *   public/hero-mark.stl.gz, whose source is scripts/hero-mark/source/.
  */
 export function createMarkScene(canvas: HTMLCanvasElement, stl: ArrayBuffer): MarkScene {
   // Throws where WebGL is unavailable. The caller treats that as "no mark",
