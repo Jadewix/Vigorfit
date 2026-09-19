@@ -466,6 +466,9 @@ html {
   value is a calc() over two breakpoints: behind the type on phones, where it
   must never compete with the headline, and full strength from `lg` where it
   has its own column.
+
+  Two layers carry it: the dumbbell in the team band (HeroObject) and the
+  turning mark in the hero (HeroMark). Each writes its own `--par`.
 */
 .hero-object {
   --ho-op: 0.22;

@@ -8,6 +8,7 @@ import { CoachAvatar } from "@/frontend/components/coach-avatar";
 import { SiteNav } from "@/frontend/site/site-nav";
 import { Reveal } from "@/frontend/site/reveal";
 import { OpenStatus } from "@/frontend/site/open-status";
+import { HeroMark } from "@/frontend/site/hero-mark";
 import { HeroObject } from "@/frontend/site/hero-object";
 import { HERO_OBJECT } from "@/frontend/site/photos";
 import { SiteFooter } from "@/frontend/site/site-footer";
@@ -243,6 +244,15 @@ export default async function Home() {
               "radial-gradient(70% 55% at 78% 88%, rgba(151,176,140,0.14), transparent 64%), radial-gradient(55% 45% at 8% 4%, rgba(11,13,11,0.55), transparent 68%)",
           }}
         />
+
+        {/* The mark in 3D, turning as the page scrolls. Behind the type on
+            phones. From `lg` it takes the lower right of the band: the
+            headline runs most of the way across, but the lead and the ledger
+            under it stop short, and that corner is where the ground light
+            above already falls. It is background, so the copy does not
+            clear it, but it sits a little further right until `xl`: the
+            lead's measure is fixed, and at 1024px it reaches 70% across. */}
+        <HeroMark className="lg:left-[64%] lg:top-[22%] xl:left-[60%]" />
 
         <div className="relative z-10 mx-auto w-full max-w-[1400px] px-5 py-20 sm:px-8 lg:px-12">
           {/*
