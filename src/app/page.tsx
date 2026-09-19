@@ -5,6 +5,7 @@ import { getPublicCoaches } from "@/backend/public-coaches";
 import { SESSION_LABEL } from "@/shared/booking";
 import { buttonClasses, type Size } from "@/frontend/ui/button";
 import { CoachAvatar } from "@/frontend/components/coach-avatar";
+import { ClassMark, type ClassIcon } from "@/frontend/components/class-mark";
 import { SiteNav } from "@/frontend/site/site-nav";
 import { Reveal } from "@/frontend/site/reveal";
 import { OpenStatus } from "@/frontend/site/open-status";
@@ -12,6 +13,8 @@ import { HeroMark } from "@/frontend/site/hero-mark";
 import { HeroObject } from "@/frontend/site/hero-object";
 import { HERO_OBJECT } from "@/frontend/site/photos";
 import { SiteFooter } from "@/frontend/site/site-footer";
+import { FeedbackForm } from "@/frontend/site/feedback-form";
+import { sendFeedbackAction } from "./actions";
 import {
   STUDIO_ADDRESS,
   STUDIO_HOURS,
@@ -37,37 +40,60 @@ import {
 */
 const copy = {
   hero: {
-    // Two display lines. The place name leads, because for a single-location
-    // studio that is the most useful thing a visitor can read first.
-    place: "Zgharta",
-    trade: "Gym & Coaching",
-    lead: "Train on your own with a membership, or book one-to-one sessions with a coach who programs for your goals.",
+    // Two display lines: the first word at full size, the rest a step
+    // below it. The no-break space keeps "&" on the line with "Classes", so a
+    // phone that wraps the second line never strands it at the end of one.
+    first: "Professional",
+    rest: "Supervised Training &\u00A0Classes",
+    lead: "Your progress is their job. Every program built, every session adjusted, every rep tracked. So all you have to do is show up and train.",
     primary: "Book a session",
     primaryGuest: "Claim your free session",
   },
   team: {
     heading: "The team",
-    lead: "Senior coaches who stay. You train with the person who writes your program — every session.",
+    lead: "Your progress is their job. Every program built, every session adjusted, every rep tracked. So all you have to do is show up and train.",
     emptyTitle: "Coaches are being set up",
     emptyBody:
       "The studio is adding its coaches now. Check back soon to see who’s available.",
   },
+  // Fixed for now. Each box is a name and an icon; to use a photo instead,
+  // put a square image in public/ and add e.g. `photo: "/classes/yoga.jpg"`.
+  // Icons: "lotus", "pullup", "dumbbell" (see ClassMark).
+  classes: {
+    heading: "Classes",
+    items: [
+      { name: "Yoga", icon: "lotus" },
+      { name: "Calisthenics", icon: "pullup" },
+      { name: "Weight Lifting", icon: "dumbbell" },
+    ] as { name: string; icon: ClassIcon; photo?: string }[],
+  },
   booking: {
     heading: "Booking",
-    lead: "Choose the coach who fits your goal, see when they’re free, and lock it in. Three steps, no back-and-forth.",
+    lead: "Your trainer, your time, your call. Booking shouldn’t take longer than the workout.",
     browse: "Browse the team",
   },
   contact: {
     heading: "Start a conversation",
-    lead: "Questions about memberships or coaching? Message us on WhatsApp.",
+    lead: "Questions about memberships or Trainers, feedback on the gym, or just a thought worth sharing. Contact us.",
     whatsapp: "WhatsApp",
     address: "Address",
     hours: "Hours",
     cta: "Message us on WhatsApp",
   },
+  // Read only by admin accounts — see supabase/feedback.sql.
+  feedback: {
+    title: "Feedback & Thoughts",
+    to: "To Jad",
+    note: "Goes straight to Jad, not to the coaches. Your name is optional.",
+    message: "Your message",
+    name: "Name (optional)",
+    send: "Send",
+    sending: "Sending…",
+    sent: "Sent. Thank you.",
+  },
   closing: {
     heading: "Book your session",
-    lead: "Pick a coach, choose a time, and get to work. That’s the whole process.",
+    lead: "One message gets you started. We’ll handle the rest.",
   },
 } as const;
 
@@ -213,10 +239,11 @@ export default async function Home() {
 
         olive   hero      — the brand's own colour, and the facts
         olive   team      — raised a step on --panel; the weight sits here
+        olive   classes   — back down to the ground; the same cards as the team
         bone    booking   — the one light band; the process, and the room
-        olive   contact   — back to the brand to close the argument
         black   closing   — the deepest well on the page under the last CTA
-        black   footer    — continuous with it, parted by one hairline
+        olive   contact   — the details, and the feedback box, after the ask
+        black   footer    — parted from it by the burgundy hairline
 
     Each band sets its own ground and its own text colour via `.brand-dark`,
     `.brand-light` or `.brand-black`, so nothing inside a band needs to know
@@ -269,23 +296,24 @@ export default async function Home() {
           */}
           <div>
             {/*
-              Two steps, not two equal lines. The place name takes the full
-              display size and the trade sits a step below it: at one size the
-              longer second line wrapped and left a stranded "&", and two lines
-              shouting at the same volume gave the hero no hierarchy to read.
+              Two steps, not two equal lines. The first word takes the full
+              display size and the rest sits a step below it: at one size the
+              longer second line wraps, and two lines shouting at the same
+              volume gave the hero no hierarchy to read. `text-balance` evens
+              the second line out when a phone does wrap it.
             */}
             <h1 className="display">
               <span
                 className="load-rise d-xl block text-grey"
                 style={{ animationDelay: "60ms" }}
               >
-                {copy.hero.place}
+                {copy.hero.first}
               </span>
               <span
-                className="load-rise d-lg mt-1 block text-sage"
+                className="load-rise d-lg mt-1 block text-balance text-sage"
                 style={{ animationDelay: "150ms" }}
               >
-                {copy.hero.trade}
+                {copy.hero.rest}
               </span>
             </h1>
 
@@ -363,7 +391,7 @@ export default async function Home() {
       {/* ── Team ───────────────────────────────────────────── */}
       <section
         id="team"
-        className="relative bg-panel/30 px-5 py-24 sm:px-8 lg:py-32"
+        className="relative bg-panel/30 px-5 pb-24 pt-16 sm:px-8 lg:pb-32 lg:pt-20"
       >
         <div className="mx-auto max-w-6xl">
           {/*
@@ -372,18 +400,33 @@ export default async function Home() {
             It keeps both of its old treatments: behind the type at low
             opacity on phones, and in a column of its own beside the heading
             from `lg`. What it needs here that it did not need in the hero is
-            a floor — the heading and its lead are barely 180px tall, and the
-            object is square, so without a minimum this block would be shorter
-            than the thing sitting in it and the weight would spill behind the
-            first row of coaches, which are opaque and would cut it in half.
+            a floor, or the weight would spill behind the first row of
+            coaches, which are opaque and would cut it in half.
+
+            Below `lg` the floor is sized to the weight itself, not to its
+            file. The render is square but the dumbbell fills only the middle
+            ~53% of its height; the rest is transparent. A floor sized to the
+            full square left 70px of nothing above and below the heading on a
+            phone. The weight is 84% of the column wide, so its visible height
+            is about 45% of the viewport, and it stops growing at 16rem, when
+            the box reaches its 30rem cap. On most phones the text is taller
+            than that and sets the height itself.
+
+            From `lg` the weight is at full strength, and so is its bloom, a
+            soft disc as wide as the whole square. The floor there is the
+            smallest one that keeps that disc inside the band, clear of the
+            rule above and the coaches below.
+
+            The band's top padding matches the gap below it to the coaches,
+            so the block sits evenly between the rule above and the grid. The
+            weight takes no vertical nudge: it is centred in the block.
           */}
-          <div className="relative flex min-h-[20rem] items-center lg:min-h-[24rem]">
+          <div className="relative flex min-h-[min(45vw,16rem)] items-center lg:min-h-[18rem]">
             <HeroObject
               src={HERO_OBJECT.src}
               width={HERO_OBJECT.width}
               height={HERO_OBJECT.height}
               className="lg:left-[58%]"
-              style={{ ["--ho-y" as string]: "-2%" }}
             />
 
             <Reveal className="relative z-10 max-w-3xl lg:max-w-[54%]">
@@ -395,7 +438,7 @@ export default async function Home() {
           </div>
 
           {coaches.length === 0 ? (
-            <div className="mt-12 border border-line bg-ground/60 p-10 text-center">
+            <div className="mt-16 border border-line bg-ground/60 p-10 text-center lg:mt-20">
               <p className="display d-md text-grey">{copy.team.emptyTitle}</p>
               <p className="mx-auto mt-3 max-w-md text-sage-dim">
                 {copy.team.emptyBody}
@@ -415,7 +458,7 @@ export default async function Home() {
               That is the same joinery the booking steps below use, and it is
               what keeps the page reading as a single ruled sheet.
             */
-            <div className="mt-12 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-16 grid gap-px border border-line bg-line sm:grid-cols-2 lg:mt-20 lg:grid-cols-3">
               {coaches.map((c) => (
                 <div
                   key={c.id}
@@ -462,6 +505,56 @@ export default async function Home() {
               ))}
             </div>
           )}
+        </div>
+      </section>
+
+      {/*
+        ── Classes ──────────────────────────────────────────
+
+        The team band's twin: the same heading, the same ruled block, the same
+        square picture beside a name. What differs is the ground — down off
+        --panel, so the two olive bands read as two sections rather than one
+        long one — and that there is no button, since a class is booked the
+        way everything else is, through a coach.
+
+        The classes are written in `copy.classes.items` above.
+      */}
+      <section
+        id="classes"
+        className="relative border-t border-line px-5 py-24 sm:px-8 lg:py-32"
+      >
+        <div className="mx-auto max-w-6xl">
+          <Reveal className="max-w-3xl">
+            <h2 className="display d-lg text-sage">{copy.classes.heading}</h2>
+          </Reveal>
+
+          {/*
+            The same hairline joinery as the team block, drawn a different
+            way: each cell carries its own 1px ring, and neighbouring rings
+            meet in the 1px gap as one rule. The team block lets `bg-line`
+            show through its gaps instead, which also shows through an
+            unfilled last row as a solid block; with rings, a short last
+            row simply ends — as three boxes do on a two-column tablet.
+          */}
+          <ul className="mt-12 grid gap-px p-px sm:grid-cols-2 lg:grid-cols-3">
+            {copy.classes.items.map((k) => (
+              <li
+                key={k.name}
+                className="flex h-full flex-col bg-ground p-6 ring-1 ring-line transition-colors hover:bg-panel/60"
+              >
+                <div className="flex items-center gap-4">
+                  <ClassMark
+                    icon={k.icon}
+                    photo={k.photo}
+                    className="h-16 w-16"
+                  />
+                  <h3 className="display min-w-0 text-lg text-grey">
+                    {k.name}
+                  </h3>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
@@ -541,94 +634,13 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ── Contact ────────────────────────────────────────── */}
-      <section
-        id="contact"
-        className="relative border-t border-line px-5 py-24 sm:px-8 lg:py-32"
-      >
-        <div className="mx-auto max-w-6xl">
-          <Reveal className="max-w-2xl">
-            <h2 className="display d-lg text-grey">{copy.contact.heading}</h2>
-            <p className="measure mt-5 text-base leading-relaxed text-sage-dim sm:text-lg">
-              {copy.contact.lead}
-            </p>
-
-            <dl className="mt-10 space-y-6 border-t border-rule pt-8">
-              <div>
-                <dt className="tag text-sage-dim">{copy.contact.whatsapp}</dt>
-                <dd className="mt-1.5">
-                  <a
-                    href={whatsappHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={detailLink}
-                  >
-                    {STUDIO_WHATSAPP_DISPLAY}
-                  </a>
-                </dd>
-              </div>
-              <div>
-                <dt className="tag text-sage-dim">{copy.contact.address}</dt>
-                <dd className="mt-1.5">
-                  <a
-                    href={STUDIO_MAPS_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={detailLink}
-                  >
-                    {STUDIO_ADDRESS[0]}
-                    <br />
-                    {STUDIO_ADDRESS[1]}
-                  </a>
-                </dd>
-              </div>
-              <div>
-                <dt className="tag text-sage-dim">{copy.contact.hours}</dt>
-                {/* The hours are the clearest case for the ledger: three
-                    labels against three figures, aligned by the typeface. */}
-                <dd className="mt-2">
-                  <dl className="ledger max-w-sm text-base">
-                    {STUDIO_HOURS.map(({ label, hours }) => (
-                      <div key={label} className="ledger-row">
-                        <dt className="text-sage-dim">{label}</dt>
-                        <dd
-                          className={
-                            hours
-                              ? "tabular-nums text-grey"
-                              : "tabular-nums text-brick"
-                          }
-                        >
-                          {hours
-                            ? `${formatClock(hours.open)} – ${formatClock(hours.close)}`
-                            : "Closed"}
-                        </dd>
-                      </div>
-                    ))}
-                  </dl>
-                </dd>
-              </div>
-            </dl>
-
-            <div className="mt-10">
-              <a
-                href={whatsappHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={buttonClasses("primary", "lg", "tag px-8")}
-              >
-                {copy.contact.cta}
-              </a>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
       {/*
         ── Closing CTA ──────────────────────────────────────
 
-        Black, and the only band that is. The page has argued on olive and
-        explained itself on paper; the last ask sits in the deepest well on
-        the page so there is nothing else to look at.
+        Black, and the only band above the footer that is. The page has argued
+        on olive and explained itself on paper; the ask sits in the deepest
+        well on the page so there is nothing else to look at. The contact
+        details come after it, for whoever still has a question.
       */}
       <section className="brand-black relative overflow-hidden px-5 py-24 sm:px-8 lg:py-32">
         <div
@@ -654,6 +666,123 @@ export default async function Home() {
             />
           </div>
         </Reveal>
+      </section>
+
+      {/*
+        ── Contact ──────────────────────────────────────────
+
+        After the closing ask rather than before it. Two columns from `lg`:
+        the studio's details on the left, and on the right the feedback box —
+        the one thing on the page that is not addressed to the whole studio.
+        On a phone the box follows the WhatsApp button.
+      */}
+      <section
+        id="contact"
+        className="relative border-t border-line px-5 py-24 sm:px-8 lg:py-32"
+      >
+        <div className="mx-auto max-w-6xl">
+          <Reveal className="max-w-2xl">
+            <h2 className="display d-lg text-grey">{copy.contact.heading}</h2>
+            <p className="measure mt-5 text-base leading-relaxed text-sage-dim sm:text-lg">
+              {copy.contact.lead}
+            </p>
+          </Reveal>
+
+          <div className="mt-10 grid gap-14 lg:grid-cols-2 lg:gap-16">
+            <Reveal>
+              <dl className="space-y-6 border-t border-rule pt-8">
+                <div>
+                  <dt className="tag text-sage-dim">{copy.contact.whatsapp}</dt>
+                  <dd className="mt-1.5">
+                    <a
+                      href={whatsappHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={detailLink}
+                    >
+                      {STUDIO_WHATSAPP_DISPLAY}
+                    </a>
+                  </dd>
+                </div>
+                <div>
+                  <dt className="tag text-sage-dim">{copy.contact.address}</dt>
+                  <dd className="mt-1.5">
+                    <a
+                      href={STUDIO_MAPS_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={detailLink}
+                    >
+                      {STUDIO_ADDRESS[0]}
+                      <br />
+                      {STUDIO_ADDRESS[1]}
+                    </a>
+                  </dd>
+                </div>
+                <div>
+                  <dt className="tag text-sage-dim">{copy.contact.hours}</dt>
+                  {/* The hours are the clearest case for the ledger: three
+                      labels against three figures, aligned by the typeface. */}
+                  <dd className="mt-2">
+                    <dl className="ledger max-w-sm text-base">
+                      {STUDIO_HOURS.map(({ label, hours }) => (
+                        <div key={label} className="ledger-row">
+                          <dt className="text-sage-dim">{label}</dt>
+                          <dd
+                            className={
+                              hours
+                                ? "tabular-nums text-grey"
+                                : "tabular-nums text-brick"
+                            }
+                          >
+                            {hours
+                              ? `${formatClock(hours.open)} – ${formatClock(hours.close)}`
+                              : "Closed"}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </dd>
+                </div>
+              </dl>
+
+              <div className="mt-10">
+                <a
+                  href={whatsappHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={buttonClasses("primary", "lg", "tag px-8")}
+                >
+                  {copy.contact.cta}
+                </a>
+              </div>
+            </Reveal>
+
+            {/*
+              The feedback box. Its header is addressed like an envelope — what
+              it is on the left, who it goes to on the right — in the same
+              term-and-value split the ledgers use. Only admin accounts can read
+              what arrives; nothing about the sender is kept but the name they
+              choose to type.
+            */}
+            <Reveal delay={120}>
+              <div className="border border-line bg-panel/40">
+                <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-line px-6 py-5 sm:px-7">
+                  <h3 className="display text-xl text-grey sm:text-2xl">
+                    {copy.feedback.title}
+                  </h3>
+                  <p className="tag text-sage">{copy.feedback.to}</p>
+                </div>
+                <div className="px-6 py-6 sm:px-7">
+                  <p className="mb-6 text-sm leading-relaxed text-sage-dim">
+                    {copy.feedback.note}
+                  </p>
+                  <FeedbackForm action={sendFeedbackAction} copy={copy.feedback} />
+                </div>
+              </div>
+            </Reveal>
+          </div>
+        </div>
       </section>
 
       <SiteFooter />

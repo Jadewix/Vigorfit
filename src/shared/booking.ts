@@ -6,7 +6,7 @@
  * minutes at the start of the next one.
  */
 export const SESSION_MINUTES = 60;
-export const SESSION_LABEL = "1 hour";
+export const SESSION_LABEL = "60 minutes";
 
 /**
  * What every client is asked to do before their session, shown wherever the

@@ -96,12 +96,16 @@ export function HeroObject({
     };
   }, []);
 
+  // `grid-rows-1` pins the one row to the layer's own height. An auto row
+  // would grow to fit a box taller than the layer and start at its top, so
+  // the weight would hang downward instead of centring. That happens on
+  // phones, where the square render is taller than the text it sits behind.
   return (
     <div
       ref={ref}
       aria-hidden
       className={[
-        "hero-object parallax pointer-events-none absolute z-0 grid place-items-center",
+        "hero-object parallax pointer-events-none absolute z-0 grid grid-rows-1 place-items-center",
         "inset-0",
         className,
       ]

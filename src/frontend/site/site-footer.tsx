@@ -41,17 +41,15 @@ const navLink =
 const sections = [
   { href: "#top", label: "Home" },
   { href: "#team", label: "Team" },
+  { href: "#classes", label: "Classes" },
   { href: "#booking", label: "Booking" },
   { href: "#contact", label: "Contact" },
 ];
 
 /**
- * The footer, and the bottom half of the page's one black well — it runs
- * straight on from the closing CTA above it, parted by a single hairline, so
- * the page ends on one unbroken block rather than on two dark stripes.
- *
- * The hairline parting it from the CTA is burgundy — the last red on the
- * page, closing it on the colour the buttons above it were filled with.
+ * The footer: a black well under the Contact band, parted from it by a
+ * single burgundy hairline — the last red on the page, closing it on the
+ * colour the booking buttons above it were filled with.
  *
  * Deliberately short. Everything here is a repeat of something stated more
  * fully further up the page, so it earns a few lines rather than a screen:

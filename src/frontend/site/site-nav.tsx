@@ -11,6 +11,7 @@ import { FREE_SESSION_GREETING, waLink } from "@/shared/studio";
 const sections = [
   { id: "top", href: "#top", label: "Home" },
   { id: "team", href: "#team", label: "Team" },
+  { id: "classes", href: "#classes", label: "Classes" },
   { id: "booking", href: "#booking", label: "Booking" },
 ];
 
