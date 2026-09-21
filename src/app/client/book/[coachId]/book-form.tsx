@@ -33,7 +33,14 @@ function toDateValue(d: Date): string {
   ).padStart(2, "0")}`;
 }
 
-type Slot = { time: string; taken: boolean; mine: boolean; remaining: number };
+type Slot = {
+  time: string;
+  taken: boolean;
+  mine: boolean;
+  remaining: number;
+  /** The coach is running a class then. */
+  inClass?: boolean;
+};
 
 export function BookForm({
   coachId,
@@ -212,6 +219,7 @@ export function BookForm({
                   time={s.time}
                   state={slotStateOf(s, time === s.time)}
                   remaining={s.remaining}
+                  inClass={s.inClass}
                   onSelect={() => setTime(s.time)}
                 />
               ))}
@@ -221,7 +229,7 @@ export function BookForm({
             <p className="mt-3 text-xs leading-relaxed text-sage-dim">
               Each slot takes up to {capacityFor(plan)} clients.{" "}
               <span className="text-sage">Green is yours</span>,{" "}
-              <span className="text-red-lift">red is full</span>.
+              <span className="text-red-lift">red is full or a class</span>.
             </p>
           </>
         )}

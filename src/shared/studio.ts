@@ -3,7 +3,7 @@
  *
  * The WhatsApp number here is used for *click-to-chat* (user → business):
  * a `wa.me` deep link that opens WhatsApp with a pre-filled message. That is
- * deliberately separate from `src/lib/whatsapp.ts`, which is the Meta Cloud
+ * deliberately separate from `src/backend/whatsapp.ts`, which is the Meta Cloud
  * API sender for business → user booking notifications and needs credentials
  * and approved templates. Click-to-chat needs neither.
  */
@@ -99,7 +99,7 @@ function sameHours(
 }
 
 /**
- * The hours list, built from `HOURS` in lib/booking — the same table the
+ * The hours list, built from `HOURS` in shared/booking — the same table the
  * booking grid sells slots from, so the site can never advertise hours the
  * calendar disagrees with.
  *

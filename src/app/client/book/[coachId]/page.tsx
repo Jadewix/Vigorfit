@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/backend/supabase/server";
 import { PageHeading } from "@/frontend/components/dashboard-shell";
 import { Card, CardBody, CardHeader, CardTitle } from "@/frontend/ui/card";
@@ -47,6 +47,8 @@ export default async function BookCoachPage({
   // Only clients reach /client/*, so the profile is always there.
   const me = await getCurrentProfile();
   const sub = await getSubscription(me!.id);
+  // Classes members join scheduled classes rather than booking a coach.
+  if (sub.plan === "classes") redirect("/client/classes");
   // No subscription still buys one free first session.
   const isTrial = sub.configured && !sub.plan;
   const freeSession = isTrial ? await hasFreeSessionAvailable(me!.id) : false;

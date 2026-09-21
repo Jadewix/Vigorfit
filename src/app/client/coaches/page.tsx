@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getCurrentProfile } from "@/backend/auth";
 import { createClient } from "@/backend/supabase/server";
 import { PageHeading } from "@/frontend/components/dashboard-shell";
 import { EmptyState } from "@/frontend/components/empty-state";
@@ -8,6 +10,10 @@ import { CoachAvatar } from "@/frontend/components/coach-avatar";
 import type { Coach, Profile } from "@/shared/types";
 
 export default async function BrowseCoachesPage() {
+  // Classes members join scheduled classes rather than booking a coach.
+  const me = await getCurrentProfile();
+  if (me?.plan === "classes") redirect("/client/classes");
+
   const supabase = await createClient();
 
   const { data: coachesData } = await supabase

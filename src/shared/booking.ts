@@ -218,7 +218,7 @@ export function slotAvailability(
  * This is the ONLY place opening hours are written down. The booking grid
  * offers slots straight from it, and every hours list on the site — the
  * marketing page, the footer, the coach and booking panels — is derived from
- * it in `lib/studio.ts`, along with the live "open now" line. The marketing
+ * it in `shared/studio.ts`, along with the live "open now" line. The marketing
  * side used to carry its own second copy, which drifted to 9–5 while the
  * grid went on selling 8–6.
  */

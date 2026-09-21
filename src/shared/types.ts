@@ -24,7 +24,7 @@ export interface Profile {
   avatar_url: string | null;
   /** Subscription. Optional: absent until supabase/subscriptions.sql runs. */
   plan?: Plan | null;
-  /** Which weekdays this client may book. See TRACKS in lib/booking. */
+  /** Which weekdays this client may book. See TRACKS in shared/booking. */
   schedule_track?: ScheduleTrack | null;
   /** "Paid until" date. Absent until subscription-limits.sql has run. */
   subscription_ends_on?: string | null;
@@ -40,16 +40,6 @@ export interface Coach {
   /** Public photo URL in the coach-photos bucket. Absent until
    *  supabase/coach-photos.sql has been run on the database. */
   avatar_url?: string | null;
-  created_at: string;
-}
-
-export interface Availability {
-  id: string;
-  coach_id: string;
-  /** 0 = Sunday ... 6 = Saturday */
-  weekday: number;
-  start_time: string; // "HH:MM:SS"
-  end_time: string; // "HH:MM:SS"
   created_at: string;
 }
 

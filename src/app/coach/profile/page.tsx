@@ -58,8 +58,8 @@ export default async function CoachProfilePage() {
               Clients book hourly slots within these hours. Each session is{" "}
               {SESSION_LABEL}, and clients are asked to arrive 5 to 10 minutes
               early. A semi-private slot seats {PLANS.semi_private.capacity}; a
-              class seats {PLANS.classes.capacity}; a fully private slot is
-              yours alone.
+              fully private slot is yours alone. Classes are scheduled under My
+              classes, and your slots close while one runs.
             </p>
           </CardBody>
         </Card>

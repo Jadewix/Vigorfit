@@ -7,10 +7,12 @@ import { EmptyState } from "@/frontend/components/empty-state";
 import { ChevronRightIcon, WeekIcon } from "@/frontend/components/icons";
 import {
   buildWeek,
+  dayLabel,
   weekRangeLabel,
   weekdayName,
   type ScheduleWeek,
 } from "@/shared/schedule";
+import { runsOn, timeRangeLabel, type StudioClass } from "@/shared/classes";
 import {
   shiftDate,
   weekStartOf,
@@ -137,6 +139,21 @@ export default async function CoachSchedulePage({
     phone: profiles.get(id)?.phone ?? null,
   }));
 
+  // The coach's classes that land in this week, one row per occurrence.
+  // Before classes.sql has run the query errors, which reads as none.
+  const { data: classRows } = await supabase
+    .from("classes")
+    .select("*")
+    .eq("coach_id", me!.id)
+    .lte("class_date", week.end);
+  const teaching = Array.from({ length: 7 }, (_, i) => shiftDate(monday, i)!)
+    .flatMap((date) =>
+      ((classRows ?? []) as StudioClass[])
+        .filter((cls) => runsOn(cls, date))
+        .sort((a, b) => a.start_time.localeCompare(b.start_time))
+        .map((cls) => ({ date, cls })),
+    );
+
   const thisWeek = weekStartOf(today)!;
   const previous = shiftDate(monday, -7)!;
   const next = shiftDate(monday, 7)!;
@@ -259,6 +276,33 @@ export default async function CoachSchedulePage({
             See them →
           </span>
         </Link>
+      )}
+
+      {/*
+        Classes the studio has put this coach on. Their hours are closed to
+        booking, so they never appear as sessions below; this is where the
+        coach sees them.
+      */}
+      {teaching.length > 0 && (
+        <section aria-label="Your classes this week" className="mb-5">
+          <h2 className="tag mb-2 text-ink-muted">Your classes this week</h2>
+          <ul className="divide-y divide-line-light overflow-hidden rounded-xl border border-line-light bg-paper-panel">
+            {teaching.map(({ date, cls }) => (
+              <li
+                key={`${cls.id}-${date}`}
+                className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5 px-4 py-3"
+              >
+                <span className="text-sm font-semibold text-ink">
+                  {cls.name}
+                </span>
+                <span className="text-sm tabular-nums text-ink-muted">
+                  {weekdayName(date).slice(0, 3)} {dayLabel(date)} ·{" "}
+                  {timeRangeLabel(cls)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
 
       {week.sessions === 0 ? (

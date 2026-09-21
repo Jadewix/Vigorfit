@@ -44,19 +44,6 @@ create table if not exists public.coaches (
   created_at  timestamptz not null default now()
 );
 
--- availability: a coach's recurring weekly availability windows.
--- NOTE: currently unused — booking slots come from the studio-wide opening
--- hours in src/lib/booking.ts. Kept so per-coach availability can be re-added.
-create table if not exists public.availability (
-  id         uuid primary key default gen_random_uuid(),
-  coach_id   uuid not null references public.coaches (id) on delete cascade,
-  weekday    int  not null check (weekday between 0 and 6), -- 0 = Sunday
-  start_time time not null,
-  end_time   time not null,
-  created_at timestamptz not null default now(),
-  check (end_time > start_time)
-);
-
 -- bookings: a client books a session with a coach
 create table if not exists public.bookings (
   id         uuid primary key default gen_random_uuid(),
@@ -77,7 +64,6 @@ alter table public.bookings
 
 create index if not exists bookings_client_idx on public.bookings (client_id);
 create index if not exists bookings_coach_idx  on public.bookings (coach_id);
-create index if not exists availability_coach_idx on public.availability (coach_id);
 
 -- ---------------------------------------------------------------------------
 -- 3. Helper: read the current user's role WITHOUT tripping RLS recursion.
@@ -144,7 +130,6 @@ create trigger on_auth_user_created
 -- ---------------------------------------------------------------------------
 alter table public.profiles     enable row level security;
 alter table public.coaches      enable row level security;
-alter table public.availability enable row level security;
 alter table public.bookings     enable row level security;
 
 -- ---------------------------------------------------------------------------
@@ -202,18 +187,6 @@ create policy coaches_admin_write on public.coaches
   for all to authenticated
   using (public.get_my_role() = 'admin')
   with check (public.get_my_role() = 'admin');
-
--- ---- availability ----
-drop policy if exists availability_select on public.availability;
-create policy availability_select on public.availability
-  for select to authenticated
-  using (true);
-
-drop policy if exists availability_write on public.availability;
-create policy availability_write on public.availability
-  for all to authenticated
-  using (coach_id = auth.uid() or public.get_my_role() = 'admin')
-  with check (coach_id = auth.uid() or public.get_my_role() = 'admin');
 
 -- ---- bookings ----
 drop policy if exists bookings_select on public.bookings;

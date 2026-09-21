@@ -55,12 +55,15 @@ export function SlotCell({
   time,
   state,
   remaining,
+  inClass,
   onSelect,
 }: {
   time: string;
   state: SlotState;
   /** Places left; a lone remaining place is called out. */
   remaining?: number;
+  /** Taken because the coach is running a class, not because it is full. */
+  inClass?: boolean;
   onSelect?: () => void;
 }) {
   const label = label12h(time);
@@ -87,7 +90,7 @@ export function SlotCell({
     return (
       <span
         aria-disabled
-        title="Fully booked"
+        title={inClass ? "Your coach is running a class" : "Fully booked"}
         className={cn(base, styles.full)}
       >
         <span className="whitespace-nowrap line-through decoration-[1.5px]">
@@ -95,7 +98,7 @@ export function SlotCell({
         </span>
         <span className="flex items-center gap-1 text-[10px] font-normal uppercase tracking-wide">
           <SlashIcon width={11} height={11} strokeWidth={2.2} />
-          Full
+          {inClass ? "Class" : "Full"}
         </span>
       </span>
     );

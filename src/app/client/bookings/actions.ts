@@ -7,7 +7,7 @@ import { createClient } from "@/backend/supabase/server";
 import { notifyBookingUpdate } from "@/backend/notifications";
 import { canCancel } from "@/shared/booking";
 
-/** Postgres: undefined_column — the same code lib/subscription retries on. */
+/** Postgres: undefined_column — the same code backend/subscription retries on. */
 const MISSING_COLUMN = "42703";
 
 /**

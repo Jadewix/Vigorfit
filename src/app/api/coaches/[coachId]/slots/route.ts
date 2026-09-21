@@ -11,6 +11,8 @@ import {
   getSubscription,
   hasFreeSessionAvailable,
 } from "@/backend/subscription";
+import { classesForCoachOn } from "@/backend/classes";
+import { blockingClass } from "@/shared/classes";
 import {
   utcToZonedTime,
   weekdayOf,
@@ -23,11 +25,12 @@ export const dynamic = "force-dynamic";
 /**
  * Hourly slots for a coach on a given date, based on the studio's opening
  * hours. Each slot holds up to SLOT_CAPACITY clients, so a slot is only
- * `taken` once it's full (or the viewer already booked it). Past slots are
- * omitted.
+ * `taken` once it's full (or the viewer already booked it). A slot that
+ * overlaps one of the coach's classes is taken for everyone, with `inClass`
+ * set. Past slots are omitted.
  *
  *   GET /api/coaches/<id>/slots?date=YYYY-MM-DD
- *   -> { closed: false, slots: [{ time, taken, mine, remaining }] }
+ *   -> { closed: false, slots: [{ time, taken, mine, remaining, inClass }] }
  */
 export async function GET(
   req: NextRequest,
@@ -87,10 +90,16 @@ export async function GET(
   // The subscription decides both the capacity and which weekdays are on
   // offer. It needs the user id so it can't join the batch above, but it can
   // run alongside the bookings read.
-  const [sub, booked] = await Promise.all([
+  const [sub, booked, classes] = await Promise.all([
     getSubscription(user.id),
     bookedPromise ?? Promise.resolve([]),
+    classesForCoachOn(coachId, date),
   ]);
+
+  // Classes members join scheduled classes rather than booking coach hours.
+  if (sub.plan === "classes") {
+    return NextResponse.json({ slots: [], closed: false, classesOnly: true });
+  }
 
   // A client with no subscription gets one free session; after that they
   // cannot book until an admin assigns a plan.
@@ -132,6 +141,10 @@ export async function GET(
   const slots = slotTimesFor(weekday)
     .filter((t) => zonedTimeToUtc(date, t)!.getTime() >= now)
     .map((t) => {
+      // The coach is teaching a class then: nobody can have this hour.
+      if (blockingClass(classes, date, t)) {
+        return { time: t, remaining: 0, mine: false, taken: true, inClass: true };
+      }
       const { remaining } = slotAvailability(
         (occupants.get(t) ?? []) as { plan?: null }[],
         sub.plan,
@@ -142,6 +155,7 @@ export async function GET(
         remaining,
         mine: mine.has(t),
         taken: remaining === 0 || mine.has(t),
+        inClass: false,
       };
     });
 

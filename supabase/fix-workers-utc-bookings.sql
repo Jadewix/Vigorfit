@@ -1,5 +1,5 @@
 -- One-off repair for bookings created on Cloudflare Workers before the
--- timezone fix (src/lib/timezone.ts). Not part of schema.sql, and nothing
+-- timezone fix (src/shared/timezone.ts). Not part of schema.sql, and nothing
 -- runs it automatically: run the steps by hand in the Supabase SQL editor.
 --
 -- What went wrong: Workers run in UTC, and the booking action read the picked

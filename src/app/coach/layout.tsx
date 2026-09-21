@@ -2,6 +2,7 @@ import { requireRole } from "@/backend/auth";
 import { DashboardShell } from "@/frontend/components/dashboard-shell";
 import {
   CalendarIcon,
+  DumbbellIcon,
   GridIcon,
   UsersIcon,
   WeekIcon,
@@ -25,6 +26,7 @@ export default async function CoachLayout({
     { href: "/coach", label: "Overview", icon: <GridIcon />, exact: true },
     { href: "/coach/schedule", label: "Weekly schedule", icon: <WeekIcon /> },
     { href: "/coach/bookings", label: "My sessions", icon: <CalendarIcon /> },
+    { href: "/coach/classes", label: "My classes", icon: <DumbbellIcon /> },
     { href: "/coach/clients", label: "Clients", icon: <UsersIcon /> },
     { href: "/coach/profile", label: "My profile", icon: <WhistleIcon /> },
   ];

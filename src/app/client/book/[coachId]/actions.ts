@@ -17,6 +17,8 @@ import {
   hasFreeSessionAvailable,
 } from "@/backend/subscription";
 import { weekdayOf, zonedTimeToUtc } from "@/shared/timezone";
+import { classesForCoachOn } from "@/backend/classes";
+import { blockingClass } from "@/shared/classes";
 
 export type BookingState = { error?: string };
 
@@ -70,11 +72,24 @@ export async function createBookingAction(
   if (!slotTimesFor(weekday).includes(time)) {
     return { error: "Please pick one of the offered time slots." };
   }
+  // The coach is teaching a class then; the grid shows it as taken.
+  if (blockingClass(await classesForCoachOn(coachId, date), date, time)) {
+    return {
+      error: "Your coach is running a class at that time. Please pick another.",
+    };
+  }
 
   // 2b. The subscription decides the capacity and the bookable weekdays. The
   //     calendar already filters both, so getting here means a stale page or
   //     a hand-made request. Either way the server decides, not the form.
   const sub = await getSubscription(me!.id);
+
+  // Classes members join scheduled classes; they don't book coach hours.
+  if (sub.plan === "classes") {
+    return {
+      error: "Your plan is Classes — pick a class from the Classes page instead.",
+    };
+  }
 
   // A newcomer with no subscription may book exactly one session: the free
   // first one. Once that is held, no plan means no booking, as before.

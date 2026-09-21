@@ -107,7 +107,11 @@ export default async function ClientBookingsPage({
       {bookings.length === 0 ? (
         <EmptyState
           title="No bookings yet"
-          hint="Head to “Find a coach” to book your first session."
+          hint={
+            sub.plan === "classes"
+              ? "Classes are joined from the “Classes” page."
+              : "Head to “Find a coach” to book your first session."
+          }
           icon={<CalendarIcon />}
         />
       ) : (
