@@ -84,7 +84,7 @@ const copy = {
   feedback: {
     title: "Feedback & Thoughts",
     to: "To Jad",
-    note: "Goes straight to Jad, not to the coaches. Your name is optional.",
+    note: "Kept private between you and management. Your name is optional.",
     message: "Your message",
     name: "Name (optional)",
     send: "Send",
@@ -94,6 +94,7 @@ const copy = {
   closing: {
     heading: "Book your session",
     lead: "One message gets you started. We’ll handle the rest.",
+    progress: "Your progress…",
   },
 } as const;
 
@@ -664,6 +665,12 @@ export default async function Home() {
               href="/client/coaches"
               className="tag px-10"
             />
+          </div>
+          <div aria-hidden className="mx-auto mt-8 w-full max-w-xs">
+            <div className="h-1.5 overflow-hidden rounded-full bg-sage/15">
+              <div className="progress-fill h-full rounded-full bg-oxblood" />
+            </div>
+            <p className="tag mt-3 text-sage-dim">{copy.closing.progress}</p>
           </div>
         </Reveal>
       </section>

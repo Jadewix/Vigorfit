@@ -458,6 +458,31 @@ html {
 }
 
 /*
+  The "Your progress…" bar under the closing CTA. Decorative: it fills,
+  holds full for a beat, and starts again. Reduced motion shows it held
+  most of the way along instead.
+*/
+@keyframes progress-fill {
+  0% {
+    transform: scaleX(0);
+  }
+  70%,
+  100% {
+    transform: scaleX(1);
+  }
+}
+.progress-fill {
+  transform-origin: left center;
+  animation: progress-fill 3.2s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .progress-fill {
+    animation: none;
+    transform: scaleX(0.7);
+  }
+}
+
+/*
   The hero object's own opacity, derived from the same `--par` the drift uses
   so the weight recedes as the hero leaves rather than tracking the page all
   the way down.
