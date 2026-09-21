@@ -41,7 +41,7 @@ export function OpenStatus({
     <span
       className={cn(
         "inline-flex items-center gap-2",
-        status.open ? "text-sage" : "text-brick",
+        status.open ? "text-sage-lift" : "text-brick",
         className,
       )}
     >

@@ -75,7 +75,7 @@ export function UserCard({
           `relative` anchors the Edit button's stretched hit area below, so
           clicking anywhere on the row opens the editor. */}
       <div className="relative flex items-start gap-3 p-3.5 transition-colors hover:bg-paper">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-forest/10 text-xs font-bold text-forest">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-forest/10 text-xs font-bold text-forest-lift">
           {initialsOf(name)}
         </span>
 
@@ -155,7 +155,7 @@ export function UserCard({
             "flex h-8 shrink-0 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium transition-colors",
             "after:absolute after:inset-0 after:content-['']",
             editing
-              ? "border-forest text-forest"
+              ? "border-forest text-forest-lift"
               : "border-line-light text-ink hover:bg-paper",
           )}
         >
@@ -319,7 +319,7 @@ export function UserCard({
                   type="checkbox"
                   name="active"
                   defaultChecked={user.coach?.active ?? false}
-                  className="h-4 w-4 rounded border-line-light text-forest focus:ring-forest/30"
+                  className="h-4 w-4 rounded border-line-light text-forest-lift focus:ring-forest/30"
                 />
                 <span className="text-sm text-ink">
                   Visible to clients (listed on the site and bookable)
@@ -334,7 +334,7 @@ export function UserCard({
             </p>
           )}
           {state.success && (
-            <p className="mt-4 rounded-lg bg-forest/10 px-3 py-2 text-sm text-forest">
+            <p className="mt-4 rounded-lg bg-forest/10 px-3 py-2 text-sm text-forest-lift">
               {state.success}
             </p>
           )}

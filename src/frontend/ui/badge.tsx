@@ -15,7 +15,7 @@ const statusStyles: Record<BookingStatus, string> = {
   pending:
     "border border-ink-muted/40 text-ink-muted app-dark:border-sage-dim/50 app-dark:text-sage-dim",
   confirmed:
-    "bg-forest/15 text-forest app-dark:bg-sage app-dark:text-ink",
+    "bg-forest/15 text-forest-lift app-dark:bg-sage app-dark:text-ink",
   cancelled:
     "bg-oxblood/15 text-oxblood app-dark:bg-oxblood/25 app-dark:text-red-lift",
   completed:

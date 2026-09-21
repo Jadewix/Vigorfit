@@ -37,7 +37,7 @@ import { DayAgenda, WeekGrid } from "./week-view";
 */
 
 const navButton =
-  "flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-line-light bg-paper-panel text-ink-muted transition-colors hover:border-forest hover:text-forest focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2";
+  "flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-line-light bg-paper-panel text-ink-muted transition-colors hover:border-forest hover:text-forest-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2";
 
 /** One figure in the week's ledger strip. */
 function Figure({
@@ -166,7 +166,7 @@ export default async function CoachSchedulePage({
         action={
           <Link
             href="/coach/bookings"
-            className="tag text-forest transition-colors hover:text-ink"
+            className="tag text-forest-lift transition-colors hover:text-ink"
           >
             All sessions →
           </Link>
@@ -196,11 +196,11 @@ export default async function CoachSchedulePage({
             {weekRangeLabel(week.start, week.end)}
           </p>
           {monday === thisWeek ? (
-            <p className="tag mt-0.5 text-forest">This week</p>
+            <p className="tag mt-0.5 text-forest-lift">This week</p>
           ) : (
             <Link
               href="/coach/schedule"
-              className="tag mt-0.5 inline-block text-ink-muted underline decoration-line-light underline-offset-4 transition-colors hover:text-forest"
+              className="tag mt-0.5 inline-block text-ink-muted underline decoration-line-light underline-offset-4 transition-colors hover:text-forest-lift"
             >
               Back to this week
             </Link>
@@ -247,7 +247,7 @@ export default async function CoachSchedulePage({
             <span className="font-semibold tabular-nums">{week.pending}</span>{" "}
             {week.pending === 1 ? "request is" : "requests are"} waiting on you.
           </span>
-          <span className="tag shrink-0 whitespace-nowrap text-forest">
+          <span className="tag shrink-0 whitespace-nowrap text-forest-lift">
             Review →
           </span>
         </Link>

@@ -67,7 +67,7 @@ export default async function BookCoachPage({
         action={
           <Link
             href="/client/coaches"
-            className="tag text-sage-dim transition-colors hover:text-sage"
+            className="tag text-sage-dim transition-colors hover:text-sage-lift"
           >
             ← Back to coaches
           </Link>

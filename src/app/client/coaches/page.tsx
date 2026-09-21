@@ -64,7 +64,7 @@ export default async function BrowseCoachesPage() {
                   <div className="min-w-0">
                     <p className="display text-xl text-bone">{name}</p>
                     {c.specialty && (
-                      <p className="tag mt-1 text-sage">{c.specialty}</p>
+                      <p className="tag mt-1 text-sage-lift">{c.specialty}</p>
                     )}
                   </div>
                 </div>

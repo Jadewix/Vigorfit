@@ -17,7 +17,7 @@ import {
   them identical rather than slowly drifting apart.
 */
 const detailRow =
-  "group flex items-start gap-2 transition-colors hover:text-sage";
+  "group flex items-start gap-2 transition-colors hover:text-sage-lift";
 
 // 3px of top margin rather than `items-center`: the glyph should sit on the
 // first line's optical centre and stay there if the text wraps on a phone.
@@ -28,7 +28,7 @@ const detailRow =
 const detailIcon = "mt-[3px] shrink-0 text-brick";
 
 const detailValue =
-  "text-grey underline decoration-line underline-offset-4 transition-colors group-hover:text-sage group-hover:decoration-sage";
+  "text-grey underline decoration-line underline-offset-4 transition-colors group-hover:text-sage-lift group-hover:decoration-sage";
 
 // 44px tall so it is a real tap target, but laid out in a row rather than a
 // column — stacked, four of these alone were 176px of the footer's height.

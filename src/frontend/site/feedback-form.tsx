@@ -113,7 +113,7 @@ export function FeedbackForm({
         </button>
         {/* Until they start the next one. */}
         {state.sent && !pending && message === "" && (
-          <p role="status" className="text-sm text-sage">
+          <p role="status" className="text-sm text-sage-lift">
             {copy.sent}
           </p>
         )}

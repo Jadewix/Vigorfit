@@ -83,7 +83,7 @@ export function SiteNav({ isClient }: { isClient: boolean }) {
               aria-current={active === s.id ? "true" : undefined}
               className={cn(
                 "tag relative flex items-center px-6 transition-colors",
-                active === s.id ? "text-sage" : "text-sage-dim hover:text-grey",
+                active === s.id ? "text-sage-lift" : "text-sage-dim hover:text-grey",
               )}
             >
               {s.label}

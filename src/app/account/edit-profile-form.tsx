@@ -53,7 +53,7 @@ export function EditProfileForm({ profile }: { profile: Profile }) {
         </p>
       )}
       {state.success && (
-        <p className="rounded-lg bg-forest/10 px-3 py-2 text-sm text-forest">
+        <p className="rounded-lg bg-forest/10 px-3 py-2 text-sm text-forest-lift">
           {state.success}
         </p>
       )}

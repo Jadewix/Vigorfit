@@ -62,7 +62,7 @@ export default async function ClientBookingsPage({
         action={
           <Link
             href="/"
-            className="tag text-sage transition-colors hover:text-bone"
+            className="tag text-sage-lift transition-colors hover:text-bone"
           >
             ← Back home
           </Link>

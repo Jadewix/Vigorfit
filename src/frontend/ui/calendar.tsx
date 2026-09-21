@@ -35,13 +35,13 @@ export function Calendar({
         month: "flex flex-col gap-3",
         month_caption: "flex h-9 items-center justify-center px-9",
         caption_label:
-          "text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-sage",
+          "text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-sage-lift",
 
         nav: "absolute inset-x-0 top-0 flex h-9 items-center justify-between",
         button_previous:
-          "flex h-8 w-8 shrink-0 items-center justify-center border border-line text-sage-dim transition-colors hover:border-sage hover:text-sage disabled:pointer-events-none disabled:opacity-40",
+          "flex h-8 w-8 shrink-0 items-center justify-center border border-line text-sage-dim transition-colors hover:border-sage hover:text-sage-lift disabled:pointer-events-none disabled:opacity-40",
         button_next:
-          "flex h-8 w-8 shrink-0 items-center justify-center border border-line text-sage-dim transition-colors hover:border-sage hover:text-sage disabled:pointer-events-none disabled:opacity-40",
+          "flex h-8 w-8 shrink-0 items-center justify-center border border-line text-sage-dim transition-colors hover:border-sage hover:text-sage-lift disabled:pointer-events-none disabled:opacity-40",
         chevron: "h-4 w-4 fill-current",
 
         month_grid: "w-full border-collapse",
@@ -52,9 +52,9 @@ export function Calendar({
 
         day: "aspect-square min-w-0 flex-1 basis-0 p-0 text-center text-[13px] sm:text-sm",
         day_button:
-          "flex h-full w-full items-center justify-center border border-transparent tabular-nums text-bone transition-colors hover:border-sage hover:text-sage focus-visible:outline-none focus-visible:border-sage",
+          "flex h-full w-full items-center justify-center border border-transparent tabular-nums text-bone transition-colors hover:border-sage hover:text-sage-lift focus-visible:outline-none focus-visible:border-sage",
 
-        today: "text-sage",
+        today: "text-sage-lift",
         outside: "text-sage-dim/40",
         disabled: "text-sage-dim/25 line-through",
         hidden: "invisible",

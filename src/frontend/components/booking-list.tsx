@@ -26,7 +26,7 @@ export function BookingList({
           <li key={b.id} className="flex items-start gap-3 p-3.5">
             {/* The chip already carries the date, so the line beside it leads
                 with the time rather than repeating it and wrapping. */}
-            <div className="flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-lg bg-forest/10 text-forest app-dark:rounded-none app-dark:bg-sage app-dark:text-ink">
+            <div className="flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-lg bg-forest/10 text-forest-lift app-dark:rounded-none app-dark:bg-sage app-dark:text-ink">
               <span className="text-[10px] font-semibold uppercase leading-none">
                 {formatInAppTimezone(b.starts_at, { month: "short" })}
               </span>

@@ -33,7 +33,7 @@ export function slotStateOf(
 }
 
 const styles: Record<SlotState, string> = {
-  available: "border-line bg-ground text-bone hover:border-sage hover:text-sage",
+  available: "border-line bg-ground text-bone hover:border-sage hover:text-sage-lift",
   selected: "border-sage bg-sage text-ink",
   // Your own booking: a result, not a block. Deliberately not struck through —
   // striking it read as a cancellation of something you actually hold.
@@ -78,7 +78,7 @@ export function SlotCell({
         <span className="whitespace-nowrap">{label}</span>
         {/* The icon and the word are both carried, so the state survives for
             anyone who cannot separate the green from the red. */}
-        <span className="flex items-center gap-1 text-[10px] font-normal uppercase tracking-wide text-sage">
+        <span className="flex items-center gap-1 text-[10px] font-normal uppercase tracking-wide text-sage-lift">
           <CheckIcon width={11} height={11} strokeWidth={2.4} />
           Yours
         </span>
@@ -123,7 +123,7 @@ export function SlotCell({
         <span
           className={cn(
             "whitespace-nowrap text-[10px] font-normal uppercase tracking-wide",
-            selected ? "text-ink/70" : "text-sage",
+            selected ? "text-ink/70" : "text-sage-lift",
           )}
         >
           1 left

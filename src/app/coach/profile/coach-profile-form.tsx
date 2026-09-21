@@ -52,7 +52,7 @@ export function CoachProfileForm({ coach }: { coach: Coach | null }) {
           type="checkbox"
           name="active"
           defaultChecked={coach?.active ?? true}
-          className="h-4 w-4 rounded border-line-light text-forest focus:ring-forest/40"
+          className="h-4 w-4 rounded border-line-light text-forest-lift focus:ring-forest/40"
         />
         Accepting new bookings (visible to clients)
       </label>
@@ -63,7 +63,7 @@ export function CoachProfileForm({ coach }: { coach: Coach | null }) {
         </p>
       )}
       {state.success && (
-        <p className="rounded-lg bg-forest/10 px-3 py-2 text-sm text-forest">
+        <p className="rounded-lg bg-forest/10 px-3 py-2 text-sm text-forest-lift">
           {state.success}
         </p>
       )}

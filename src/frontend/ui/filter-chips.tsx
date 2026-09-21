@@ -40,7 +40,7 @@ export function FilterChips({
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2 app-dark:focus-visible:ring-sage app-dark:focus-visible:ring-offset-ground",
             o.active
               ? "border border-forest bg-forest text-paper app-dark:border-sage app-dark:bg-sage app-dark:text-ink"
-              : "border border-line-light bg-paper-panel text-ink-muted hover:border-forest hover:text-forest app-dark:border-line app-dark:bg-transparent app-dark:text-sage-dim app-dark:hover:border-sage app-dark:hover:text-sage",
+              : "border border-line-light bg-paper-panel text-ink-muted hover:border-forest hover:text-forest-lift app-dark:border-line app-dark:bg-transparent app-dark:text-sage-dim app-dark:hover:border-sage app-dark:hover:text-sage-lift",
           )}
         >
           {o.label}

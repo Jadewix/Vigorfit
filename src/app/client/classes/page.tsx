@@ -51,7 +51,7 @@ export default async function ClientClassesPage() {
         action={
           <Link
             href="/"
-            className="tag text-sage transition-colors hover:text-bone"
+            className="tag text-sage-lift transition-colors hover:text-bone"
           >
             ← Back home
           </Link>
@@ -72,7 +72,7 @@ export default async function ClientClassesPage() {
               className="flex flex-col gap-4 border border-line bg-ground/50 p-5 sm:flex-row sm:items-center sm:justify-between"
             >
               <div className="min-w-0">
-                <p className="tag text-sage">{dateLabel(o.date)}</p>
+                <p className="tag text-sage-lift">{dateLabel(o.date)}</p>
                 <p className="display mt-1 text-xl text-bone">{o.cls.name}</p>
                 <p className="mt-1 text-sm tabular-nums text-bone">
                   {timeRangeLabel(o.cls)}

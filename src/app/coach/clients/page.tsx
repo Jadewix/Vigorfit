@@ -130,7 +130,7 @@ export default async function CoachClientsPage() {
 
               <Link
                 href="/coach/bookings"
-                className="tag shrink-0 text-forest transition-colors hover:text-ink app-dark:text-sage app-dark:hover:text-bone"
+                className="tag shrink-0 text-forest-lift transition-colors hover:text-ink app-dark:text-sage-lift app-dark:hover:text-bone"
               >
                 Sessions
               </Link>

@@ -137,7 +137,7 @@ const detailLink =
   address link uses on the same ground.
 */
 const ledgerLink =
-  "text-grey underline decoration-rule underline-offset-4 transition-colors hover:text-sage hover:decoration-sage";
+  "text-grey underline decoration-rule underline-offset-4 transition-colors hover:text-sage-lift hover:decoration-sage";
 
 /**
  * A booking button.
@@ -217,7 +217,7 @@ function LedgerRow({
 }) {
   return (
     <div className="ledger-row">
-      <dt className="tag text-sage">{term}</dt>
+      <dt className="tag text-sage-lift">{term}</dt>
       <dd className="text-grey">{children}</dd>
     </div>
   );
@@ -474,7 +474,7 @@ export default async function Home() {
                     <div className="min-w-0">
                       <p className="display text-lg text-grey">{c.name}</p>
                       {c.specialty && (
-                        <p className="tag text-sage">{c.specialty}</p>
+                        <p className="tag text-sage-lift">{c.specialty}</p>
                       )}
                     </div>
                   </div>
@@ -778,7 +778,7 @@ export default async function Home() {
                   <h3 className="display text-xl text-grey sm:text-2xl">
                     {copy.feedback.title}
                   </h3>
-                  <p className="tag text-sage">{copy.feedback.to}</p>
+                  <p className="tag text-sage-lift">{copy.feedback.to}</p>
                 </div>
                 <div className="px-6 py-6 sm:px-7">
                   <p className="mb-6 text-sm leading-relaxed text-sage-dim">

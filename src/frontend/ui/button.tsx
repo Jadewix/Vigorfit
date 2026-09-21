@@ -50,7 +50,7 @@ const variants: Record<Variant, string> = {
   secondary:
     "bg-ink text-paper hover:bg-ink/85 app-dark:bg-panel-2 app-dark:text-bone app-dark:hover:bg-panel",
   outline:
-    "border border-line-light bg-paper-panel text-ink hover:bg-paper app-dark:border-line app-dark:bg-transparent app-dark:text-bone app-dark:hover:border-sage app-dark:hover:text-sage",
+    "border border-line-light bg-paper-panel text-ink hover:bg-paper app-dark:border-line app-dark:bg-transparent app-dark:text-bone app-dark:hover:border-sage app-dark:hover:text-sage-lift",
   ghost:
     "text-ink-muted hover:bg-paper-panel hover:text-ink app-dark:text-sage-dim app-dark:hover:bg-panel-2 app-dark:hover:text-bone",
   // Destructive. Oxblood reads well as a fill on both surfaces; as *text* on
@@ -60,7 +60,7 @@ const variants: Record<Variant, string> = {
     "bg-oxblood text-paper hover:bg-oxblood/85 app-dark:bg-oxblood app-dark:text-bone app-dark:hover:bg-oxblood/80",
   // Quiet hairline control, for the secondary action beside a primary CTA.
   hairline:
-    "border border-line-light bg-transparent text-ink hover:border-forest hover:text-forest app-dark:border-rule app-dark:text-bone app-dark:hover:border-sage app-dark:hover:text-sage",
+    "border border-line-light bg-transparent text-ink hover:border-forest hover:text-forest-lift app-dark:border-rule app-dark:text-bone app-dark:hover:border-sage app-dark:hover:text-sage-lift",
 };
 
 const sizes: Record<Size, string> = {

@@ -41,7 +41,7 @@ export function StatCard({ label, value, icon, href, hint }: StatCardProps) {
         <span className="text-sm font-medium text-ink-muted app-dark:text-sage-dim">
           {label}
         </span>
-        <span className="shrink-0 text-forest app-dark:text-sage">{icon}</span>
+        <span className="shrink-0 text-forest-lift app-dark:text-sage-lift">{icon}</span>
       </div>
 
       <div className="mt-2 flex items-end justify-between gap-2">
@@ -51,7 +51,7 @@ export function StatCard({ label, value, icon, href, hint }: StatCardProps) {
         {href && (
           <span
             aria-hidden
-            className="mb-1 shrink-0 text-line-light transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-forest app-dark:text-line app-dark:group-hover:text-sage"
+            className="mb-1 shrink-0 text-line-light transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-forest-lift app-dark:text-line app-dark:group-hover:text-sage-lift"
           >
             <ChevronRightIcon width={18} height={18} />
           </span>

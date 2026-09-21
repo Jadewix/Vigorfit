@@ -201,7 +201,7 @@ export function CoachPhotoForm({
         </p>
       )}
       {message.success && (
-        <p className="mt-3 rounded-lg bg-forest/10 px-3 py-2 text-sm text-forest">
+        <p className="mt-3 rounded-lg bg-forest/10 px-3 py-2 text-sm text-forest-lift">
           {message.success}
         </p>
       )}

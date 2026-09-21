@@ -228,7 +228,7 @@ export function BookForm({
                 different things. Each entry names its own state. */}
             <p className="mt-3 text-xs leading-relaxed text-sage-dim">
               Each slot takes up to {capacityFor(plan)} clients.{" "}
-              <span className="text-sage">Green is yours</span>,{" "}
+              <span className="text-sage-lift">Green is yours</span>,{" "}
               <span className="text-red-lift">red is full or a class</span>.
             </p>
           </>

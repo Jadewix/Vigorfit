@@ -81,7 +81,10 @@
 
   --bone: #ecefe8; /* primary text on dark */
   --sage: #97b08c; /* secondary text, accents, "yours" */
-  --sage-dim: #7e9476; /* tertiary text on dark */
+  /* Small green text runs two steps (+10% lightness) above the sage that
+     fills buttons and marks state; the user asked for it lighter. */
+  --sage-lift: #b2c5aa; /* secondary green text on dark */
+  --sage-dim: #99aa93; /* tertiary text on dark (was #7e9476) */
   --grey: #b8b8b8; /* structural grey — the brief's 20% */
 
   --oxblood: #7b0f14; /* red fills and borders only */
@@ -135,7 +138,8 @@
   --ink: #0b0d0b; /* the brief's 10% black */
   --ink-muted: #4a5348; /* secondary text on paper */
   --line-light: #cfd4c7; /* hairline on paper */
-  --forest: #2f5a3a; /* green text and CTA on paper */
+  --forest: #2f5a3a; /* green CTA fills and borders on paper */
+  --forest-lift: #407c50; /* green text on paper, two steps lighter; 4.6:1 */
 
   /* Dashboards are the light surface by default; the dark pages opt in. */
   --background: var(--paper);
@@ -158,6 +162,7 @@
   --color-bone: var(--bone);
   --color-sage: var(--sage);
   --color-sage-dim: var(--sage-dim);
+  --color-sage-lift: var(--sage-lift);
   --color-grey: var(--grey);
 
   --color-oxblood: var(--oxblood);
@@ -170,6 +175,7 @@
   --color-ink-muted: var(--ink-muted);
   --color-line-light: var(--line-light);
   --color-forest: var(--forest);
+  --color-forest-lift: var(--forest-lift);
 
   /* One family carries display, body and data. */
   --font-sans: var(--font-plex-mono);

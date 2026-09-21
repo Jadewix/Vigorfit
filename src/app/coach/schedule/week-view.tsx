@@ -116,7 +116,7 @@ function SlotRow({ slot }: { slot: ScheduleSlot }) {
                 {entry.booking.is_free && (
                   // Worth its own mark: a first session is someone the coach
                   // has never met, which changes how the hour is run.
-                  <span className="tag rounded-full border border-forest/40 px-2 py-0.5 text-forest">
+                  <span className="tag rounded-full border border-forest/40 px-2 py-0.5 text-forest-lift">
                     First session
                   </span>
                 )}
@@ -131,7 +131,7 @@ function SlotRow({ slot }: { slot: ScheduleSlot }) {
                 */
                 <a
                   href={`tel:${entry.clientPhone}`}
-                  className="mt-1 inline-block text-xs tabular-nums text-forest underline decoration-forest/40 underline-offset-2 transition-colors hover:decoration-forest"
+                  className="mt-1 inline-block text-xs tabular-nums text-forest-lift underline decoration-forest/40 underline-offset-2 transition-colors hover:decoration-forest"
                 >
                   {entry.clientPhone}
                 </a>
@@ -164,7 +164,7 @@ function DayCard({ day, today }: { day: ScheduleDay; today: string }) {
         <div className="min-w-0">
           <h3 className="panel-title text-base text-ink">
             {weekdayName(day.date)}
-            {isToday && <span className="tag ml-2 text-forest">Today</span>}
+            {isToday && <span className="tag ml-2 text-forest-lift">Today</span>}
           </h3>
           <p className="mt-0.5 text-xs tabular-nums text-ink-muted">
             {dayLabel(day.date)}
@@ -333,14 +333,14 @@ export function WeekGrid({
               )}
             >
               <p
-                className={cn("tag", isToday ? "text-forest" : "text-ink-muted")}
+                className={cn("tag", isToday ? "text-forest-lift" : "text-ink-muted")}
               >
                 {weekdayName(day.date).slice(0, 3)}
               </p>
               <p
                 className={cn(
                   "page-heading mt-0.5 text-xl tabular-nums",
-                  isToday ? "text-forest" : "text-ink",
+                  isToday ? "text-forest-lift" : "text-ink",
                 )}
               >
                 {dayNumber(day.date)}
