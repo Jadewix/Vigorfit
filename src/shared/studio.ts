@@ -20,7 +20,7 @@ export const STUDIO_WHATSAPP = (
 ).replace(/\D/g, "");
 
 /**
- * Groups a number the way Lebanese numbers are written: "+961 78 903 759"
+ * Groups a number the way Lebanese numbers are written: "+961 79 067 958"
  * (mobile) or "+961 6 123 456" (landline). Anything else stays "+digits".
  */
 function formatPhone(digits: string): string {
@@ -34,7 +34,7 @@ function formatPhone(digits: string): string {
   return `+${digits}`;
 }
 
-/** Display form, e.g. "+961 78 903 759". */
+/** Display form, e.g. "+961 79 067 958". */
 export const STUDIO_WHATSAPP_DISPLAY = formatPhone(STUDIO_WHATSAPP);
 
 /** Opening line pre-filled in every WhatsApp chat started from the site. */
