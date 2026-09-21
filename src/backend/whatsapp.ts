@@ -15,14 +15,14 @@ const DEFAULT_LANG = process.env.WHATSAPP_LANG || "en";
 /** Template names — override via env if you name them differently in Meta. */
 export const WA_TEMPLATES = {
   bookingRequest:
-    process.env.WHATSAPP_TEMPLATE_BOOKING_REQUEST || "booking_request",
+    process.env.WHATSAPP_TEMPLATE_BOOKING_REQUEST || "coach",
   bookingUpdate:
     process.env.WHATSAPP_TEMPLATE_BOOKING_UPDATE || "booking_update",
   sessionReminder:
-    process.env.WHATSAPP_TEMPLATE_SESSION_REMINDER || "session_reminder",
+    process.env.WHATSAPP_TEMPLATE_SESSION_REMINDER || "session_reminder_notice",
   subscriptionExpiring:
     process.env.WHATSAPP_TEMPLATE_SUBSCRIPTION_EXPIRING ||
-    "subscription_expiring",
+    "subscription_end_notice",
 };
 
 export function isWhatsAppConfigured(): boolean {

@@ -8,12 +8,13 @@ being sent, so you can develop the whole flow first.
 
 | Event                          | Recipient | Template          |
 | ------------------------------ | --------- | ----------------- |
-| Client requests a session      | Coach     | `booking_request` |
+| Client requests a session      | Coach     | `coach` |
 | Coach confirms                 | Client    | `booking_update`  |
 | Coach declines                 | Client    | `booking_update`  |
 | Coach cancels a confirmed one  | Client    | `booking_update`  |
 | Client cancels                 | Coach     | `booking_update`  |
-| ~24h before a confirmed session| Both      | `session_reminder`|
+| ~24h before a confirmed session| Both      | `session_reminder_notice`|
+| Subscription ends in 7 days    | Client    | `subscription_end_notice` |
 
 ## 1. Create a Meta app + WhatsApp number
 
@@ -28,10 +29,10 @@ being sent, so you can develop the whole flow first.
 
 Meta requires pre-approved templates for business-initiated messages.
 WhatsApp Manager → **Message templates → Create template** (category
-**Utility**, language **English**). Create these three, using `{{1}}`, `{{2}}`…
+**Utility**, language **English**). Create these four, using `{{1}}`, `{{2}}`…
 placeholders **in this exact order** (the app fills them positionally):
 
-**`booking_request`**
+**`coach`** (the booking request; named `booking_request` in older setups)
 ```
 Hi {{1}}, you have a new session request from {{2}} for {{3}}.
 Open Vigorfit to confirm or decline.
@@ -45,11 +46,29 @@ Hi {{1}}, update on your session with {{2}} for {{3}}: {{4}}.
 Order: 1 = recipient first name, 2 = other person, 3 = date/time, 4 = status
 (e.g. "Confirmed ✅", "Cancelled").
 
-**`session_reminder`**
+**`session_reminder_notice`**
 ```
-Hi {{1}}, reminder: your session with {{2}} is coming up on {{3}}. See you there!
+Hi {{1}}, this is a reminder from Vigorfit about your confirmed session with {{2}} on {{3}}. If anything has changed, please contact the studio.
 ```
-Order: 1 = recipient first name, 2 = other person, 3 = date/time.
+Order: 1 = recipient first name, 2 = other person, 3 = date/time. The same
+template goes to the client (2 = coach) and to the coach (2 = client), so it
+must read right both ways. Sample values for Meta: `Robin`, `Elie Ayoub`,
+`Tue, Sep 22, 6:00 PM`. Same Utility rules as below: factual, no "!", no
+emojis, no buttons. (It used to be `session_reminder`, ending "See you
+there!".)
+
+**`subscription_end_notice`**
+```
+Hi {{1}}, this is an account notice from Vigorfit. Your {{2}} subscription ends on {{3}}. After that date you can still sign in to your account, but new session bookings will be paused until your subscription is extended with the studio.
+```
+Order: 1 = client first name, 2 = plan (e.g. "Semi-private"), 3 = end date
+(e.g. "Sep 30"). Sample values for Meta: `Robin`, `Semi-private`, `Sep 30`.
+
+Keep this one strictly factual or Meta files it under **Marketing**: no
+"renew now", no prices, offers or urgency, no emojis or "!", and no buttons.
+It reports a change to an account the client already has, which is what
+Utility means. If Meta still reclassifies it, use **Request review** on the
+template rather than accepting the new category.
 
 > Approval usually takes minutes to a few hours. If you name a template
 > differently, set the matching `WHATSAPP_TEMPLATE_*` env var.
