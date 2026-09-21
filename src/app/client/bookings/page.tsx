@@ -38,6 +38,17 @@ export default async function ClientBookingsPage({
     bookings.map((b) => b.coach_id),
   );
 
+  // Coach photos for the list. Before coach-photos.sql has run the column
+  // doesn't exist, the query errors, and every coach falls back to initials.
+  const coachIds = [...new Set(bookings.map((b) => b.coach_id))];
+  const { data: photoRows } =
+    coachIds.length > 0
+      ? await supabase.from("coaches").select("id, avatar_url").in("id", coachIds)
+      : { data: [] };
+  const photos = new Map<string, string | null>(
+    (photoRows ?? []).map((c) => [c.id as string, c.avatar_url as string | null]),
+  );
+
   // The free-change count is the subscription month's, so it needs the same
   // renewal date the session allowance is counted against.
   const sub = await getSubscription(me!.id);
@@ -119,6 +130,7 @@ export default async function ClientBookingsPage({
           items={bookings}
           getName={getName}
           showCoach
+          getCoachPhoto={(id) => photos.get(id) ?? null}
           renderActions={(b) => {
             const open = b.status === "pending" || b.status === "confirmed";
             if (!open || b.starts_at < now) return null;

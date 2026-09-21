@@ -1,4 +1,5 @@
 import { StatusBadge } from "@/frontend/ui/badge";
+import { CoachAvatar } from "@/frontend/components/coach-avatar";
 import { formatInAppTimezone, formatTime } from "@/shared/utils";
 import type { Booking } from "@/shared/types";
 
@@ -7,12 +8,15 @@ export function BookingList({
   getName,
   showClient = false,
   showCoach = false,
+  getCoachPhoto,
   renderActions,
 }: {
   items: Booking[];
   getName: (id: string) => string;
   showClient?: boolean;
   showCoach?: boolean;
+  /** When given, the coach line carries their photo (or initials). */
+  getCoachPhoto?: (coachId: string) => string | null;
   renderActions?: (booking: Booking) => React.ReactNode;
 }) {
   return (
@@ -48,12 +52,19 @@ export function BookingList({
                   meant the second name was always truncated away. */}
               <dl className="mt-1 space-y-0.5 text-xs">
                 {showCoach && (
-                  <div className="flex gap-1.5">
+                  <div className="flex items-center gap-1.5">
                     <dt className="shrink-0 text-ink-muted app-dark:text-sage-dim/70">
                       Coach
                     </dt>
-                    <dd className="truncate text-ink-muted app-dark:text-sage-dim">
-                      {getName(b.coach_id)}
+                    <dd className="flex min-w-0 items-center gap-1.5 text-ink-muted app-dark:text-sage-dim">
+                      {getCoachPhoto && (
+                        <CoachAvatar
+                          name={getName(b.coach_id)}
+                          photoUrl={getCoachPhoto(b.coach_id)}
+                          className="h-5 w-5 text-[9px]"
+                        />
+                      )}
+                      <span className="truncate">{getName(b.coach_id)}</span>
                     </dd>
                   </div>
                 )}

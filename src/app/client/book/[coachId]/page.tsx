@@ -85,13 +85,11 @@ export default async function BookCoachPage({
               </CardHeader>
               <CardBody>
                 <div className="flex items-start gap-4">
-                  {coach.avatar_url && (
-                    <CoachAvatar
-                      name={name}
-                      photoUrl={coach.avatar_url}
-                      className="h-20 w-20"
-                    />
-                  )}
+                  <CoachAvatar
+                    name={name}
+                    photoUrl={coach.avatar_url}
+                    className="h-20 w-20 text-2xl"
+                  />
                   {coach.bio && (
                     <p className="text-sm leading-relaxed text-sage-dim">
                       {coach.bio}
