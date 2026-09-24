@@ -4,7 +4,11 @@ import { revalidatePath } from "next/cache";
 import { requireRole } from "@/backend/auth";
 import { createClient } from "@/backend/supabase/server";
 import { createAdminClient } from "@/backend/supabase/admin";
-import { classBlocksSlot, type StudioClass } from "@/shared/classes";
+import {
+  classBlocksSlot,
+  isClassIcon,
+  type StudioClass,
+} from "@/shared/classes";
 import {
   utcToZonedTime,
   zonedDayRange,
@@ -27,6 +31,8 @@ function refresh() {
   revalidatePath("/coach/classes");
   revalidatePath("/coach/schedule");
   revalidatePath("/client/classes");
+  // The landing page lists the classes too.
+  revalidatePath("/");
 }
 
 /**
@@ -58,6 +64,9 @@ export async function createClassAction(
 
   const name = String(formData.get("name") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
+  // Only sent when the form had an icon picker, i.e. once class-icons.sql has
+  // run. Before that the class goes in without one and shows the default.
+  const icon = formData.get("icon");
   const coachId =
     me.role === "coach" ? me.id : String(formData.get("coach_id") ?? "");
   const date = String(formData.get("class_date") ?? "");
@@ -69,6 +78,9 @@ export async function createClassAction(
   if (name.length > 80) return fail("Keep the name under 80 characters.");
   if (description.length > 1000) {
     return fail("Keep the description under 1000 characters.");
+  }
+  if (icon !== null && !isClassIcon(icon)) {
+    return fail("Choose one of the icons.");
   }
   if (!coachId) return fail("Choose the coach running it.");
   if (!zonedDayRange(date)) return fail("Choose a valid date.");
@@ -83,6 +95,7 @@ export async function createClassAction(
     .insert({
       name,
       description: description || null,
+      ...(icon !== null && { icon }),
       coach_id: coachId,
       class_date: date,
       start_time: start,
@@ -153,6 +166,30 @@ export async function deleteClassAction(formData: FormData): Promise<void> {
   if (error || !data?.length) {
     throw new Error(
       `Could not delete class: ${error?.message ?? "it no longer exists"}`,
+    );
+  }
+
+  refresh();
+}
+
+/**
+ * Give a class a different icon, which is also how a class added before
+ * icons existed gets one. A coach can only change their own (RLS says the
+ * same).
+ */
+export async function setClassIconAction(formData: FormData): Promise<void> {
+  const me = await requireRole(["admin", "coach"]);
+  const id = String(formData.get("id") ?? "");
+  const icon = formData.get("icon");
+  if (!id || !isClassIcon(icon)) return;
+
+  const supabase = await createClient();
+  let query = supabase.from("classes").update({ icon }).eq("id", id);
+  if (me.role === "coach") query = query.eq("coach_id", me.id);
+  const { data, error } = await query.select("id");
+  if (error || !data?.length) {
+    throw new Error(
+      `Could not change the icon: ${error?.message ?? "the class no longer exists"}`,
     );
   }
 

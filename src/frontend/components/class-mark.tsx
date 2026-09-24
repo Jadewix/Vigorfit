@@ -1,48 +1,67 @@
 import { cn } from "@/shared/utils";
+import type { ClassIcon } from "@/shared/classes";
 import {
+  BallIcon,
+  BikeIcon,
+  BoltIcon,
   DumbbellIcon,
+  FlameIcon,
+  GloveIcon,
+  HeartPulseIcon,
+  JumpingJackIcon,
+  KettlebellIcon,
   LotusIcon,
+  MatIcon,
+  MusicIcon,
   PullUpIcon,
+  ShoeIcon,
+  StopwatchIcon,
+  WhistleIcon,
 } from "@/frontend/components/icons";
 
-const GLYPHS = {
+// Typed against the keys in CLASS_ICONS, so an icon added there without a
+// drawing here fails the build rather than rendering nothing.
+const GLYPHS: Record<ClassIcon, (props: React.SVGProps<SVGSVGElement>) => React.JSX.Element> = {
   dumbbell: DumbbellIcon,
-  lotus: LotusIcon,
+  kettlebell: KettlebellIcon,
   pullup: PullUpIcon,
+  lotus: LotusIcon,
+  mat: MatIcon,
+  glove: GloveIcon,
+  bike: BikeIcon,
+  shoe: ShoeIcon,
+  heart: HeartPulseIcon,
+  bolt: BoltIcon,
+  stopwatch: StopwatchIcon,
+  jack: JumpingJackIcon,
+  music: MusicIcon,
+  flame: FlameIcon,
+  whistle: WhistleIcon,
+  ball: BallIcon,
 };
 
-export type ClassIcon = keyof typeof GLYPHS;
+/** A class icon's bare drawing, sized and coloured by whatever holds it. */
+export function ClassGlyph({
+  icon,
+  ...props
+}: { icon: ClassIcon } & React.SVGProps<SVGSVGElement>) {
+  const Glyph = GLYPHS[icon];
+  return <Glyph aria-hidden {...props} />;
+}
 
 /**
- * A class's picture: a photo when it has one, otherwise its glyph on a sage
- * square — the same square a coach without a photo gets their initials on, so
- * the Team and Classes bands are built from one part. Size it with
- * `className` (e.g. "h-16 w-16"). Decorative: the class's name always sits
- * beside it.
+ * A class's icon on a sage square — the same square a coach without a photo
+ * gets their initials on, so the Team and Classes bands are built from one
+ * part. Size it with `className` (e.g. "h-16 w-16"). Decorative: the class's
+ * name always sits beside it.
  */
 export function ClassMark({
   icon,
-  photo,
   className,
 }: {
   icon: ClassIcon;
-  /** A path under public/, e.g. "/classes/yoga.jpg". Square works best. */
-  photo?: string;
   className?: string;
 }) {
-  if (photo) {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={photo}
-        alt=""
-        loading="lazy"
-        decoding="async"
-        className={cn("shrink-0 object-cover", className)}
-      />
-    );
-  }
-  const Glyph = GLYPHS[icon];
   return (
     <span
       aria-hidden
@@ -51,7 +70,7 @@ export function ClassMark({
         className,
       )}
     >
-      <Glyph width="52%" height="52%" />
+      <ClassGlyph icon={icon} width="52%" height="52%" />
     </span>
   );
 }

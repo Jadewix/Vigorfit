@@ -189,8 +189,10 @@ export function MessageIcon(props: IconProps) {
 }
 
 /*
-  Class glyphs, one per class in the landing page's Classes band — see
-  ClassMark. Drawn on the same 24px grid and stroke as everything above.
+  Class glyphs — the icons a class can be given, listed in CLASS_ICONS in
+  shared/classes and drawn by ClassMark. Same 24px grid and stroke as
+  everything above, so they sit beside the app's own icons without looking
+  borrowed.
 */
 
 /** Weight lifting. */
@@ -225,6 +227,141 @@ export function PullUpIcon(props: IconProps) {
       <path d="M7 3v6.5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V3" />
       <circle cx="12" cy="7.2" r="2" />
       <path d="M12 11.5v5M12 16.5l-2.5 4.5M12 16.5l2.5 4.5" />
+    </svg>
+  );
+}
+
+/**
+ * Kettlebell. The handle flares wider than the bell's neck, which is what
+ * keeps it from reading as a padlock at small sizes.
+ */
+export function KettlebellIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M8.4 9.6 8 7.2A2.8 2.8 0 0 1 10.8 4h2.4A2.8 2.8 0 0 1 16 7.2l-.4 2.4" />
+      <path d="M7.4 19.5h9.2a6.6 6.6 0 1 0-9.2 0z" />
+    </svg>
+  );
+}
+
+/** Pilates: a mat, rolled up and starting to unroll. */
+export function MatIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="8" cy="11.5" r="5" />
+      <path d="M8 11.5a1.5 1.5 0 1 1 1.5 1.5" />
+      <path d="M8 16.5h13.5v3H4" />
+    </svg>
+  );
+}
+
+/** Boxing: a glove from the side, thumb tucked, cuff below. */
+export function GloveIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M7.5 17v-3.8A2.2 2.2 0 0 1 5.3 11V9.3A6.3 6.3 0 0 1 11.6 3h1.9a4.5 4.5 0 0 1 4.5 4.5V13a4 4 0 0 1-4 4z" />
+      <path d="M5.3 10.5h3.9a1.8 1.8 0 0 1 0 3.6H7.5" />
+      <path d="M8.5 17v4h8v-4" />
+    </svg>
+  );
+}
+
+/** Cycling and spin. */
+export function BikeIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="5.5" cy="16" r="3.5" />
+      <circle cx="18.5" cy="16" r="3.5" />
+      <path d="M5.5 16 9 9.5h6.5L18.5 16" />
+      <path d="M9 9.5 11.5 16h-6M15.5 9.5l-4 6.5" />
+      <path d="M7.5 7h3M14.5 6.5h2.5l-1.5 3" />
+    </svg>
+  );
+}
+
+/** Running: a trainer in profile. */
+export function ShoeIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M3 16.5V8.5l3.8 1.2 2.1-2.4 2.3 2.5-1.4 1.8 3.4 2.2 6.3 1.1a2.3 2.3 0 0 1 1.5 1.1V17a1.5 1.5 0 0 1-1.5 1.5H4.5A1.5 1.5 0 0 1 3 17z" />
+      <path d="M3 15.5h18" />
+    </svg>
+  );
+}
+
+/** Cardio: a heart with a pulse running through it. */
+export function HeartPulseIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M19.8 13.6A31 31 0 0 1 12 20.5a31 31 0 0 1-7.8-6.9" />
+      <path d="M3.3 10A4.8 4.8 0 0 1 12 6.8a4.8 4.8 0 0 1 8.7 3.2" />
+      <path d="M2.5 12h4.2l1.8-3 3 6 1.8-3h8.2" />
+    </svg>
+  );
+}
+
+/** HIIT. */
+export function BoltIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M13.5 2.5 5 13.5h6.2L10.5 21.5 19 10.5h-6.2z" />
+    </svg>
+  );
+}
+
+/** Circuit training: work against the clock. */
+export function StopwatchIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="12" cy="13.5" r="7.5" />
+      <path d="M12 13.5 15 10.5" />
+      <path d="M9.5 2.5h5M12 2.5V6" />
+      <path d="m18.5 6.5 1.5-1.5" />
+    </svg>
+  );
+}
+
+/** Aerobics: a figure mid jumping jack. */
+export function JumpingJackIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="12" cy="4.5" r="2" />
+      <path d="M5.5 3.5 12 9l6.5-5.5" />
+      <path d="M12 9v5.5" />
+      <path d="M7.5 21l4.5-6.5 4.5 6.5" />
+    </svg>
+  );
+}
+
+/** Dance and Zumba. */
+export function MusicIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M9 18V5.5l11-2V16" />
+      <circle cx="6.5" cy="18" r="2.5" />
+      <circle cx="17.5" cy="16" r="2.5" />
+      <path d="M9 9.5l11-2" />
+    </svg>
+  );
+}
+
+/** Fat burn. */
+export function FlameIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M12 21.5a7 7 0 0 1-7-7c0-3.3 2.1-5.3 3.5-7.2.4 2 1.3 3.1 2.4 3.6-.3-3.5 1.3-6.4 3.6-8.4.4 3.1 1.8 4.8 3.1 6.6 1 1.4 1.4 3 1.4 5.4a7 7 0 0 1-7 7z" />
+      <path d="M12 21.5a3 3 0 0 1-3-3c0-1.8 1.3-3 3-4.5 1.7 1.5 3 2.7 3 4.5a3 3 0 0 1-3 3z" />
+    </svg>
+  );
+}
+
+/** Core work: a medicine ball. */
+export function BallIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M3.9 9.4c5.2 2.1 11 2.1 16.2 0" />
+      <path d="M3.9 14.6c5.2-2.1 11-2.1 16.2 0" />
     </svg>
   );
 }

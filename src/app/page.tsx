@@ -1,11 +1,18 @@
 import type { Viewport } from "next";
 import Link from "next/link";
 import { getCurrentProfile } from "@/backend/auth";
+import { getPublicClasses } from "@/backend/public-classes";
 import { getPublicCoaches } from "@/backend/public-coaches";
 import { SESSION_LABEL } from "@/shared/booking";
+import {
+  classIconOf,
+  shortTimeRangeLabel,
+  shortWhenLabel,
+} from "@/shared/classes";
+import { zonedToday } from "@/shared/timezone";
 import { buttonClasses, type Size } from "@/frontend/ui/button";
 import { CoachAvatar } from "@/frontend/components/coach-avatar";
-import { ClassMark, type ClassIcon } from "@/frontend/components/class-mark";
+import { ClassMark } from "@/frontend/components/class-mark";
 import { SiteNav } from "@/frontend/site/site-nav";
 import { Reveal } from "@/frontend/site/reveal";
 import { OpenStatus } from "@/frontend/site/open-status";
@@ -56,16 +63,12 @@ const copy = {
     emptyBody:
       "The studio is adding its coaches now. Check back soon to see who’s available.",
   },
-  // Fixed for now. Each box is a name and an icon; to use a photo instead,
-  // put a square image in public/ and add e.g. `photo: "/classes/yoga.jpg"`.
-  // Icons: "lotus", "pullup", "dumbbell" (see ClassMark).
+  // The classes themselves are added from /admin/classes, not written here.
   classes: {
     heading: "Classes",
-    items: [
-      { name: "Yoga", icon: "lotus" },
-      { name: "Calisthenics", icon: "pullup" },
-      { name: "Weight Lifting", icon: "dumbbell" },
-    ] as { name: string; icon: ClassIcon; photo?: string }[],
+    emptyTitle: "Classes are being set up",
+    emptyBody:
+      "The studio is putting its class timetable together. Check back soon to see what’s on.",
   },
   booking: {
     heading: "Booking",
@@ -224,15 +227,20 @@ function LedgerRow({
 }
 
 export default async function Home() {
-  // Coaches are public, so signed-out visitors see the team too. The cards
-  // still route into the existing auth-gated booking flow untouched. The two
-  // lookups are independent, so they run concurrently.
-  const [profile, coaches] = await Promise.all([
+  // Coaches and classes are public, so signed-out visitors see the team and
+  // the timetable too. The coach cards still route into the existing
+  // auth-gated booking flow untouched. The lookups are independent, so they
+  // run concurrently.
+  const [profile, coaches, classes] = await Promise.all([
     getCurrentProfile(),
     getPublicCoaches(),
+    getPublicClasses(),
   ]);
   const isClient = profile?.role === "client";
   const whatsappHref = waLink(WHATSAPP_GREETING);
+  // A class names its coach only while they're on the team shown above.
+  const coachNames = new Map(coaches.map((c) => [c.id, c.name]));
+  const today = zonedToday();
 
   /*
     The page is a stack of full-bleed bands, and the order of their grounds is
@@ -518,7 +526,10 @@ export default async function Home() {
         long one — and that there is no button, since a class is booked the
         way everything else is, through a coach.
 
-        The classes are written in `copy.classes.items` above.
+        Like the team, the classes come from the database: whatever the studio
+        adds at /admin/classes (or a coach at /coach/classes) is here on the
+        next load, as many as there are, each with the icon picked for it. A
+        class leaves once its last date has passed.
       */}
       <section
         id="classes"
@@ -529,33 +540,78 @@ export default async function Home() {
             <h2 className="display d-lg text-sage">{copy.classes.heading}</h2>
           </Reveal>
 
-          {/*
-            The same hairline joinery as the team block, drawn a different
-            way: each cell carries its own 1px ring, and neighbouring rings
-            meet in the 1px gap as one rule. The team block lets `bg-line`
-            show through its gaps instead, which also shows through an
-            unfilled last row as a solid block; with rings, a short last
-            row simply ends — as three boxes do on a two-column tablet.
-          */}
-          <ul className="mt-12 grid gap-px p-px sm:grid-cols-2 lg:grid-cols-3">
-            {copy.classes.items.map((k) => (
-              <li
-                key={k.name}
-                className="flex h-full flex-col bg-ground p-6 ring-1 ring-line transition-colors hover:bg-panel/60"
-              >
-                <div className="flex items-center gap-4">
-                  <ClassMark
-                    icon={k.icon}
-                    photo={k.photo}
-                    className="h-16 w-16"
-                  />
-                  <h3 className="display min-w-0 text-lg text-grey">
-                    {k.name}
-                  </h3>
-                </div>
-              </li>
-            ))}
-          </ul>
+          {classes.length === 0 ? (
+            <div className="mt-12 border border-line bg-panel/40 p-10 text-center">
+              <p className="display d-md text-grey">
+                {copy.classes.emptyTitle}
+              </p>
+              <p className="mx-auto mt-3 max-w-md text-sage-dim">
+                {copy.classes.emptyBody}
+              </p>
+            </div>
+          ) : (
+            /*
+              The same hairline joinery as the team block, drawn a different
+              way: each cell carries its own 1px ring, and neighbouring rings
+              meet in the 1px gap as one rule. The team block lets `bg-line`
+              show through its gaps instead, which also shows through an
+              unfilled last row as a solid block; with rings, a short last
+              row simply ends, whatever number of classes there are.
+
+              One column on a phone, where each card is a full-width row; two
+              from `sm`, three from `lg`.
+            */
+            <ul className="mt-12 grid gap-px p-px sm:grid-cols-2 lg:grid-cols-3">
+              {classes.map((k) => {
+                const coach = coachNames.get(k.coach_id);
+                return (
+                  <li
+                    key={k.id}
+                    className="flex h-full flex-col bg-ground p-6 ring-1 ring-line transition-colors hover:bg-panel/60"
+                  >
+                    <div className="flex items-center gap-4">
+                      <ClassMark
+                        icon={classIconOf(k)}
+                        className="h-14 w-14 sm:h-16 sm:w-16"
+                      />
+                      <div className="min-w-0">
+                        <h3 className="display break-words text-lg text-grey">
+                          {k.name}
+                        </h3>
+                        {coach && (
+                          <p className="tag mt-1 text-sage-lift">with {coach}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {k.description && (
+                      <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-sage-dim">
+                        {k.description}
+                      </p>
+                    )}
+
+                    {/*
+                      When it meets, as a ledger row: the day on the left, the
+                      hours on the right, in the form the Contact band writes
+                      the opening hours. Pinned to the foot of the card, so
+                      across a row of cards the times line up whatever sits
+                      above them.
+                    */}
+                    <div className="mt-auto pt-5">
+                      <p className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-line pt-4 text-sm">
+                        <span className="text-sage-dim">
+                          {shortWhenLabel(k, today)}
+                        </span>
+                        <span className="tabular-nums text-grey">
+                          {shortTimeRangeLabel(k)}
+                        </span>
+                      </p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
       </section>
 

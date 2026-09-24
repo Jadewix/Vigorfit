@@ -4,8 +4,10 @@ import { getCurrentProfile } from "@/backend/auth";
 import { getSubscription } from "@/backend/subscription";
 import { PageHeading } from "@/frontend/components/dashboard-shell";
 import { EmptyState } from "@/frontend/components/empty-state";
+import { ClassMark } from "@/frontend/components/class-mark";
 import { DumbbellIcon } from "@/frontend/components/icons";
 import {
+  classIconOf,
   comingMessage,
   dateLabel,
   enrollMessage,
@@ -71,17 +73,20 @@ export default async function ClientClassesPage() {
               key={`${o.cls.id}-${o.date}`}
               className="flex flex-col gap-4 border border-line bg-ground/50 p-5 sm:flex-row sm:items-center sm:justify-between"
             >
-              <div className="min-w-0">
-                <p className="tag text-sage-lift">{dateLabel(o.date)}</p>
-                <p className="display mt-1 text-xl text-bone">{o.cls.name}</p>
-                <p className="mt-1 text-sm tabular-nums text-bone">
-                  {timeRangeLabel(o.cls)}
-                </p>
-                {o.cls.description && (
-                  <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-sage-dim">
-                    {o.cls.description}
+              <div className="flex min-w-0 gap-4">
+                <ClassMark icon={classIconOf(o.cls)} className="h-12 w-12" />
+                <div className="min-w-0">
+                  <p className="tag text-sage-lift">{dateLabel(o.date)}</p>
+                  <p className="display mt-1 text-xl text-bone">{o.cls.name}</p>
+                  <p className="mt-1 text-sm tabular-nums text-bone">
+                    {timeRangeLabel(o.cls)}
                   </p>
-                )}
+                  {o.cls.description && (
+                    <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-sage-dim">
+                      {o.cls.description}
+                    </p>
+                  )}
+                </div>
               </div>
               <JoinButton
                 className="shrink-0 sm:w-40"

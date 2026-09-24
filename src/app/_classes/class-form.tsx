@@ -2,7 +2,9 @@
 
 import { useActionState } from "react";
 import { Button } from "@/frontend/ui/button";
+import { DEFAULT_CLASS_ICON, isClassIcon } from "@/shared/classes";
 import { createClassAction, type ClassFormState } from "./actions";
+import { IconPicker } from "./icon-picker";
 
 const initialState: ClassFormState = {};
 
@@ -13,11 +15,15 @@ const labelClass = "mb-1.5 block text-sm font-medium text-ink";
 export function ClassForm({
   coaches,
   today,
+  iconsReady,
 }: {
   /** Admins choose the coach; a coach's form leaves it out (it is them). */
   coaches?: { id: string; name: string }[];
   /** Studio date, "YYYY-MM-DD" — the earliest the date picker offers. */
   today: string;
+  /** False until supabase/class-icons.sql has run, when there is nowhere to
+   *  save an icon, so the picker stays out of the form. */
+  iconsReady: boolean;
 }) {
   const [state, formAction, pending] = useActionState(
     createClassAction,
@@ -66,6 +72,12 @@ export function ClassForm({
           </div>
         )}
       </div>
+
+      {iconsReady && (
+        <IconPicker
+          defaultValue={isClassIcon(v.icon) ? v.icon : DEFAULT_CLASS_ICON}
+        />
+      )}
 
       <div>
         <label className={labelClass} htmlFor="description">

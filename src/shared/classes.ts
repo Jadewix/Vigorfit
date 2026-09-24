@@ -11,12 +11,17 @@
  * with like means daylight saving never enters into it.
  */
 import { SESSION_MINUTES } from "@/shared/booking";
+import { formatClock } from "@/shared/studio";
 import { shiftDate, weekdayOf } from "@/shared/timezone";
 
 export interface StudioClass {
   id: string;
   name: string;
   description: string | null;
+  /** A key from CLASS_ICONS. Null on classes added before icons existed, and
+   *  missing from the row altogether until supabase/class-icons.sql runs —
+   *  read it through `classIconOf`, which covers both. */
+  icon?: string | null;
   coach_id: string;
   /** The (first) day it runs, "YYYY-MM-DD". */
   class_date: string;
@@ -27,6 +32,52 @@ export interface StudioClass {
   repeats_weekly: boolean;
   created_at: string;
 }
+
+/* -------------------------------------------------------------- icons --- */
+
+/**
+ * The icons a class can be given, in the order the picker offers them. Each
+ * label names the kind of class the drawing suits; it only helps whoever is
+ * choosing, since the class's own name is what everyone else reads.
+ *
+ * The keys are what `classes.icon` stores. Renaming one would send every
+ * class that picked it back to the default, so add new keys rather than
+ * renaming old ones. The drawings are in ClassMark.
+ */
+export const CLASS_ICONS = [
+  { key: "dumbbell", label: "Weights" },
+  { key: "kettlebell", label: "Kettlebell" },
+  { key: "pullup", label: "Bodyweight" },
+  { key: "lotus", label: "Yoga" },
+  { key: "mat", label: "Pilates" },
+  { key: "glove", label: "Boxing" },
+  { key: "bike", label: "Cycling" },
+  { key: "shoe", label: "Running" },
+  { key: "heart", label: "Cardio" },
+  { key: "bolt", label: "HIIT" },
+  { key: "stopwatch", label: "Circuit" },
+  { key: "jack", label: "Aerobics" },
+  { key: "music", label: "Dance" },
+  { key: "flame", label: "Fat burn" },
+  { key: "whistle", label: "Bootcamp" },
+  { key: "ball", label: "Core" },
+] as const;
+
+export type ClassIcon = (typeof CLASS_ICONS)[number]["key"];
+
+/** What a class shows until someone picks its icon. */
+export const DEFAULT_CLASS_ICON: ClassIcon = "dumbbell";
+
+export function isClassIcon(value: unknown): value is ClassIcon {
+  return CLASS_ICONS.some((i) => i.key === value);
+}
+
+/** A class's icon, or the default when it has none (or an unknown one). */
+export function classIconOf(cls: { icon?: string | null }): ClassIcon {
+  return isClassIcon(cls.icon) ? cls.icon : DEFAULT_CLASS_ICON;
+}
+
+/* ------------------------------------------------------------- timing --- */
 
 /** "HH:MM[:SS]" as minutes after midnight. */
 function minutesOf(time: string): number {
@@ -100,6 +151,54 @@ export function whenLabel(cls: StudioClass): string {
 /** "6:00 PM – 7:00 PM". */
 export function timeRangeLabel(cls: StudioClass): string {
   return `${clockLabel(cls.start_time)} – ${clockLabel(cls.end_time)}`;
+}
+
+/* ------------------------------------------------------ public page --- */
+
+/** A one-off class whose day has gone. It no longer blocks or shows. */
+export function isOver(cls: StudioClass, today: string): boolean {
+  return !cls.repeats_weekly && cls.class_date < today;
+}
+
+/** Sorts like a timetable: weekly classes Monday to Sunday, then dates. */
+function timetableKey(cls: StudioClass): string {
+  return cls.repeats_weekly
+    ? `0 ${(weekdayOf(cls.class_date) + 6) % 7} ${cls.start_time}`
+    : `1 ${cls.class_date} ${cls.start_time}`;
+}
+
+/**
+ * The classes the landing page shows, in the order it shows them: finished
+ * one-offs dropped, the weekly timetable first, then one-off dates.
+ */
+export function publicTimetable(
+  classes: StudioClass[],
+  today: string,
+): StudioClass[] {
+  return classes
+    .filter((c) => !isOver(c, today))
+    .sort(
+      (a, b) =>
+        timetableKey(a).localeCompare(timetableKey(b)) ||
+        a.name.localeCompare(b.name),
+    );
+}
+
+/**
+ * The landing page's shorter `whenLabel`: "Every Monday", "Every Monday from
+ * 12 Oct" while a weekly class has yet to start, or "Saturday 3 Oct".
+ */
+export function shortWhenLabel(cls: StudioClass, today: string): string {
+  if (!cls.repeats_weekly) return dateLabel(cls.class_date);
+  const every = `Every ${WEEKDAYS[weekdayOf(cls.class_date)]}`;
+  if (cls.class_date <= today) return every;
+  const [, mo, d] = cls.class_date.split("-").map(Number);
+  return `${every} from ${d} ${MONTHS[mo - 1]}`;
+}
+
+/** "6pm – 7pm", in the form the landing page writes its opening hours. */
+export function shortTimeRangeLabel(cls: StudioClass): string {
+  return `${formatClock(minutesOf(cls.start_time))} – ${formatClock(minutesOf(cls.end_time))}`;
 }
 
 /* ------------------------------------------------------ client view --- */
