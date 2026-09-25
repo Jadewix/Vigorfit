@@ -6,7 +6,8 @@ import { zonedToday } from "@/shared/timezone";
 
 async function fetchClasses(client: SupabaseClient): Promise<StudioClass[]> {
   // `*` rather than a column list so this keeps working on a database where
-  // supabase/class-icons.sql (which adds `icon`) hasn't been run yet.
+  // supabase/class-icons.sql or class-photos.sql (which add `icon` and
+  // `photo_url`) hasn't been run yet.
   const { data, error } = await client.from("classes").select("*");
   // No table at all means classes.sql hasn't run: no classes, not a failure.
   if (error?.code === "PGRST205" || error?.code === "42P01") return [];

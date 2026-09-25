@@ -50,18 +50,37 @@ export function ClassGlyph({
 }
 
 /**
- * A class's icon on a sage square — the same square a coach without a photo
- * gets their initials on, so the Team and Classes bands are built from one
- * part. Size it with `className` (e.g. "h-16 w-16"). Decorative: the class's
- * name always sits beside it.
+ * A class's picture: its photo when it has one, otherwise its icon on a sage
+ * square — the same square a coach without a photo gets their initials on, so
+ * the Team and Classes bands are built from one part. Size it with
+ * `className` (e.g. "h-16 w-16"). Decorative: the class's name always sits
+ * beside it.
  */
 export function ClassMark({
   icon,
+  photoUrl,
   className,
 }: {
   icon: ClassIcon;
+  photoUrl?: string | null;
   className?: string;
 }) {
+  if (photoUrl) {
+    return (
+      // Photos are already 512px squares from the uploader, so a plain <img>
+      // does the job without configuring next/image for Supabase Storage.
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={photoUrl}
+        alt=""
+        width={512}
+        height={512}
+        loading="lazy"
+        decoding="async"
+        className={cn("shrink-0 object-cover", className)}
+      />
+    );
+  }
   return (
     <span
       aria-hidden

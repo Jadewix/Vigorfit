@@ -5,7 +5,7 @@ import { EmptyState } from "@/frontend/components/empty-state";
 import { ConfirmSubmit } from "@/frontend/components/confirm-button";
 import { ClassMark } from "@/frontend/components/class-mark";
 import { WeekIcon } from "@/frontend/components/icons";
-import { buttonClasses } from "@/frontend/ui/button";
+import { PHOTO_HINT } from "@/frontend/components/square-photo";
 import { Card, CardBody, CardHeader, CardTitle } from "@/frontend/ui/card";
 import {
   classIconOf,
@@ -15,12 +15,10 @@ import {
   type StudioClass,
 } from "@/shared/classes";
 import { zonedToday } from "@/shared/timezone";
-import { cn } from "@/shared/utils";
 import type { Profile } from "@/shared/types";
-import { deleteClassAction, setClassIconAction } from "./actions";
+import { deleteClassAction } from "./actions";
 import { ClassForm } from "./class-form";
-import { IconPicker } from "./icon-picker";
-import { SaveIconButton } from "./save-icon-button";
+import { ClassPhotoControl } from "./class-photo";
 
 /**
  * The class timetable, as the admin and the coaches see it. One component for
@@ -40,21 +38,21 @@ export async function ClassesPanel({ viewer }: { viewer: Profile }) {
     .order("start_time", { ascending: true });
   if (!isAdmin) classesQuery = classesQuery.eq("coach_id", viewer.id);
 
-  const [classesRes, coachesRes, iconProbe] = await Promise.all([
+  const [classesRes, coachesRes, photoProbe] = await Promise.all([
     classesQuery,
     isAdmin
       ? supabase.from("coaches").select("id").eq("active", true)
       : Promise.resolve({ data: [] as { id: string }[] }),
-    // Whether class-icons.sql has run. Naming a column that isn't there is
+    // Whether class-photos.sql has run. Naming a column that isn't there is
     // an error, where the `*` above would quietly leave it out.
-    supabase.from("classes").select("icon").limit(1),
+    supabase.from("classes").select("photo_url").limit(1),
   ]);
 
   // PGRST205: PostgREST has no such table, i.e. classes.sql has not run.
   const notSetUp =
     classesRes.error?.code === "PGRST205" || classesRes.error?.code === "42P01";
   if (classesRes.error && !notSetUp) throw classesRes.error;
-  const iconsReady = !iconProbe.error;
+  const photosReady = !photoProbe.error;
 
   const classes = (classesRes.data ?? []) as StudioClass[];
   const coachIds = (coachesRes.data ?? []).map((c) => c.id as string);
@@ -95,14 +93,14 @@ export async function ClassesPanel({ viewer }: { viewer: Profile }) {
         </p>
       ) : (
         <>
-          {!iconsReady && (
+          {!photosReady && (
             <p className="mb-6 rounded-lg bg-oxblood/10 px-4 py-3 text-sm text-oxblood">
-              Class icons aren&rsquo;t switched on yet, so every class shows the
-              default one.{" "}
+              Class photos aren&rsquo;t switched on yet, so every class shows an
+              icon instead.{" "}
               {isAdmin ? (
                 <>
                   Run{" "}
-                  <code className="font-semibold">supabase/class-icons.sql</code>{" "}
+                  <code className="font-semibold">supabase/class-photos.sql</code>{" "}
                   in the Supabase SQL editor, then reload this page.
                 </>
               ) : (
@@ -119,12 +117,18 @@ export async function ClassesPanel({ viewer }: { viewer: Profile }) {
               <ClassForm
                 coaches={isAdmin ? coaches : undefined}
                 today={today}
-                iconsReady={iconsReady}
+                uploaderId={viewer.id}
+                photosReady={photosReady}
               />
             </CardBody>
           </Card>
 
-          <h2 className="panel-title mb-3 text-lg text-ink">Timetable</h2>
+          <h2 className="panel-title mb-1 text-lg text-ink">Timetable</h2>
+          <p className="mb-3 text-xs text-ink-muted">
+            {photosReady
+              ? `Each class shows its photo on the home page. ${PHOTO_HINT}`
+              : "Each class shows on the home page."}
+          </p>
           {current.length === 0 ? (
             <EmptyState
               title="No classes yet"
@@ -135,7 +139,7 @@ export async function ClassesPanel({ viewer }: { viewer: Profile }) {
             <ClassList
               items={current}
               getName={isAdmin ? getName : null}
-              changeIcon={iconsReady}
+              photoUploaderId={photosReady ? viewer.id : null}
             />
           )}
 
@@ -160,14 +164,15 @@ export async function ClassesPanel({ viewer }: { viewer: Profile }) {
 function ClassList({
   items,
   getName,
-  changeIcon,
+  photoUploaderId = null,
   muted,
 }: {
   items: StudioClass[];
   /** Null on a coach's own list, where every class is theirs. */
   getName: ((id: string) => string) | null;
-  /** Offer "Change icon" — only once class-icons.sql has run. */
-  changeIcon?: boolean;
+  /** Who uploads if a photo is changed; null offers no photo controls,
+   *  as on past classes or before class-photos.sql has run. */
+  photoUploaderId?: string | null;
   muted?: boolean;
 }) {
   return (
@@ -179,6 +184,7 @@ function ClassList({
               <div className="flex gap-4">
                 <ClassMark
                   icon={classIconOf(c)}
+                  photoUrl={c.photo_url}
                   className="h-11 w-11 rounded-lg"
                 />
                 <div className="min-w-0 flex-1">
@@ -201,32 +207,12 @@ function ClassList({
                 </p>
               )}
               <div className="mt-4 flex flex-wrap items-center gap-2">
-                {changeIcon && (
-                  /*
-                    A disclosure rather than a dialog: it opens in place under
-                    the class, which on a phone keeps the picker next to what
-                    it is changing. Keyed by the icon, so saving a new one
-                    remounts it closed.
-                  */
-                  <details
-                    key={classIconOf(c)}
-                    className="group open:basis-full"
-                  >
-                    <summary
-                      className={cn(
-                        buttonClasses("outline", "sm"),
-                        "cursor-pointer list-none [&::-webkit-details-marker]:hidden",
-                      )}
-                    >
-                      <span className="group-open:hidden">Change icon</span>
-                      <span className="hidden group-open:inline">Cancel</span>
-                    </summary>
-                    <form action={setClassIconAction} className="mt-4 space-y-4">
-                      <input type="hidden" name="id" value={c.id} />
-                      <IconPicker defaultValue={classIconOf(c)} />
-                      <SaveIconButton />
-                    </form>
-                  </details>
+                {photoUploaderId && (
+                  <ClassPhotoControl
+                    classId={c.id}
+                    uploaderId={photoUploaderId}
+                    photoUrl={c.photo_url ?? null}
+                  />
                 )}
                 <form action={deleteClassAction}>
                   <input type="hidden" name="id" value={c.id} />

@@ -6,7 +6,7 @@ import { createClient } from "@/backend/supabase/server";
 import { createAdminClient } from "@/backend/supabase/admin";
 import {
   classBlocksSlot,
-  isClassIcon,
+  classPhotoFolder,
   type StudioClass,
 } from "@/shared/classes";
 import {
@@ -25,6 +25,16 @@ export type ClassFormState = {
 };
 
 const TIME = /^\d{2}:\d{2}$/;
+
+/**
+ * Whether `url` is a photo `uploaderId` put in the class-photos bucket. The
+ * file goes from the browser straight to Storage; this is what stops a form
+ * from saving any other address as a class's photo.
+ */
+function isOwnPhoto(url: string, uploaderId: string): boolean {
+  const folder = classPhotoFolder(process.env.NEXT_PUBLIC_SUPABASE_URL!, uploaderId);
+  return url.startsWith(folder) && !url.includes("..");
+}
 
 function refresh() {
   revalidatePath("/admin/classes");
@@ -64,9 +74,9 @@ export async function createClassAction(
 
   const name = String(formData.get("name") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
-  // Only sent when the form had an icon picker, i.e. once class-icons.sql has
-  // run. Before that the class goes in without one and shows the default.
-  const icon = formData.get("icon");
+  // Empty unless a photo was uploaded, which the form only offers once
+  // class-photos.sql has run. Without one the class shows the default icon.
+  const photoUrl = String(formData.get("photo_url") ?? "");
   const coachId =
     me.role === "coach" ? me.id : String(formData.get("coach_id") ?? "");
   const date = String(formData.get("class_date") ?? "");
@@ -79,8 +89,8 @@ export async function createClassAction(
   if (description.length > 1000) {
     return fail("Keep the description under 1000 characters.");
   }
-  if (icon !== null && !isClassIcon(icon)) {
-    return fail("Choose one of the icons.");
+  if (photoUrl && !isOwnPhoto(photoUrl, me.id)) {
+    return fail("That photo couldn't be saved. Upload it again.");
   }
   if (!coachId) return fail("Choose the coach running it.");
   if (!zonedDayRange(date)) return fail("Choose a valid date.");
@@ -95,7 +105,7 @@ export async function createClassAction(
     .insert({
       name,
       description: description || null,
-      ...(icon !== null && { icon }),
+      ...(photoUrl && { photo_url: photoUrl }),
       coach_id: coachId,
       class_date: date,
       start_time: start,
@@ -172,26 +182,33 @@ export async function deleteClassAction(formData: FormData): Promise<void> {
   refresh();
 }
 
-/**
- * Give a class a different icon, which is also how a class added before
- * icons existed gets one. A coach can only change their own (RLS says the
- * same).
- */
-export async function setClassIconAction(formData: FormData): Promise<void> {
-  const me = await requireRole(["admin", "coach"]);
-  const id = String(formData.get("id") ?? "");
-  const icon = formData.get("icon");
-  if (!id || !isClassIcon(icon)) return;
+export type PhotoState = { error?: string; success?: string };
 
-  const supabase = await createClient();
-  let query = supabase.from("classes").update({ icon }).eq("id", id);
-  if (me.role === "coach") query = query.eq("coach_id", me.id);
-  const { data, error } = await query.select("id");
-  if (error || !data?.length) {
-    throw new Error(
-      `Could not change the icon: ${error?.message ?? "the class no longer exists"}`,
-    );
+/**
+ * Give a class a photo, replace it, or (with null) take it away so the class
+ * shows its icon again. The file itself is uploaded from the browser straight
+ * to Storage; this only records its URL. A coach can only change their own
+ * classes (RLS says the same).
+ */
+export async function setClassPhotoAction(
+  id: string,
+  url: string | null,
+): Promise<PhotoState> {
+  const me = await requireRole(["admin", "coach"]);
+  if (!id) return { error: "That class no longer exists." };
+  if (url !== null && !isOwnPhoto(url, me.id)) {
+    return { error: "That photo couldn't be saved. Upload it again." };
   }
 
+  const supabase = await createClient();
+  let query = supabase.from("classes").update({ photo_url: url }).eq("id", id);
+  if (me.role === "coach") query = query.eq("coach_id", me.id);
+  // Asking for the row back tells a real update from one RLS turned into
+  // nothing — both come back without an error.
+  const { data, error } = await query.select("id");
+  if (error) return { error: `Could not save the photo: ${error.message}` };
+  if (!data?.length) return { error: "That class no longer exists." };
+
   refresh();
+  return { success: url ? "Photo updated." : "Photo removed." };
 }

@@ -74,7 +74,11 @@ export default async function ClientClassesPage() {
               className="flex flex-col gap-4 border border-line bg-ground/50 p-5 sm:flex-row sm:items-center sm:justify-between"
             >
               <div className="flex min-w-0 gap-4">
-                <ClassMark icon={classIconOf(o.cls)} className="h-12 w-12" />
+                <ClassMark
+                  icon={classIconOf(o.cls)}
+                  photoUrl={o.cls.photo_url}
+                  className="h-12 w-12"
+                />
                 <div className="min-w-0">
                   <p className="tag text-sage-lift">{dateLabel(o.date)}</p>
                   <p className="display mt-1 text-xl text-bone">{o.cls.name}</p>

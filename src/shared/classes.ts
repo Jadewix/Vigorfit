@@ -22,6 +22,10 @@ export interface StudioClass {
    *  missing from the row altogether until supabase/class-icons.sql runs —
    *  read it through `classIconOf`, which covers both. */
   icon?: string | null;
+  /** Public URL of the class's square photo in the class-photos bucket.
+   *  Shown instead of the icon when set; missing from the row until
+   *  supabase/class-photos.sql runs. */
+  photo_url?: string | null;
   coach_id: string;
   /** The (first) day it runs, "YYYY-MM-DD". */
   class_date: string;
@@ -36,13 +40,12 @@ export interface StudioClass {
 /* -------------------------------------------------------------- icons --- */
 
 /**
- * The icons a class can be given, in the order the picker offers them. Each
- * label names the kind of class the drawing suits; it only helps whoever is
- * choosing, since the class's own name is what everyone else reads.
+ * The icons a class could be given before classes took photos. Nothing picks
+ * them any more, but a class without a photo still shows the one it has (or
+ * the default), so these stay as its fallback.
  *
  * The keys are what `classes.icon` stores. Renaming one would send every
- * class that picked it back to the default, so add new keys rather than
- * renaming old ones. The drawings are in ClassMark.
+ * class that picked it back to the default. The drawings are in ClassMark.
  */
 export const CLASS_ICONS = [
   { key: "dumbbell", label: "Weights" },
@@ -75,6 +78,17 @@ export function isClassIcon(value: unknown): value is ClassIcon {
 /** A class's icon, or the default when it has none (or an unknown one). */
 export function classIconOf(cls: { icon?: string | null }): ClassIcon {
   return isClassIcon(cls.icon) ? cls.icon : DEFAULT_CLASS_ICON;
+}
+
+/**
+ * The storage folder a photo uploaded by `uploaderId` lives in. The
+ * class-photos bucket only lets each admin or coach write inside their own.
+ */
+export function classPhotoFolder(supabaseUrl: string, uploaderId: string): string {
+  // Same shape as the URL getPublicUrl() returns; a trailing slash on the
+  // configured project URL would otherwise make every photo fail the check.
+  const base = supabaseUrl.replace(/\/+$/, "");
+  return `${base}/storage/v1/object/public/class-photos/${uploaderId}/`;
 }
 
 /* ------------------------------------------------------------- timing --- */

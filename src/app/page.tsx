@@ -528,8 +528,8 @@ export default async function Home() {
 
         Like the team, the classes come from the database: whatever the studio
         adds at /admin/classes (or a coach at /coach/classes) is here on the
-        next load, as many as there are, each with the icon picked for it. A
-        class leaves once its last date has passed.
+        next load, as many as there are, each with its photo (or its icon,
+        until it has one). A class leaves once its last date has passed.
       */}
       <section
         id="classes"
@@ -572,6 +572,7 @@ export default async function Home() {
                     <div className="flex items-center gap-4">
                       <ClassMark
                         icon={classIconOf(k)}
+                        photoUrl={k.photo_url}
                         className="h-14 w-14 sm:h-16 sm:w-16"
                       />
                       <div className="min-w-0">
