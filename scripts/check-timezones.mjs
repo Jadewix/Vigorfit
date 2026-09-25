@@ -29,6 +29,7 @@ const COACH = "coach-1";
 const ME = "client-1";
 
 // Beirut is UTC+3 until the clocks go back on Sunday 25 Oct 2026, then UTC+2.
+// Sessions run SESSION_MINUTES (60), so each one ends an hour after it starts.
 const EXPECTED = {
   appTimezone: "Asia/Beirut",
   calendar: { today: "2026-09-11", bookable: ["2026-09-11"] },
@@ -37,10 +38,10 @@ const EXPECTED = {
     capacityCheckedAt: "2026-09-11T07:00:00.000Z",
     stored: {
       starts_at: "2026-09-11T07:00:00.000Z",
-      ends_at: "2026-09-11T08:10:00.000Z",
+      ends_at: "2026-09-11T08:00:00.000Z",
     },
     whatsapp: ["Fri, Sep 11, 10:00 AM"],
-    dashboard: "Sep 11 Fri · 10:00 AM – 11:10 AM pending",
+    dashboard: "Sep 11 Fri · 10:00 AM – 11:00 AM pending",
     formatDateTime: "Fri, Sep 11, 10:00 AM",
   },
   pastSlot: {
@@ -50,10 +51,10 @@ const EXPECTED = {
   winter: {
     stored: {
       starts_at: "2026-11-02T08:00:00.000Z",
-      ends_at: "2026-11-02T09:10:00.000Z",
+      ends_at: "2026-11-02T09:00:00.000Z",
     },
     whatsapp: ["Mon, Nov 2, 10:00 AM"],
-    dashboard: "Nov 2 Mon · 10:00 AM – 11:10 AM pending",
+    dashboard: "Nov 2 Mon · 10:00 AM – 11:00 AM pending",
   },
   slotsToday: {
     window: ["2026-09-10T21:00:00.000Z", "2026-09-11T21:00:00.000Z"],
@@ -308,6 +309,8 @@ async function child() {
     state.sent = [];
     state.tables = {
       coaches: [{ id: COACH, active: true }],
+      // No classes, so none of them takes the coach's hours away.
+      classes: [],
       profiles: [
         { id: COACH, full_name: "Casey Coach", phone: "+9613000002" },
         { id: ME, full_name: "Robin Client", phone: "+9613000003" },
@@ -520,6 +523,9 @@ function fakeQuery(state, table) {
     in: (col, value) => filter(col, "in", value),
     gte: (col, value) => filter(col, "gte", value),
     lt: (col, value) => filter(col, "lt", value),
+    // Logged but not applied: classesForCoachOn re-checks every row it gets
+    // back with runsOn, so returning a superset is harmless.
+    or: (expr) => (q.filters.push({ col: null, op: "or", value: expr }), builder),
     insert: (row) => ((q.insert = row), builder),
     single: () => ((q.single = true), builder),
     then: (ok, fail) =>
@@ -543,7 +549,9 @@ function execute(state, q) {
     rows.push(row);
     return { data: row, error: null };
   }
-  const hits = rows.filter((row) => q.filters.every((f) => matches(row[f.col], f)));
+  const hits = rows.filter((row) =>
+    q.filters.every((f) => f.op === "or" || matches(row[f.col], f)),
+  );
   if (!q.single) return { data: hits, error: null };
   return hits.length === 1
     ? { data: hits[0], error: null }
