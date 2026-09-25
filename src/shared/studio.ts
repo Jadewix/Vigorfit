@@ -12,12 +12,14 @@ import { APP_TIMEZONE } from "@/shared/timezone";
 
 /**
  * Studio WhatsApp number in international format, digits only (no "+", spaces
- * or dashes). Set NEXT_PUBLIC_WHATSAPP_NUMBER to the studio's real number —
- * the fallback below is a placeholder and will not reach anyone.
+ * or dashes): +961 79 067 958.
+ *
+ * Kept in code rather than an env var on purpose. The number is public on
+ * every page anyway, and as an env var it was baked in at build time, so a
+ * build from a machine with a stale .env.local put the old number (a personal
+ * phone) back on the live site.
  */
-export const STUDIO_WHATSAPP = (
-  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "96170123456"
-).replace(/\D/g, "");
+export const STUDIO_WHATSAPP = "96179067958";
 
 /**
  * Groups a number the way Lebanese numbers are written: "+961 79 067 958"
