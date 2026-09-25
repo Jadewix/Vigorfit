@@ -67,6 +67,21 @@ export const STUDIO_ADDRESS = ["Main Street, Zgharta", "North Lebanon"] as const
 /** Google Maps pin for the studio. */
 export const STUDIO_MAPS_URL = "https://maps.app.goo.gl/jRUd9qNsvoPxmGBX9";
 
+/**
+ * Instagram accounts linked in the footer, the gym's first. Handles are stored
+ * without the leading "@": the display puts it back, and the profile URL needs
+ * it gone.
+ */
+export const STUDIO_INSTAGRAMS = [
+  { name: "Vigorfit", handle: "vigorfit.lb" },
+  { name: "Jad Yammine", handle: "jad.yammine" },
+] as const;
+
+/** instagram.com profile URL for a handle written without its "@". */
+export function instagramLink(handle: string): string {
+  return `https://www.instagram.com/${handle}/`;
+}
+
 /* --------------------------------------------------------------- hours --- */
 
 const WEEKDAYS = [
@@ -147,7 +162,7 @@ export function formatClock(minutes: number): string {
 
 /**
  * The same rows in the longer form the signed-in dashboards use, e.g.
- * `{ days: "Mon – Fri", hours: "8:00 AM – 6:00 PM" }`. Presentation only —
+ * `{ days: "Mon – Fri", hours: "8:00 AM – 9:00 PM" }`. Presentation only —
  * the numbers still come from the one table above.
  */
 export const STUDIO_HOURS_DISPLAY = STUDIO_HOURS.map(({ label, hours }) => ({

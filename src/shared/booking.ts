@@ -224,12 +224,12 @@ export function slotAvailability(
  */
 export const HOURS: Record<number, { first: number; last: number } | null> = {
   0: null, // Sunday — closed
-  1: { first: 8, last: 18 }, // Mon  8:00 AM – 6:00 PM
-  2: { first: 8, last: 18 },
-  3: { first: 8, last: 18 },
-  4: { first: 8, last: 18 },
-  5: { first: 8, last: 18 },
-  6: { first: 8, last: 15 }, // Sat  8:00 AM – 3:00 PM
+  1: { first: 8, last: 21 }, // Mon  8:00 AM – 9:00 PM
+  2: { first: 8, last: 21 },
+  3: { first: 8, last: 21 },
+  4: { first: 8, last: 21 },
+  5: { first: 8, last: 21 },
+  6: { first: 8, last: 16 }, // Sat  8:00 AM – 4:00 PM
 };
 
 export function isOpenOn(weekday: number): boolean {
