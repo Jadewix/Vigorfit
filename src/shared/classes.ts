@@ -246,6 +246,30 @@ export function upcomingOccurrences(
   );
 }
 
+/**
+ * The next time a class meets from now: today if it hasn't started yet,
+ * otherwise its next date. Null once a one-off class has started or passed.
+ */
+export function nextOccurrence(
+  cls: StudioClass,
+  today: string,
+  nowTime: string,
+): ClassOccurrence | null {
+  const started = (date: string) =>
+    date === today && shortTime(cls.start_time) <= nowTime;
+  if (!cls.repeats_weekly) {
+    return cls.class_date < today || started(cls.class_date)
+      ? null
+      : { date: cls.class_date, cls };
+  }
+  const from = cls.class_date > today ? cls.class_date : today;
+  for (let i = 0; i < 8; i++) {
+    const date = shiftDate(from, i)!;
+    if (runsOn(cls, date) && !started(date)) return { date, cls };
+  }
+  return null;
+}
+
 /** "Monday 28 Sep". */
 export function dateLabel(date: string): string {
   const [, mo, d] = date.split("-").map(Number);
@@ -258,6 +282,15 @@ export function comingMessage(
   { date, cls }: ClassOccurrence,
 ): string {
   return `Hi Vigorfit, this is ${who}. I'm coming to ${cls.name} on ${dateLabel(date)} at ${clockLabel(cls.start_time)}.`;
+}
+
+/**
+ * What a visitor without an account sends from the landing page. They can't
+ * join yet, so it asks for both things that have to happen: the class and an
+ * account (the studio opens those).
+ */
+export function guestJoinMessage({ date, cls }: ClassOccurrence): string {
+  return `Hi Vigorfit, I'd like to join ${cls.name} on ${dateLabel(date)} at ${clockLabel(cls.start_time)}. Can you set up my account?`;
 }
 
 /** What anyone else sends to get onto (or back onto) the Classes plan. */

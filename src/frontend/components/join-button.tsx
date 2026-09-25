@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useId, useRef } from "react";
 import { buttonClasses } from "@/frontend/ui/button";
 import { WhatsAppIcon } from "@/frontend/components/icons";
 
@@ -26,6 +26,9 @@ export function JoinButton({
   renew: boolean;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
+  // Several of these share a page (a list of classes), so each dialog needs
+  // its own title id.
+  const titleId = useId();
 
   if (comingHref) {
     return (
@@ -53,13 +56,13 @@ export function JoinButton({
 
       <dialog
         ref={dialog}
-        aria-labelledby="enroll-title"
+        aria-labelledby={titleId}
         // Clicking the backdrop (the dialog element itself) closes it.
         onClick={(e) => e.target === e.currentTarget && dialog.current?.close()}
         className="m-auto w-[min(26rem,calc(100vw-2rem))] border border-line bg-ground p-0 text-bone backdrop:bg-black/70"
       >
         <div className="p-6">
-          <h2 id="enroll-title" className="display text-2xl text-sage">
+          <h2 id={titleId} className="display text-2xl text-sage">
             {renew ? "Renew to join" : "Classes are a separate plan"}
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-sage-dim">

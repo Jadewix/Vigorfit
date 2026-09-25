@@ -3,16 +3,22 @@ import Link from "next/link";
 import { getCurrentProfile } from "@/backend/auth";
 import { getPublicClasses } from "@/backend/public-classes";
 import { getPublicCoaches } from "@/backend/public-coaches";
+import { getSubscription } from "@/backend/subscription";
 import { SESSION_LABEL } from "@/shared/booking";
 import {
   classIconOf,
+  comingMessage,
+  enrollMessage,
+  guestJoinMessage,
+  nextOccurrence,
   shortTimeRangeLabel,
   shortWhenLabel,
 } from "@/shared/classes";
-import { zonedToday } from "@/shared/timezone";
+import { utcToZonedTime } from "@/shared/timezone";
 import { buttonClasses, type Size } from "@/frontend/ui/button";
 import { CoachAvatar } from "@/frontend/components/coach-avatar";
 import { ClassMark } from "@/frontend/components/class-mark";
+import { JoinButton } from "@/frontend/components/join-button";
 import { SiteNav } from "@/frontend/site/site-nav";
 import { Reveal } from "@/frontend/site/reveal";
 import { OpenStatus } from "@/frontend/site/open-status";
@@ -240,7 +246,15 @@ export default async function Home() {
   const whatsappHref = waLink(WHATSAPP_GREETING);
   // A class names its coach only while they're on the team shown above.
   const coachNames = new Map(coaches.map((c) => [c.id, c.name]));
-  const today = zonedToday();
+  const now = utcToZonedTime(new Date());
+  // What a client's "I'm coming" does depends on their plan, as on their own
+  // Classes page. A failed read leaves them the visitor's WhatsApp ask
+  // rather than taking the homepage down.
+  const sub =
+    isClient && profile
+      ? await getSubscription(profile.id).catch(() => null)
+      : null;
+  const who = profile?.full_name || profile?.username || "a member";
 
   /*
     The page is a stack of full-bleed bands, and the order of their grounds is
@@ -523,8 +537,9 @@ export default async function Home() {
         The team band's twin: the same heading, the same ruled block, the same
         square picture beside a name. What differs is the ground — down off
         --panel, so the two olive bands read as two sections rather than one
-        long one — and that there is no button, since a class is booked the
-        way everything else is, through a coach.
+        long one — and that its button is "I'm coming", as on the client's
+        own Classes page, rather than a booking: a class isn't booked, you
+        tell the studio you'll be there.
 
         Like the team, the classes come from the database: whatever the studio
         adds at /admin/classes (or a coach at /coach/classes) is here on the
@@ -564,6 +579,8 @@ export default async function Home() {
             <ul className="mt-12 grid gap-px p-px sm:grid-cols-2 lg:grid-cols-3">
               {classes.map((k) => {
                 const coach = coachNames.get(k.coach_id);
+                const next = nextOccurrence(k, now.date, now.time);
+                const member = sub?.plan === "classes";
                 return (
                   <li
                     key={k.id}
@@ -601,12 +618,39 @@ export default async function Home() {
                     <div className="mt-auto pt-5">
                       <p className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-line pt-4 text-sm">
                         <span className="text-sage-dim">
-                          {shortWhenLabel(k, today)}
+                          {shortWhenLabel(k, now.date)}
                         </span>
                         <span className="tabular-nums text-grey">
                           {shortTimeRangeLabel(k)}
                         </span>
                       </p>
+                      {/*
+                        A Classes member says they're coming on WhatsApp;
+                        another plan gets the pop-up asking them to enroll;
+                        a visitor asks to join and for an account, like every
+                        other button on this page does for them. Hidden once
+                        a one-off class has started.
+                      */}
+                      {next &&
+                        (sub ? (
+                          <JoinButton
+                            className="mt-5 w-full"
+                            comingHref={
+                              member && !sub.expired
+                                ? waLink(comingMessage(who, next))
+                                : null
+                            }
+                            enrollHref={waLink(enrollMessage(who, k, member))}
+                            renew={member}
+                          />
+                        ) : (
+                          <JoinButton
+                            className="mt-5 w-full"
+                            comingHref={waLink(guestJoinMessage(next))}
+                            enrollHref={waLink(guestJoinMessage(next))}
+                            renew={false}
+                          />
+                        ))}
                     </div>
                   </li>
                 );

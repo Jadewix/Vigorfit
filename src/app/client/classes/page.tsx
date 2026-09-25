@@ -5,6 +5,7 @@ import { getSubscription } from "@/backend/subscription";
 import { PageHeading } from "@/frontend/components/dashboard-shell";
 import { EmptyState } from "@/frontend/components/empty-state";
 import { ClassMark } from "@/frontend/components/class-mark";
+import { JoinButton } from "@/frontend/components/join-button";
 import { DumbbellIcon } from "@/frontend/components/icons";
 import {
   classIconOf,
@@ -17,7 +18,6 @@ import {
 } from "@/shared/classes";
 import { waLink } from "@/shared/studio";
 import { utcToZonedTime } from "@/shared/timezone";
-import { JoinButton } from "./join-button";
 
 /**
  * Upcoming classes for the next two weeks. Nothing is booked here: a Classes
