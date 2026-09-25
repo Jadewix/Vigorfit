@@ -76,6 +76,40 @@ export async function sendWhatsAppTemplate(opts: {
     return { ok: true };
   }
 
+  return post(payload);
+}
+
+/**
+ * Plain-text message. Meta only delivers these within 24 hours of the
+ * person's last message to us, and doesn't charge for them there, so this is
+ * for answering someone who just wrote in, never for starting a chat.
+ */
+export async function sendWhatsAppText(
+  toRaw: string | null | undefined,
+  body: string,
+): Promise<{ ok: boolean; error?: string }> {
+  const to = toWaNumber(toRaw);
+  if (!to) return { ok: false, error: "invalid or missing phone number" };
+
+  if (!isWhatsAppConfigured()) {
+    console.log(`[whatsapp:dry-run] to=${to} text=${JSON.stringify(body)}`);
+    return { ok: true };
+  }
+
+  return post({
+    messaging_product: "whatsapp",
+    to,
+    type: "text",
+    text: { body, preview_url: false },
+  });
+}
+
+/** The phone number id we send from; incoming webhooks carry it too. */
+export function whatsAppPhoneId(): string | undefined {
+  return PHONE_ID;
+}
+
+async function post(payload: unknown): Promise<{ ok: boolean; error?: string }> {
   try {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 8000);

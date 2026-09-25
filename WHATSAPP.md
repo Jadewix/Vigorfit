@@ -41,8 +41,10 @@ Order: 1 = coach first name, 2 = client name, 3 = date/time.
 
 **`booking_update`**
 ```
-Hi {{1}}, update on your session with {{2}} for {{3}}: {{4}}.
+Hi {{1}}, this is a booking update from Vigorfit about your session with {{2}} on {{3}}. The new status is: {{4}}. You can see the full details of this session in your Vigorfit account.
 ```
+(The shorter "Hi {{1}}, update on your session with {{2}} for {{3}}: {{4}}."
+is rejected: too many variables for its length, and one sits at the end.)
 Order: 1 = recipient first name, 2 = other person, 3 = date/time, 4 = status
 (e.g. "Confirmed ✅", "Cancelled").
 
