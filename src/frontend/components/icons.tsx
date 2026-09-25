@@ -88,6 +88,22 @@ export function WhatsAppIcon(props: IconProps) {
   );
 }
 
+/**
+ * Instagram glyph, for the studio's and Jad's profiles in the footer. The
+ * corner dot is a zero-length path that the round linecap draws as a point —
+ * it stays crisp at the 15px this is used at, where a tiny stroked circle
+ * would fill to a blob.
+ */
+export function InstagramIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <rect x="2" y="2" width="20" height="20" rx="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <path d="M17.5 6.5h.01" />
+    </svg>
+  );
+}
+
 export function ClockIcon(props: IconProps) {
   return (
     <svg {...base(props)}>

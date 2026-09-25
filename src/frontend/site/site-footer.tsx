@@ -1,12 +1,18 @@
 import { Wordmark } from "@/frontend/site/wordmark";
-import { MapPinIcon, WhatsAppIcon } from "@/frontend/components/icons";
+import {
+  InstagramIcon,
+  MapPinIcon,
+  WhatsAppIcon,
+} from "@/frontend/components/icons";
 import {
   STUDIO_ADDRESS,
   STUDIO_HOURS,
+  STUDIO_INSTAGRAMS,
   STUDIO_MAPS_URL,
   STUDIO_WHATSAPP_DISPLAY,
   WHATSAPP_GREETING,
   formatClock,
+  instagramLink,
   waLink,
 } from "@/shared/studio";
 
@@ -53,8 +59,8 @@ const sections = [
  *
  * Deliberately short. Everything here is a repeat of something stated more
  * fully further up the page, so it earns a few lines rather than a screen:
- * the mark and the index on one row, the address, the number and the hours
- * beneath it, and the small print under a rule.
+ * the mark and the index on one row, the address, the number, the two
+ * Instagram handles and the hours beneath it, and the small print under a rule.
  */
 export function SiteFooter() {
   return (
@@ -126,6 +132,32 @@ export function SiteFooter() {
               </span>
             </a>
           </p>
+
+          {/*
+            The gym's account and Jad's, each its own row and its own tap
+            target — two destinations, so unlike the rows above these can't
+            fold into one link. The "@" is shown but not stored; the link
+            strips back to the bare handle the URL wants.
+          */}
+          {STUDIO_INSTAGRAMS.map(({ name, handle }) => (
+            <p key={handle}>
+              <a
+                href={instagramLink(handle)}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${name} on Instagram`}
+                className={detailRow}
+              >
+                <InstagramIcon
+                  aria-hidden
+                  width={15}
+                  height={15}
+                  className={detailIcon}
+                />
+                <span className={detailValue}>@{handle}</span>
+              </a>
+            </p>
+          ))}
 
           {/*
             One wrapped line, not the ledger. The ledger upstairs needs the
