@@ -22,6 +22,8 @@ export type ClassFormState = {
   values?: Record<string, string>;
   /** Bumped on every result, so the form remounts with `values`. */
   attempt?: number;
+  /** Saved with nothing to sort out, so an edit form can close itself. */
+  done?: boolean;
 };
 
 const TIME = /^\d{2}:\d{2}$/;
@@ -45,6 +47,82 @@ function refresh() {
   revalidatePath("/");
 }
 
+type Me = Awaited<ReturnType<typeof requireRole>>;
+
+// React clears a form after its action runs; handing the fields back lets
+// a rejected form keep what was typed.
+function failWith(formData: FormData, attempt: number) {
+  return (error: string): ClassFormState => ({
+    error,
+    attempt,
+    values: Object.fromEntries(
+      [...formData].flatMap(([k, v]) =>
+        typeof v === "string" && !k.startsWith("$") ? [[k, v]] : [],
+      ),
+    ),
+  });
+}
+
+type ClassFields = Pick<
+  StudioClass,
+  | "name"
+  | "description"
+  | "coach_id"
+  | "class_date"
+  | "start_time"
+  | "end_time"
+  | "repeats_weekly"
+>;
+
+/**
+ * The class a form describes, checked, or what is wrong with it. A coach's
+ * classes are always their own, whatever the form sends. The photo isn't
+ * part of it: that is saved on its own (see setClassPhotoAction).
+ */
+function readClass(
+  formData: FormData,
+  me: Me,
+): { error: string } | { fields: ClassFields } {
+  const name = String(formData.get("name") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+  const coachId =
+    me.role === "coach" ? me.id : String(formData.get("coach_id") ?? "");
+  const date = String(formData.get("class_date") ?? "");
+  const start = String(formData.get("start_time") ?? "");
+  const end = String(formData.get("end_time") ?? "");
+
+  if (!name) return { error: "Give the class a name." };
+  if (name.length > 80) return { error: "Keep the name under 80 characters." };
+  if (description.length > 1000) {
+    return { error: "Keep the description under 1000 characters." };
+  }
+  if (!coachId) return { error: "Choose the coach running it." };
+  if (!zonedDayRange(date)) return { error: "Choose a valid date." };
+  if (!TIME.test(start) || !TIME.test(end)) {
+    return { error: "Choose a start and end time." };
+  }
+  if (end <= start) return { error: "The class must end after it starts." };
+
+  return {
+    fields: {
+      name,
+      description: description || null,
+      coach_id: coachId,
+      class_date: date,
+      start_time: start,
+      end_time: end,
+      repeats_weekly: formData.get("repeats_weekly") === "on",
+    },
+  };
+}
+
+/** `done` ("“Yoga” added.") plus, if bookings overlap, what to do about them. */
+function clashNotice(done: string, clashes: number, me: Me): string {
+  if (clashes === 0) return done;
+  const one = clashes === 1;
+  return `${done} ${clashes} existing booking${one ? "" : "s"} with this coach overlap${one ? "s" : ""} it and ${one ? "was" : "were"} not cancelled — move or cancel ${one ? "it" : "them"} from ${me.role === "coach" ? "My sessions" : "Bookings"}.`;
+}
+
 /**
  * Put a class on a coach's timetable. Admins pick any coach; a coach can
  * only schedule their own classes, whatever the form sends. From then on the
@@ -60,57 +138,23 @@ export async function createClassAction(
 ): Promise<ClassFormState> {
   const me = await requireRole(["admin", "coach"]);
   const attempt = (prev.attempt ?? 0) + 1;
-  // React clears a form after its action runs; handing the fields back lets
-  // a rejected form keep what was typed.
-  const fail = (error: string): ClassFormState => ({
-    error,
-    attempt,
-    values: Object.fromEntries(
-      [...formData].flatMap(([k, v]) =>
-        typeof v === "string" && !k.startsWith("$") ? [[k, v]] : [],
-      ),
-    ),
-  });
+  const fail = failWith(formData, attempt);
 
-  const name = String(formData.get("name") ?? "").trim();
-  const description = String(formData.get("description") ?? "").trim();
+  const parsed = readClass(formData, me);
+  if ("error" in parsed) return fail(parsed.error);
   // Empty unless a photo was uploaded, which the form only offers once
   // class-photos.sql has run. Without one the class shows the default icon.
   const photoUrl = String(formData.get("photo_url") ?? "");
-  const coachId =
-    me.role === "coach" ? me.id : String(formData.get("coach_id") ?? "");
-  const date = String(formData.get("class_date") ?? "");
-  const start = String(formData.get("start_time") ?? "");
-  const end = String(formData.get("end_time") ?? "");
-  const repeatsWeekly = formData.get("repeats_weekly") === "on";
-
-  if (!name) return fail("Give the class a name.");
-  if (name.length > 80) return fail("Keep the name under 80 characters.");
-  if (description.length > 1000) {
-    return fail("Keep the description under 1000 characters.");
-  }
   if (photoUrl && !isOwnPhoto(photoUrl, me.id)) {
     return fail("That photo couldn't be saved. Upload it again.");
   }
-  if (!coachId) return fail("Choose the coach running it.");
-  if (!zonedDayRange(date)) return fail("Choose a valid date.");
-  if (!TIME.test(start) || !TIME.test(end)) {
-    return fail("Choose a start and end time.");
-  }
-  if (end <= start) return fail("The class must end after it starts.");
 
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("classes")
     .insert({
-      name,
-      description: description || null,
+      ...parsed.fields,
       ...(photoUrl && { photo_url: photoUrl }),
-      coach_id: coachId,
-      class_date: date,
-      start_time: start,
-      end_time: end,
-      repeats_weekly: repeatsWeekly,
     })
     .select("*")
     .single();
@@ -129,10 +173,46 @@ export async function createClassAction(
   const clashes = await countClashingBookings(data as StudioClass);
   return {
     attempt,
-    notice:
-      clashes === 0
-        ? `“${name}” added.`
-        : `“${name}” added. ${clashes} existing booking${clashes === 1 ? "" : "s"} with this coach overlap${clashes === 1 ? "s" : ""} it and ${clashes === 1 ? "was" : "were"} not cancelled — move or cancel ${clashes === 1 ? "it" : "them"} from ${me.role === "coach" ? "My sessions" : "Bookings"}.`,
+    notice: clashNotice(`“${parsed.fields.name}” added.`, clashes, me),
+  };
+}
+
+/**
+ * Change a class: its name, description, day, hours, weekly repeat and, for
+ * an admin, its coach. A coach can only change their own, and it stays
+ * theirs (RLS says the same). The booking grid follows the new hours at once.
+ *
+ * As when adding, bookings the new hours overlap are counted, not cancelled.
+ */
+export async function updateClassAction(
+  prev: ClassFormState,
+  formData: FormData,
+): Promise<ClassFormState> {
+  const me = await requireRole(["admin", "coach"]);
+  const attempt = (prev.attempt ?? 0) + 1;
+  const fail = failWith(formData, attempt);
+
+  const id = String(formData.get("id") ?? "");
+  if (!id) return fail("That class no longer exists.");
+  const parsed = readClass(formData, me);
+  if ("error" in parsed) return fail(parsed.error);
+
+  const supabase = await createClient();
+  let query = supabase.from("classes").update(parsed.fields).eq("id", id);
+  if (me.role === "coach") query = query.eq("coach_id", me.id);
+  // Asking for the row back tells a real update from one RLS turned into
+  // nothing — both come back without an error.
+  const { data, error } = await query.select("*");
+  if (error) return fail(`Could not save the class: ${error.message}`);
+  if (!data?.length) return fail("That class no longer exists.");
+
+  refresh();
+
+  const clashes = await countClashingBookings(data[0] as StudioClass);
+  return {
+    attempt,
+    done: clashes === 0,
+    notice: clashNotice(`“${parsed.fields.name}” saved.`, clashes, me),
   };
 }
 

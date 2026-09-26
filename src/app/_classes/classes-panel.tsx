@@ -16,6 +16,7 @@ import {
 import { zonedToday } from "@/shared/timezone";
 import type { Profile } from "@/shared/types";
 import { deleteClassAction } from "./actions";
+import { ClassEditor } from "./class-editor";
 import { ClassForm } from "./class-form";
 import { ClassPhotoControl } from "./class-photo";
 
@@ -66,6 +67,11 @@ export async function ClassesPanel({ viewer }: { viewer: Profile }) {
   // A one-off class whose day has gone no longer blocks anything.
   const current = classes.filter((c) => !isOver(c, today));
   const past = classes.filter((c) => isOver(c, today));
+  const editor = {
+    coaches: isAdmin ? coaches : undefined,
+    today,
+    viewerId: viewer.id,
+  };
 
   return (
     <>
@@ -138,6 +144,7 @@ export async function ClassesPanel({ viewer }: { viewer: Profile }) {
             <ClassList
               items={current}
               getName={isAdmin ? getName : null}
+              editor={editor}
               photoUploaderId={photosReady ? viewer.id : null}
             />
           )}
@@ -150,6 +157,7 @@ export async function ClassesPanel({ viewer }: { viewer: Profile }) {
               <ClassList
                 items={past}
                 getName={isAdmin ? getName : null}
+                editor={editor}
                 muted
               />
             </>
@@ -163,17 +171,36 @@ export async function ClassesPanel({ viewer }: { viewer: Profile }) {
 function ClassList({
   items,
   getName,
+  editor,
   photoUploaderId = null,
   muted,
 }: {
   items: StudioClass[];
   /** Null on a coach's own list, where every class is theirs. */
   getName: ((id: string) => string) | null;
+  /** What each class's Edit form needs. `coaches` is the admin's list of
+   *  active coaches; a coach's form has no picker. */
+  editor: {
+    coaches?: { id: string; name: string }[];
+    today: string;
+    viewerId: string;
+  };
   /** Who uploads if a photo is changed; null offers no photo controls,
    *  as on past classes or before class-photos.sql has run. */
   photoUploaderId?: string | null;
   muted?: boolean;
 }) {
+  // A class can belong to a coach who has since been hidden from clients.
+  // Their name stays in its picker, so saving other changes doesn't make the
+  // admin choose a coach again.
+  const coachesFor = (c: StudioClass) => {
+    const { coaches } = editor;
+    if (!coaches || !getName || coaches.some((k) => k.id === c.coach_id)) {
+      return coaches;
+    }
+    return [...coaches, { id: c.coach_id, name: getName(c.coach_id) }];
+  };
+
   return (
     <ul className="space-y-4">
       {items.map((c) => (
@@ -204,7 +231,12 @@ function ClassList({
                   {c.description}
                 </p>
               )}
-              <div className="mt-4 flex flex-wrap items-center gap-2">
+              <ClassEditor
+                cls={c}
+                coaches={coachesFor(c)}
+                today={editor.today}
+                uploaderId={editor.viewerId}
+              >
                 {photoUploaderId && (
                   <ClassPhotoControl
                     classId={c.id}
@@ -221,7 +253,7 @@ function ClassList({
                     Delete
                   </ConfirmSubmit>
                 </form>
-              </div>
+              </ClassEditor>
             </CardBody>
           </Card>
         </li>
