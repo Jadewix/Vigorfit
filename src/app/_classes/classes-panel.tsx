@@ -8,7 +8,6 @@ import { WeekIcon } from "@/frontend/components/icons";
 import { PHOTO_HINT } from "@/frontend/components/square-photo";
 import { Card, CardBody, CardHeader, CardTitle } from "@/frontend/ui/card";
 import {
-  classIconOf,
   isOver,
   timeRangeLabel,
   whenLabel,
@@ -95,8 +94,8 @@ export async function ClassesPanel({ viewer }: { viewer: Profile }) {
         <>
           {!photosReady && (
             <p className="mb-6 rounded-lg bg-oxblood/10 px-4 py-3 text-sm text-oxblood">
-              Class photos aren&rsquo;t switched on yet, so every class shows an
-              icon instead.{" "}
+              Class photos aren&rsquo;t switched on yet, so every class shows the
+              default icon.{" "}
               {isAdmin ? (
                 <>
                   Run{" "}
@@ -183,7 +182,6 @@ function ClassList({
             <CardBody>
               <div className="flex gap-4">
                 <ClassMark
-                  icon={classIconOf(c)}
                   photoUrl={c.photo_url}
                   className="h-11 w-11 rounded-lg"
                 />

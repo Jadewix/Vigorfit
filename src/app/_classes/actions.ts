@@ -186,9 +186,9 @@ export type PhotoState = { error?: string; success?: string };
 
 /**
  * Give a class a photo, replace it, or (with null) take it away so the class
- * shows its icon again. The file itself is uploaded from the browser straight
- * to Storage; this only records its URL. A coach can only change their own
- * classes (RLS says the same).
+ * shows the default icon again. The file itself is uploaded from the browser
+ * straight to Storage; this only records its URL. A coach can only change
+ * their own classes (RLS says the same).
  */
 export async function setClassPhotoAction(
   id: string,

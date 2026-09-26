@@ -8,7 +8,6 @@ import { ClassMark } from "@/frontend/components/class-mark";
 import { JoinButton } from "@/frontend/components/join-button";
 import { DumbbellIcon } from "@/frontend/components/icons";
 import {
-  classIconOf,
   comingMessage,
   dateLabel,
   enrollMessage,
@@ -75,7 +74,6 @@ export default async function ClientClassesPage() {
             >
               <div className="flex min-w-0 gap-4">
                 <ClassMark
-                  icon={classIconOf(o.cls)}
                   photoUrl={o.cls.photo_url}
                   className="h-12 w-12"
                 />

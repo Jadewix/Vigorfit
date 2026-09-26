@@ -9,7 +9,6 @@ import {
   storagePathOf,
   toSquareJpeg,
 } from "@/frontend/components/square-photo";
-import { DEFAULT_CLASS_ICON } from "@/shared/classes";
 import { setClassPhotoAction } from "./actions";
 
 const BUCKET = "class-photos";
@@ -126,7 +125,6 @@ export function ClassPhotoField({
       <input type="hidden" name="photo_url" value={url ?? ""} />
       <div className="flex items-center gap-4">
         <ClassMark
-          icon={DEFAULT_CLASS_ICON}
           photoUrl={url}
           className="h-16 w-16 rounded-lg"
         />

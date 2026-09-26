@@ -6,8 +6,7 @@ import { zonedToday } from "@/shared/timezone";
 
 async function fetchClasses(client: SupabaseClient): Promise<StudioClass[]> {
   // `*` rather than a column list so this keeps working on a database where
-  // supabase/class-icons.sql or class-photos.sql (which add `icon` and
-  // `photo_url`) hasn't been run yet.
+  // supabase/class-photos.sql (which adds `photo_url`) hasn't been run yet.
   const { data, error } = await client.from("classes").select("*");
   // No table at all means classes.sql hasn't run: no classes, not a failure.
   if (error?.code === "PGRST205" || error?.code === "42P01") return [];
@@ -22,7 +21,7 @@ async function fetchClasses(client: SupabaseClient): Promise<StudioClass[]> {
  * Read the way getPublicCoaches reads the team, and for the same reason: RLS
  * only lets signed-in users read `classes`, so this reads on the server with
  * the service role. Everything in a class row is already public-facing — its
- * name, icon, description, coach and times.
+ * name, photo, description, coach and times.
  *
  * If the service key is missing it falls back to the visitor's own session,
  * which RLS lets read the timetable, so members still see it. Never throws:

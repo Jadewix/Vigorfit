@@ -18,12 +18,8 @@ export interface StudioClass {
   id: string;
   name: string;
   description: string | null;
-  /** A key from CLASS_ICONS. Null on classes added before icons existed, and
-   *  missing from the row altogether until supabase/class-icons.sql runs —
-   *  read it through `classIconOf`, which covers both. */
-  icon?: string | null;
   /** Public URL of the class's square photo in the class-photos bucket.
-   *  Shown instead of the icon when set; missing from the row until
+   *  Shown instead of the default icon when set; missing from the row until
    *  supabase/class-photos.sql runs. */
   photo_url?: string | null;
   coach_id: string;
@@ -37,48 +33,7 @@ export interface StudioClass {
   created_at: string;
 }
 
-/* -------------------------------------------------------------- icons --- */
-
-/**
- * The icons a class could be given before classes took photos. Nothing picks
- * them any more, but a class without a photo still shows the one it has (or
- * the default), so these stay as its fallback.
- *
- * The keys are what `classes.icon` stores. Renaming one would send every
- * class that picked it back to the default. The drawings are in ClassMark.
- */
-export const CLASS_ICONS = [
-  { key: "dumbbell", label: "Weights" },
-  { key: "kettlebell", label: "Kettlebell" },
-  { key: "pullup", label: "Bodyweight" },
-  { key: "lotus", label: "Yoga" },
-  { key: "mat", label: "Pilates" },
-  { key: "glove", label: "Boxing" },
-  { key: "bike", label: "Cycling" },
-  { key: "shoe", label: "Running" },
-  { key: "heart", label: "Cardio" },
-  { key: "bolt", label: "HIIT" },
-  { key: "stopwatch", label: "Circuit" },
-  { key: "jack", label: "Aerobics" },
-  { key: "music", label: "Dance" },
-  { key: "flame", label: "Fat burn" },
-  { key: "whistle", label: "Bootcamp" },
-  { key: "ball", label: "Core" },
-] as const;
-
-export type ClassIcon = (typeof CLASS_ICONS)[number]["key"];
-
-/** What a class shows until someone picks its icon. */
-export const DEFAULT_CLASS_ICON: ClassIcon = "dumbbell";
-
-export function isClassIcon(value: unknown): value is ClassIcon {
-  return CLASS_ICONS.some((i) => i.key === value);
-}
-
-/** A class's icon, or the default when it has none (or an unknown one). */
-export function classIconOf(cls: { icon?: string | null }): ClassIcon {
-  return isClassIcon(cls.icon) ? cls.icon : DEFAULT_CLASS_ICON;
-}
+/* ------------------------------------------------------------- photos --- */
 
 /**
  * The storage folder a photo uploaded by `uploaderId` lives in. The
