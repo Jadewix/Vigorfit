@@ -35,7 +35,7 @@ export function ClassMark({
     <span
       aria-hidden
       className={cn(
-        "flex shrink-0 items-center justify-center bg-sage text-ink",
+        "flex shrink-0 items-center justify-center bg-sage text-paper",
         className,
       )}
     >

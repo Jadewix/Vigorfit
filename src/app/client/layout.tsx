@@ -7,9 +7,9 @@ import {
   UsersIcon,
 } from "@/frontend/components/icons";
 
-// The client area runs on the dark brand; phone browsers that tint their
-// toolbars from theme-color match it instead of showing a light bar.
-export const viewport: Viewport = { themeColor: "#16281b" };
+// The client area runs on the pastel brand; phone browsers that tint their
+// toolbars from theme-color match it instead of showing their default bar.
+export const viewport: Viewport = { themeColor: "#c8e8cf" };
 
 export default async function ClientLayout({
   children,

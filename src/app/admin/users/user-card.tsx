@@ -112,8 +112,8 @@ export function UserCard({
             </div>
             {user.role === "client" && (
               <div className="flex gap-1.5">
-                <dt className="shrink-0 text-slate-400">Plan</dt>
-                <dd className="truncate text-slate-600">
+                <dt className="shrink-0 text-ink-muted">Plan</dt>
+                <dd className="truncate text-ink-muted">
                   {user.plan
                     ? `${PLANS[user.plan].label} · ${
                         user.schedule_track
@@ -126,8 +126,8 @@ export function UserCard({
             )}
             {user.role === "client" && user.subscription_ends_on && (
               <div className="flex gap-1.5">
-                <dt className="shrink-0 text-slate-400">Paid until</dt>
-                <dd className="truncate text-slate-600">
+                <dt className="shrink-0 text-ink-muted">Paid until</dt>
+                <dd className="truncate text-ink-muted">
                   {user.subscription_ends_on}
                 </dd>
               </div>
@@ -228,7 +228,7 @@ export function UserCard({
           </div>
 
           {user.role === "client" && (
-            <div className="mt-4 grid gap-4 rounded-lg border border-slate-200 bg-white p-4 sm:grid-cols-2">
+            <div className="mt-4 grid gap-4 rounded-lg border border-line-light bg-paper p-4 sm:grid-cols-2">
               <div>
                 <label className={labelClass} htmlFor={`plan-${user.id}`}>
                   Subscription
@@ -277,7 +277,7 @@ export function UserCard({
                   className={inputClass}
                 />
               </div>
-              <p className="text-xs text-slate-400 sm:col-span-2">
+              <p className="text-xs text-ink-muted sm:col-span-2">
                 Set both, or neither. With no subscription the client can
                 sign in but not book. Renewing means moving the paid-until
                 date forward.

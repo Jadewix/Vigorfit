@@ -26,7 +26,7 @@ import { cn } from "@/shared/utils";
   happens to emit them in rather than by anything written here.
 
   Colour: the letters are drawn in `currentColor`, so one component serves
-  the olive chrome (bone) and the light dashboards (ink) without a dark
+  the brand chrome (bone) and the paper dashboards (ink) without a dark
   variant. The mark keeps the brand red on both — see --logo-red in
   globals.css for why that red is not one of the site's two burgundies.
 */

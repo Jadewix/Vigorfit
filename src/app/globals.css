@@ -1,25 +1,26 @@
 @import "tailwindcss";
 
 /*
-  `app-dark:` means "on any dark surface".
+  `app-dark:` means "on the brand's pastel-green surface".
 
-  Two wrappers paint the dark olive: `.brand-dark` (the marketing site and
-  login) and `.app-dark` (the client booking area, which runs the dark brand
-  inside the same dashboard shell that /coach and /admin keep on light paper).
+  Two wrappers paint the pastel green: `.brand-dark` (the marketing site and
+  login) and `.app-dark` (the client booking area, which runs the brand
+  inside the same dashboard shell that /coach and /admin keep on paper).
   This variant matches both, so a single shared component — Button, Card,
-  StatCard — can carry the light and dark treatment at once: light utilities
-  stay exactly as they are, and the dark ones are written `app-dark:`.
+  StatCard — can carry both treatments at once: paper utilities stay exactly
+  as they are, and the brand-surface ones are written `app-dark:`.
 
-  The name is kept despite now covering both surfaces, because it is already
-  spelled across ~130 call sites and renaming it would be churn without a
-  behavioural gain.
+  The names are kept from when this surface was a dark olive, because they
+  are already spelled across ~130 call sites and renaming them would be churn
+  without a behavioural gain. "dark" now names the brand surface, not its
+  lightness — the square, hairline-ruled treatment it selects is unchanged.
 
-  `.brand-light` is the escape hatch. The landing page alternates bands now —
-  olive, bone, olive, black — but the bone band still sits *inside* the
+  `.brand-light` is the escape hatch. The landing page alternates bands —
+  green, paper, green, black — but the paper band still sits *inside* the
   `.brand-dark` wrapper, so without this every Button and Card in it would
-  render its dark treatment on a light ground. Marking that one band
+  render its brand treatment on the paper ground. Marking that one band
   `.brand-light` stops the variant matching inside it, and the shared
-  components fall back to their light-paper styling with no per-call-site
+  components fall back to their paper styling with no per-call-site
   overrides. Written with `:where()` so the specificity stays 0, as before.
 */
 @custom-variant app-dark (
@@ -36,8 +37,9 @@
 
   A gym's real records are numbers in columns: times, capacities, counts. That
   is what earns a monospace face as the product's whole voice rather than as
-  decoration on small labels. Deep olive is the ground the record is kept on,
-  and burgundy is what marks it.
+  decoration on small labels. Pastel green is the ground the record is kept
+  on, deep green and near-black are what it is written in, and burgundy is
+  what marks it.
 
   Red used to carry exactly one meaning here — blocked — and inside the booking
   app it still does: "full", "cancelled" and every error are red, and nothing
@@ -51,69 +53,72 @@
   black for the deepest wells, red as the single sharp accent.
 
   Two surfaces:
-    - dark olive  (.brand-dark, .app-dark) — site, login, client booking
-    - light paper (:root default)          — coach and admin dashboards
+    - pastel green (.brand-dark, .app-dark) — site, login, client booking
+    - green paper  (:root default)          — coach and admin dashboards
+  plus one black band (.brand-black) — the closing ask and the footer.
+
+  Every piece of text is dark on both light surfaces: the pastel carries the
+  colour, and the type carries the reading. Light text appears only on the
+  saturated fills (burgundy, deep green, near-black) and in the black band.
 
   CONTRAST RULES, measured against these grounds. Do not collapse these into
   fewer tokens; each pair below exists because its alternative fails WCAG AA:
 
-    --oxblood on --ground   1.42:1  FAIL — a fill and a border, never text
-    --bone on --oxblood     9.41:1  PASS — which is what makes it a CTA fill
-    --brick on --ground     3.19:1  PASS as an icon or a mark, FAIL as prose
-    --red-lift on --ground  5.78:1  PASS — every red glyph in the booking app
-    --sage on --paper       1.94:1  FAIL — never sage text on the light surface
-    --forest on --paper     6.54:1  PASS — green text/CTA on the light surface
-    --oxblood on --paper    6.38:1  PASS — the step numerals on the bone band
-
-  The landing page's one light band runs two steps greyer than `--paper` and
-  redefines these tokens locally; its own figures are noted at `.brand-light`.
+    --bone on --ground       12.60:1  PASS — primary text
+    --sage-dim on --ground    7.65:1  PASS — body copy and quiet labels
+    --sage-lift on --ground   6.52:1  PASS — small green text
+    --sage on --ground        4.83:1  PASS — headings, and the deep green fill
+    --paper on --sage         5.47:1  PASS — type on a green fill
+    --paper on --oxblood      9.37:1  PASS — which is what makes it a CTA fill
+    --brick on --ground       5.26:1  PASS — marks, and the words beside them
+    --red-lift on --ground    7.68:1  PASS — every red glyph in the booking app
+    --ink-muted on --paper    7.73:1  PASS — secondary text on the dashboards
+    --forest-lift on --paper  5.69:1  PASS — green text on the dashboards
+    --oxblood on --paper      9.37:1  PASS — the step numerals on the paper band
 */
 :root {
-  /* ── Dark olive surfaces ─────────────────────────────── */
-  --ground: #16281b; /* dominant surface — unmistakably green, not black */
-  --panel: #1e3324; /* raised panel */
-  --panel-2: #27402d; /* hover / higher */
-  --panel-green: #22381f; /* "yours" state tint */
-  --panel-red: #2e1f21; /* "full" state tint */
+  /* ── Pastel green surfaces ───────────────────────────── */
+  --ground: #c8e8cf; /* dominant surface — pastel green */
+  --panel: #def2e2; /* raised panel — lighter, closer to the light */
+  --panel-2: #edf8ef; /* hover / higher */
+  --panel-green: #b0dcbb; /* "yours" state tint — a step greener */
+  --panel-red: #f6dada; /* "full" state tint */
 
-  --line: #314b38; /* hairline on dark */
-  --rule: rgba(151, 176, 140, 0.28); /* sage framing rule */
+  --line: #9fc8aa; /* hairline on the pastel */
+  --rule: rgba(28, 80, 46, 0.25); /* deep green framing rule */
 
-  --bone: #ecefe8; /* primary text on dark */
-  --sage: #97b08c; /* secondary text, accents, "yours" */
-  /* Small green text runs six steps (+30% lightness, more saturated to stay green) above the sage that
-     fills buttons and marks state; the user asked for it lighter. */
-  --sage-lift: #dcedd4; /* secondary green text on dark */
-  --sage-dim: #c6d9bf; /* tertiary text on dark (was #7e9476) */
-  --grey: #b8b8b8; /* structural grey — the brief's 20% */
+  /*
+    The text ramp. The names are the olive surface's, kept for the reason
+    given at the top of this file; the values are dark, because text on a
+    pastel has to be. --bone is the strongest, --grey carries headlines and
+    figures, and --sage-dim the body copy — three steps of one near-black
+    green, so the hierarchy survives without any of them going pale.
+  */
+  --bone: #0f2217; /* primary text */
+  --sage: #2c6b42; /* deep green — headings, accents, fills, "yours" */
+  --sage-lift: #1f5634; /* small green text: tags, specialties, "today" */
+  --sage-dim: #33463a; /* secondary text, body copy */
+  --grey: #26312a; /* structural — headlines, names, figures */
 
-  --oxblood: #7b0f14; /* red fills and borders only */
-  --red-lift: #e87f87; /* red text and icons on dark */
+  --oxblood: #7b0f14; /* red fills and borders */
+  --red-lift: #84101a; /* red text and icons on the pastel */
   /*
     Burgundy, in two steps, read off the reference sheet the studio supplied:
-    a deep #7b1511 under everything filled, and a bright #c5463d for everything
+    a deep #7b1511 under everything filled, and a brighter red for everything
     drawn. --oxblood was already within a few counts of the first, so it stays
-    exactly as it was and --brick is the one genuinely new colour here.
+    exactly as it was.
 
-    --brick is a MARK colour, not a text colour: icons, ledger labels, the
-    "Closed" line, the sign-in link, a hairline. At 3.19:1 on the olive it
-    clears the 3:1 that icons and UI edges are held to, and misses the 4.5:1
-    that small text needs — so it may letter a label or a link, where the
-    shape, the position or an underline is already carrying the meaning, and
-    never a sentence someone has to read to understand the page.
-
-    This replaces the three-step --wine / --wine-lift / --wine-status scale.
-    Those were split so that a label, a link and a status could be told apart
-    by shade alone, across 1.73:1 to 2.92:1 — a distinction that cost three
-    tokens and was never really legible on the ground it sat on. One accent at
-    3.19:1 separates them better, because now all three can be seen at all.
+    --brick is the drawn one: icons, the "Closed" line, the sign-in link, a
+    hairline. On the olive it was a bright #c5463d at 3.19:1, a mark colour
+    that could not letter a sentence. Deepened for the pastel it reads at
+    5.26:1, so the words it sits beside are as legible as everything else.
 
     Scope: the marketing site, the site chrome and the client booking area's
     brand marks. The booking app itself keeps --red-lift for its errors, full
     slots and cancelled badges — those are messages a client has to be able to
-    read, and they are not worth 3.19:1 for the look of them.
+    read, and they stay a step darker than the accent.
   */
-  --brick: #c5463d;
+  --brick: #a52e27;
 
   /*
     The logo's own red, and the only colour on the site that is not chosen
@@ -125,21 +130,21 @@
     picks it up, the site has two unrelated reds arguing a few pixels apart,
     which is exactly what the single-accent rule above exists to prevent.
 
-    It sits at 3.21:1 on the olive, 3.98:1 on the dashboards' paper and
+    It sits at 3.65:1 on the pastel, 4.13:1 on the dashboards' paper and
     4.04:1 in the black footer. A logotype carries no contrast minimum at
     all under WCAG, so those figures are recorded as a description of how it
     reads rather than as a bar it has to clear.
   */
   --logo-red: #e30241;
 
-  /* ── Light paper surfaces ────────────────────────────── */
-  --paper: #e8eae2;
-  --paper-panel: #f4f5f0;
+  /* ── Green paper surfaces ────────────────────────────── */
+  --paper: #e3f1e6; /* a paler step of the pastel, for dense data */
+  --paper-panel: #f6fbf7; /* cards raised off it */
   --ink: #0b0d0b; /* the brief's 10% black */
-  --ink-muted: #4a5348; /* secondary text on paper */
-  --line-light: #cfd4c7; /* hairline on paper */
+  --ink-muted: #3f4c43; /* secondary text on paper */
+  --line-light: #c3dbc9; /* hairline on paper */
   --forest: #2f5a3a; /* green CTA fills and borders on paper */
-  --forest-lift: #6eb480; /* green text on paper, six steps lighter; ~2.3:1 */
+  --forest-lift: #2b6841; /* green text on paper */
 
   /* Dashboards are the light surface by default; the dark pages opt in. */
   --background: var(--paper);
@@ -190,7 +195,7 @@ body {
     monospace;
 }
 
-/* Dark brand shell for public/marketing surfaces. */
+/* Brand shell for public/marketing surfaces. */
 .brand-dark {
   background: var(--ground);
   color: var(--bone);
@@ -202,55 +207,40 @@ body {
   <section> and nothing inside it needs to know which ground it is sitting on.
 
   `.brand-light` additionally cancels the `app-dark:` variant (see the top of
-  this file), which is what lets Button, Card and StatCard cross into the bone
-  band unmodified.
-*/
-/*
-  The band runs two steps greyer than the dashboards do. It is the only
-  light surface a visitor sees, sitting between two olive bands, and at the
-  dashboards' near-white it read as a hole punched in the page rather than as
-  one of the grounds the page alternates between. One step down still read as
-  white on a phone, where the step strip fills the screen and there is no
-  olive left in view to measure it against; this is the second.
+  this file), which is what lets Button, Card and StatCard cross into the
+  paper band unmodified.
 
-  The three tokens are redefined *here* rather than at `:root`, so the change
-  stops at this band: /coach, /admin and the account forms keep their paper.
-  That works because `@theme inline` substitutes the theme variables at the
-  use site, so `bg-paper-panel` and `border-line-light` inside the band resolve
-  against these values and the same utilities elsewhere resolve against the
-  originals — no per-call-site overrides anywhere.
+  The paper band is the dashboards' own paper, a paler step of the same green,
+  so it reads as one of the grounds the page alternates between rather than as
+  a different product. It used to redefine its paper tokens a few steps greyer
+  than the dashboards', because next to the old olive their near-white read as
+  a hole punched in the page; beside a pastel it no longer does.
 
-  All three move together by necessity. Lifting the ground alone would leave
-  `--line-light` at 1.03:1 against it, which is not a hairline but nothing at
-  all, and the cards at their old near-white would then read as white chips on
-  grey rather than as a surface raised off it.
-
-  The three keep fixed relationships to each other, so darkening the band is a
-  matter of moving all three together: the card sits 1.16:1 above the ground
-  and the hairline 1.35:1 below it. Those two ratios are the band's look —
-  change the ground alone and it comes apart.
-
-  Contrast against the ground, same standard as the palette above:
-
-    --ink        on band  11.38:1  PASS
-    --ink-muted  on band   4.67:1  PASS — the band's body copy
-    --forest     on band   4.63:1  PASS — hairline hover, focus rings
-    --forest     on card   5.39:1  PASS
-
-  This second step has all but spent the band's headroom. --ink-muted and
-  --forest are the floor, a tenth apart at 4.6:1, and a third step of the same
-  size puts both under 4.5:1 — at which point the paragraph under the heading,
-  not just a hover colour, stops passing AA. Greyer than this means lightening
-  the type, not darkening the ground.
+    --ink        on band  16.71:1  PASS
+    --ink-muted  on band   7.73:1  PASS — the band's body copy
+    --forest     on band   6.80:1  PASS — hairline hover, focus rings
 */
 .brand-light {
-  --paper: #c4c7bd; /* the band's ground */
-  --paper-panel: #d3d6cc; /* cards raised off it — the step strip */
-  --line-light: #a7ad9c; /* hairlines, dark enough to show on both */
   background: var(--paper);
   color: var(--ink);
 }
+
+/*
+  The one dark band left: the closing ask and the footer. The text tokens are
+  dark everywhere else, so this band puts back the light values they held on
+  the olive — the same figures, now against black — and everything inside it
+  reads exactly as it did.
+*/
 .brand-black {
+  --bone: #ecefe8;
+  --sage: #97b08c;
+  --sage-lift: #dcedd4;
+  --sage-dim: #c6d9bf;
+  --grey: #b8b8b8;
+  --line: #314b38;
+  --rule: rgba(151, 176, 140, 0.28);
+  --brick: #c5463d;
+  --red-lift: #e87f87;
   background: var(--ink);
   color: var(--bone);
 }
@@ -261,28 +251,27 @@ body {
 }
 
 /*
-  The dark pages (.brand-dark: the site and login; .app-dark: the client
-  booking area) paint their olive on a wrapper, so the page behind it would
-  otherwise stay the light paper background. iOS shows that background when it
+  The brand pages (.brand-dark: the site and login; .app-dark: the client
+  booking area) paint their pastel on a wrapper, so the page behind it would
+  otherwise stay the paper background. iOS shows that background when it
   bounces past the top or bottom of the page, and Safari tints its toolbars
-  from the body's colour, which left pale bands at the edges. The dark colour
-  scheme also gives these pages dark native scrollbars.
+  from the body's colour, which left mismatched bands at the edges. Every
+  surface is light now, so native scrollbars and form controls stay light.
 */
 html:has(.brand-dark, .app-dark),
 html:has(.brand-dark, .app-dark) body {
   background: var(--ground);
 }
-html:has(.brand-dark, .app-dark) {
-  color-scheme: dark;
-}
-
 html {
+  color-scheme: light;
   scroll-behavior: smooth;
 }
 
+/* --forest is the one green no band redefines, so a selection reads the same
+   on the pastel, the paper and the black. */
 ::selection {
-  background: var(--sage);
-  color: var(--ink);
+  background: var(--forest);
+  color: var(--paper);
 }
 
 /* Fine film grain — paper texture under the ledger. Kept very low opacity. */
@@ -565,8 +554,8 @@ html {
 }
 
 /*
-  Dashboard headings. On the light paper surface these stay quiet and
-  readable; inside the dark client area they take the same display treatment
+  Dashboard headings. On the paper surface these stay quiet and readable;
+  inside the pastel client area they take the same display treatment
   as the marketing sections, so the booking flow reads as one piece with the
   hero rather than as a separate admin screen.
 */

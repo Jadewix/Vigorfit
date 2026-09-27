@@ -6,10 +6,10 @@ import { FEEDBACK_MESSAGE_MAX, FEEDBACK_NAME_MAX } from "@/shared/feedback";
 
 type State = { error?: string; sent?: boolean };
 
-// The login form's fields, so the two forms a visitor can meet on the olive
+// The login form's fields, so the two forms a visitor can meet on the pastel
 // are one family. 48px: the site's touch target.
 const field =
-  "w-full border border-line bg-ground/60 px-3.5 text-sm text-bone placeholder:text-sage-dim/60 outline-none transition focus:border-sage focus:ring-2 focus:ring-sage/30";
+  "w-full border border-line bg-ground/60 px-3.5 text-sm text-bone placeholder:text-sage-dim/70 outline-none transition focus:border-sage focus:ring-2 focus:ring-sage/30";
 const label = "tag mb-2 block text-sage-dim";
 
 /**

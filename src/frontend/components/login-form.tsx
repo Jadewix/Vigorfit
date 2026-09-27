@@ -11,7 +11,7 @@ const initial: LoginState = {};
 // large buttons use, since this is a form people fill in on a phone at the
 // door of the gym.
 const field =
-  "h-12 w-full border border-line bg-ground/60 px-3.5 text-sm text-bone placeholder:text-sage-dim/60 outline-none transition focus:border-sage focus:ring-2 focus:ring-sage/30";
+  "h-12 w-full border border-line bg-ground/60 px-3.5 text-sm text-bone placeholder:text-sage-dim/70 outline-none transition focus:border-sage focus:ring-2 focus:ring-sage/30";
 
 export function LoginForm({
   action,
@@ -33,7 +33,7 @@ export function LoginForm({
         className="pointer-events-none absolute inset-0 z-0"
         style={{
           background:
-            "radial-gradient(90% 70% at 50% -10%, rgba(151,176,140,0.14), transparent 60%)",
+            "radial-gradient(90% 70% at 50% -10%, rgba(255,255,255,0.5), transparent 60%)",
         }}
       />
       <div className="relative z-10 w-full max-w-sm">
@@ -42,7 +42,7 @@ export function LoginForm({
         {/*
           A ruled panel rather than a floating card: the heading sits in its
           own cell closed by a hairline, the way the site's nav and bands are
-          divided. Nothing here is rounded or shadowed — on the dark surface
+          divided. Nothing here is rounded or shadowed — on the brand surface
           the whole system is built from right angles and 1px rules.
         */}
         <div className="border border-line bg-panel/70 backdrop-blur">

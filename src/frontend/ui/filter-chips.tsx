@@ -39,7 +39,7 @@ export function FilterChips({
             "app-dark:rounded-none",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2 app-dark:focus-visible:ring-sage app-dark:focus-visible:ring-offset-ground",
             o.active
-              ? "border border-forest bg-forest text-paper app-dark:border-sage app-dark:bg-sage app-dark:text-ink"
+              ? "border border-forest bg-forest text-paper app-dark:border-sage app-dark:bg-sage app-dark:text-paper"
               : "border border-line-light bg-paper-panel text-ink-muted hover:border-forest hover:text-forest-lift app-dark:border-line app-dark:bg-transparent app-dark:text-sage-dim app-dark:hover:border-sage app-dark:hover:text-sage-lift",
           )}
         >
@@ -49,8 +49,8 @@ export function FilterChips({
               className={cn(
                 "tabular-nums",
                 o.active
-                  ? "text-paper/70 app-dark:text-ink/60"
-                  : "text-ink-muted/60 app-dark:text-sage-dim/60",
+                  ? "text-paper/80 app-dark:text-paper/80"
+                  : "text-ink-muted/80 app-dark:text-sage-dim/80",
               )}
             >
               {o.count}

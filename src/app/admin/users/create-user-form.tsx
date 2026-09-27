@@ -133,7 +133,7 @@ export function CreateUserForm() {
       )}
 
       {role === "client" && (
-        <div className="grid gap-4 rounded-lg bg-slate-50 p-4 sm:grid-cols-2">
+        <div className="grid gap-4 rounded-lg bg-paper p-4 sm:grid-cols-2">
           <div>
             <label className={labelClass} htmlFor="plan">
               Subscription
@@ -151,7 +151,7 @@ export function CreateUserForm() {
                 </option>
               ))}
             </select>
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-xs text-ink-muted">
               Until this is set they can sign in, but not book.
             </p>
           </div>
@@ -172,7 +172,7 @@ export function CreateUserForm() {
                 </option>
               ))}
             </select>
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-xs text-ink-muted">
               Their usual days. They can still book outside them — the booking
               form asks them to keep to the plan rather than refusing the date.
             </p>
@@ -180,7 +180,7 @@ export function CreateUserForm() {
           <div className="sm:col-span-2">
             <label className={labelClass} htmlFor="subscription_ends_on">
               Paid until{" "}
-              <span className="text-slate-400">(can be set later)</span>
+              <span className="text-ink-muted">(can be set later)</span>
             </label>
             <input
               id="subscription_ends_on"
@@ -188,7 +188,7 @@ export function CreateUserForm() {
               type="date"
               className={inputClass}
             />
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-xs text-ink-muted">
               Their 12 sessions a month are counted over the month ending on
               this date, and booking stops once it passes.
             </p>

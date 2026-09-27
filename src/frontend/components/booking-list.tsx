@@ -26,7 +26,7 @@ export function BookingList({
           <li key={b.id} className="flex items-start gap-3 p-3.5">
             {/* The chip already carries the date, so the line beside it leads
                 with the time rather than repeating it and wrapping. */}
-            <div className="flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-lg bg-forest/10 text-forest-lift app-dark:rounded-none app-dark:bg-sage app-dark:text-ink">
+            <div className="flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-lg bg-forest/10 text-forest-lift app-dark:rounded-none app-dark:bg-sage app-dark:text-paper">
               <span className="text-[10px] font-semibold uppercase leading-none">
                 {formatInAppTimezone(b.starts_at, { month: "short" })}
               </span>
@@ -53,7 +53,7 @@ export function BookingList({
               <dl className="mt-1 space-y-0.5 text-xs">
                 {showCoach && (
                   <div className="flex items-center gap-1.5">
-                    <dt className="shrink-0 text-ink-muted app-dark:text-sage-dim/70">
+                    <dt className="shrink-0 text-ink-muted app-dark:text-sage-dim/80">
                       Coach
                     </dt>
                     <dd className="flex min-w-0 items-center gap-1.5 text-ink-muted app-dark:text-sage-dim">
@@ -70,7 +70,7 @@ export function BookingList({
                 )}
                 {showClient && (
                   <div className="flex gap-1.5">
-                    <dt className="shrink-0 text-ink-muted app-dark:text-sage-dim/70">
+                    <dt className="shrink-0 text-ink-muted app-dark:text-sage-dim/80">
                       Client
                     </dt>
                     <dd className="truncate text-ink-muted app-dark:text-sage-dim">
@@ -80,7 +80,7 @@ export function BookingList({
                 )}
                 {b.notes && (
                   <div className="flex gap-1.5">
-                    <dt className="shrink-0 text-ink-muted app-dark:text-sage-dim/70">
+                    <dt className="shrink-0 text-ink-muted app-dark:text-sage-dim/80">
                       Notes
                     </dt>
                     <dd className="line-clamp-2 text-ink-muted app-dark:text-sage-dim">

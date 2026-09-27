@@ -12,7 +12,7 @@
 
 /**
  * The hero's weight. This one MUST have a transparent background — the bloom
- * and contact shadow behind it in `HeroObject` are what seat it on the olive,
+ * and contact shadow behind it in `HeroObject` are what seat it on the pastel,
  * and they only work against alpha. A version with its own backdrop baked in
  * will read as a pasted rectangle.
  *

@@ -182,14 +182,14 @@ export function HeroMark({ className }: { className?: string }) {
         .join(" ")}
     >
       <div className="relative aspect-square w-[min(88%,34rem)]">
-        {/* Bloom, as behind the dumbbell: it seats the mark on the olive
+        {/* Bloom, as behind the dumbbell: it seats the mark on the pastel
             instead of leaving it pasted on. Drawn in CSS, so it is there
             before the mark is. */}
         <div
           className="absolute inset-[8%] rounded-full"
           style={{
             background:
-              "radial-gradient(circle at 50% 45%, rgba(151,176,140,0.16), rgba(151,176,140,0.04) 48%, transparent 70%)",
+              "radial-gradient(circle at 50% 45%, rgba(255,255,255,0.5), rgba(255,255,255,0.12) 48%, transparent 70%)",
           }}
         />
         <canvas

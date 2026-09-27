@@ -140,7 +140,7 @@ export default async function ClientBookingsPage({
             // become pressable again.
             if (!canCancel(b.starts_at)) {
               return (
-                <span className="tag whitespace-nowrap text-sage-dim/70">
+                <span className="tag whitespace-nowrap text-sage-dim">
                   Locked
                 </span>
               );

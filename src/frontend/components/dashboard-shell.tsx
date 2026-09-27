@@ -33,7 +33,7 @@ export function DashboardShell({
   profile: Profile;
   navItems: NavItem[];
   children: React.ReactNode;
-  /** Pass "app-dark" to run this shell on the dark brand (client booking flow). */
+  /** Pass "app-dark" to run this shell on the pastel brand (client booking flow). */
   className?: string;
 }) {
   const initials = initialsOf(profile.full_name || profile.username || "?");
@@ -63,7 +63,7 @@ export function DashboardShell({
 
         <div className="mt-auto border-t border-line-light pt-4 app-dark:border-line app-dark:p-3 app-dark:pt-3">
           <div className="flex items-center gap-3 px-2 pb-2 app-dark:px-1">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-line-light text-sm font-semibold text-ink-muted app-dark:rounded-none app-dark:bg-sage app-dark:text-ink">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-line-light text-sm font-semibold text-ink-muted app-dark:rounded-none app-dark:bg-sage app-dark:text-paper">
               {initials}
             </span>
             <div className="min-w-0">

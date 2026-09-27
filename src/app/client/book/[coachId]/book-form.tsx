@@ -19,7 +19,7 @@ import { SlotCell, slotStateOf, label12h } from "./slot-cell";
 
 const initial: BookingState = {};
 const inputClass =
-  "h-11 w-full border border-line bg-ground px-3 text-sm text-bone outline-none transition-colors placeholder:text-sage-dim/60 focus:border-sage";
+  "h-11 w-full border border-line bg-ground px-3 text-sm text-bone outline-none transition-colors placeholder:text-sage-dim/70 focus:border-sage";
 const labelClass = "tag mb-2 block text-sage-dim";
 
 /**
@@ -237,7 +237,7 @@ export function BookForm({
 
       <div>
         <label className={labelClass} htmlFor="notes">
-          Notes for your coach <span className="text-sage-dim/60">(optional)</span>
+          Notes for your coach <span className="text-sage-dim/80">(optional)</span>
         </label>
         <textarea
           id="notes"
@@ -266,7 +266,7 @@ export function BookForm({
             ? `Request ${label12h(time)} session`
             : "Select a time"}
       </Button>
-      <p className="text-center text-xs leading-relaxed text-sage-dim/70">
+      <p className="text-center text-xs leading-relaxed text-sage-dim">
         Your coach will confirm the session. {ARRIVAL_NOTE}
       </p>
     </form>

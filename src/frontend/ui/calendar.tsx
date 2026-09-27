@@ -58,7 +58,7 @@ export function Calendar({
         outside: "text-sage-dim/40",
         disabled: "text-sage-dim/25 line-through",
         hidden: "invisible",
-        selected: "[&>button]:border-sage [&>button]:bg-sage [&>button]:text-ink [&>button]:hover:text-ink",
+        selected: "[&>button]:border-sage [&>button]:bg-sage [&>button]:text-paper [&>button]:hover:text-paper",
 
         ...classNames,
       }}

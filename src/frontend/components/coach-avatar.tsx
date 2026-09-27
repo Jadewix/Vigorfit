@@ -34,7 +34,7 @@ export function CoachAvatar({
     <span
       aria-hidden
       className={cn(
-        "flex shrink-0 items-center justify-center bg-sage font-display text-ink",
+        "flex shrink-0 items-center justify-center bg-sage font-display text-paper",
         className,
       )}
     >

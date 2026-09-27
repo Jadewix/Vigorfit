@@ -19,9 +19,9 @@ const sections = [
  * The site's top bar, in three zones: the mark in its own ruled cell on the
  * left, the section index centred, and the actions flush to the right edge.
  *
- * The bar stays olive over every band, including the light one — it is the
- * frame the page scrolls inside rather than part of any section, and letting
- * it invert on the bone band would make it read as page content.
+ * The bar stays pastel green over every band, including the paper one — it
+ * is the frame the page scrolls inside rather than part of any section, and
+ * letting it change on the paper band would make it read as page content.
  */
 export function SiteNav({ isClient }: { isClient: boolean }) {
   const [open, setOpen] = useState(false);
@@ -153,7 +153,7 @@ export function SiteNav({ isClient }: { isClient: boolean }) {
           */}
           <a
             href="#contact"
-            className="tag hidden items-center bg-oxblood px-8 text-bone transition-colors hover:bg-oxblood/85 md:flex"
+            className="tag hidden items-center bg-oxblood px-8 text-paper transition-colors hover:bg-oxblood/85 md:flex"
           >
             Contact us
           </a>
@@ -164,7 +164,7 @@ export function SiteNav({ isClient }: { isClient: boolean }) {
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-label={open ? "Close menu" : "Open menu"}
-            className="flex w-16 items-center justify-center bg-oxblood text-bone md:hidden"
+            className="flex w-16 items-center justify-center bg-oxblood text-paper md:hidden"
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
               {open ? (

@@ -1,8 +1,8 @@
 import { cn } from "@/shared/utils";
 
 /**
- * Panel surface. Soft and rounded on the light paper dashboards; hard-edged
- * on the dark olive, where the whole system is built from hairlines rather
+ * Panel surface. Soft and rounded on the paper dashboards; hard-edged on
+ * the pastel green, where the whole system is built from hairlines rather
  * than shadows.
  */
 export function Card({

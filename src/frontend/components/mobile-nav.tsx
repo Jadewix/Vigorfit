@@ -85,7 +85,7 @@ export function MobileNav({
           onClick={() => setOpen(true)}
           aria-label="Open menu"
           aria-expanded={open}
-          className="flex h-9 w-9 items-center justify-center rounded-lg text-ink transition-colors hover:bg-paper app-dark:h-auto app-dark:w-16 app-dark:rounded-none app-dark:bg-oxblood app-dark:text-bone app-dark:hover:bg-oxblood/85"
+          className="flex h-9 w-9 items-center justify-center rounded-lg text-ink transition-colors hover:bg-paper app-dark:h-auto app-dark:w-16 app-dark:rounded-none app-dark:bg-oxblood app-dark:text-paper app-dark:hover:bg-oxblood/85"
         >
           <MenuIcon />
         </button>
@@ -96,7 +96,7 @@ export function MobileNav({
         aria-hidden
         onClick={() => setOpen(false)}
         className={cn(
-          "fixed inset-0 z-40 bg-ink/50 transition-opacity duration-300 app-dark:bg-black/70",
+          "fixed inset-0 z-40 bg-ink/50 transition-opacity duration-300",
           open ? "opacity-100" : "pointer-events-none opacity-0",
         )}
       />
@@ -134,7 +134,7 @@ export function MobileNav({
 
         <div className="border-t border-line-light p-3 app-dark:border-line">
           <div className="flex items-center gap-3 px-3 pb-3">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-line-light text-sm font-semibold text-ink-muted app-dark:rounded-none app-dark:bg-sage app-dark:text-ink">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-line-light text-sm font-semibold text-ink-muted app-dark:rounded-none app-dark:bg-sage app-dark:text-paper">
               {initials}
             </span>
             <div className="min-w-0 flex-1">

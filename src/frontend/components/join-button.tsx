@@ -59,7 +59,7 @@ export function JoinButton({
         aria-labelledby={titleId}
         // Clicking the backdrop (the dialog element itself) closes it.
         onClick={(e) => e.target === e.currentTarget && dialog.current?.close()}
-        className="m-auto w-[min(26rem,calc(100vw-2rem))] border border-line bg-ground p-0 text-bone backdrop:bg-black/70"
+        className="m-auto w-[min(26rem,calc(100vw-2rem))] border border-line bg-ground p-0 text-bone backdrop:bg-ink/50"
       >
         <div className="p-6">
           <h2 id={titleId} className="display text-2xl text-sage">

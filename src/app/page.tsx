@@ -140,7 +140,7 @@ const detailLink =
   so the underline is what marks it as pressable.
 
   The rule colour is the difference. The footer underlines in `--line`, which
-  is the hairline for the black well it sits in; on the hero's olive that is
+  is the hairline for the black well it sits in; on the hero's pastel that is
   nearly invisible, so this uses `--rule` — exactly what the Contact band's
   address link uses on the same ground.
 */
@@ -199,8 +199,8 @@ function BookButton({
 }
 
 // Phone browsers that tint their toolbars from theme-color get the page's
-// olive instead of their default light bar.
-export const viewport: Viewport = { themeColor: "#16281b" };
+// pastel green instead of their default bar.
+export const viewport: Viewport = { themeColor: "#c8e8cf" };
 
 /**
  * One row of the hero's ledger: term on the left, value on the right, the gap
@@ -208,9 +208,9 @@ export const viewport: Viewport = { themeColor: "#16281b" };
  * so the markup stays a plain definition list.
  *
  * The terms are sage. They spent a while in red — first wine, then the
- * accent — and at 3.19:1 on this ground they were the dimmest text in the
+ * accent — and at 3.19:1 on the old olive they were the dimmest text in the
  * hero while also being the part that names what every figure beside them
- * means. Sage reads them at 6.58:1.
+ * means. The small green text reads them at 6.52:1.
  *
  * Red has not left the hero: the mark in the bar above it, the booking
  * button and the sign-in line all still carry it. It is no longer doing the
@@ -259,12 +259,12 @@ export default async function Home() {
     The page is a stack of full-bleed bands, and the order of their grounds is
     the structure a reader feels before they read a word:
 
-        olive   hero      — the brand's own colour, and the facts
-        olive   team      — raised a step on --panel; the weight sits here
-        olive   classes   — back down to the ground; the same cards as the team
-        bone    booking   — the one light band; the process, and the room
+        green   hero      — the brand's own colour, and the facts
+        green   team      — raised a step on --panel; the weight sits here
+        green   classes   — back down to the ground; the same cards as the team
+        paper   booking   — the paler band; the process, and the room
         black   closing   — the deepest well on the page under the last CTA
-        olive   contact   — the details, and the feedback box, after the ask
+        green   contact   — the details, and the feedback box, after the ask
         black   footer    — parted from it by the burgundy hairline
 
     Each band sets its own ground and its own text colour via `.brand-dark`,
@@ -283,14 +283,15 @@ export default async function Home() {
         {/* Ground light. Low and off-centre, so the band is lit from one
             direction rather than evenly flooded. The weight it used to seat
             has moved down to the team band; the light stays, because what it
-            is really doing is keeping a full screen of flat olive from
-            reading as a blank. */}
+            is really doing is keeping a full screen of flat pastel from
+            reading as a blank. On a light ground the light is white and the
+            shade opposite it a breath of the deep green. */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 z-0"
           style={{
             background:
-              "radial-gradient(70% 55% at 78% 88%, rgba(151,176,140,0.14), transparent 64%), radial-gradient(55% 45% at 8% 4%, rgba(11,13,11,0.55), transparent 68%)",
+              "radial-gradient(70% 55% at 78% 88%, rgba(255,255,255,0.5), transparent 64%), radial-gradient(55% 45% at 8% 4%, rgba(28,80,46,0.12), transparent 68%)",
           }}
         />
 
@@ -390,18 +391,21 @@ export default async function Home() {
             </div>
             {!isClient && (
               <p
-                className="load-rise mt-4 text-xs text-brick/70"
+                className="load-rise mt-4 text-xs text-brick"
                 style={{ animationDelay: "480ms" }}
               >
                 Already training with us?{" "}
                 {/*
-                  The sentence is held at 70% of the accent and the link at its
-                  full strength, because once the whole line is one colour that
-                  step is the only thing marking the link — a phone has no hover
-                  to do it. Two weights of one token, where this used to spend
-                  two tokens on the same distinction.
+                  The whole line is the accent at full strength, so the
+                  sentence reads as easily as the link. The underline is what
+                  marks the link — a phone has no hover to do it. It used to
+                  be marked by holding the sentence at 70% of the accent,
+                  which left the sentence too faint to read.
                 */}
-                <Link href="/login" className="text-brick hover:underline">
+                <Link
+                  href="/login"
+                  className="text-brick underline underline-offset-2"
+                >
                   Log in
                 </Link>
               </p>
@@ -535,7 +539,7 @@ export default async function Home() {
 
         The team band's twin: the same heading, the same ruled block, the same
         square picture beside a name. What differs is the ground — down off
-        --panel, so the two olive bands read as two sections rather than one
+        --panel, so the two green bands read as two sections rather than one
         long one — and that its button is "I'm coming", as on the client's
         own Classes page, rather than a booking: a class isn't booked, you
         tell the studio you'll be there.
@@ -709,8 +713,8 @@ export default async function Home() {
                   <div className="flex h-full flex-col p-8">
                     {/*
                       The numerals are the band's red, and the one place on the
-                      page where burgundy sits on paper rather than on olive —
-                      6.86:1 against this ground, so unlike the site's other
+                      page where burgundy sits on paper rather than on green —
+                      10.4:1 against the cards, so unlike the site's other
                       reds these are as readable as they are loud.
 
                       The rule under each number is tinted to match. It is the
@@ -738,7 +742,7 @@ export default async function Home() {
         ── Closing CTA ──────────────────────────────────────
 
         Black, and the only band above the footer that is. The page has argued
-        on olive and explained itself on paper; the ask sits in the deepest
+        on green and explained itself on paper; the ask sits in the deepest
         well on the page so there is nothing else to look at. The contact
         details come after it, for whoever still has a question.
       */}

@@ -32,7 +32,7 @@ import { useImageFallback } from "@/frontend/site/use-image-fallback";
  * for it beyond declining to start the listener.
  *
  * Asset. `src` is expected to be a *transparent* PNG/WebP cut-out — the bloom
- * and contact shadow below only seat the object on the olive if the file has
+ * and contact shadow below only seat the object on the pastel if the file has
  * no background of its own. Until that file exists the component falls back to
  * the wireframe plate, so a missing asset degrades to a deliberate graphic
  * rather than a broken image icon.
@@ -143,14 +143,14 @@ export function HeroObject({
       >
         {/*
           Light bloom. This stays once a render is dropped in: it is what seats
-          the object on the olive ground instead of leaving it floating as a
+          the object on the pastel ground instead of leaving it floating as a
           cut-out.
         */}
         <div
           className="absolute inset-0 rounded-full"
           style={{
             background:
-              "radial-gradient(circle at 42% 38%, rgba(151,176,140,0.20), rgba(151,176,140,0.05) 45%, transparent 68%)",
+              "radial-gradient(circle at 42% 38%, rgba(255,255,255,0.55), rgba(255,255,255,0.14) 45%, transparent 68%)",
           }}
         />
 
@@ -187,7 +187,7 @@ export function HeroObject({
           className="hero-weight-shadow absolute bottom-[6%] left-1/2 h-[7%] w-[62%] -translate-x-1/2 rounded-[50%] blur-md"
           style={{
             background:
-              "radial-gradient(ellipse at center, rgba(11,13,11,0.55), transparent 72%)",
+              "radial-gradient(ellipse at center, rgba(15,34,23,0.4), transparent 72%)",
           }}
         />
       </div>
@@ -220,7 +220,7 @@ function PlatePlaceholder() {
           style={{
             width: `${size}%`,
             height: `${size}%`,
-            borderColor: `rgba(151,176,140,${alpha})`,
+            borderColor: `rgba(44,107,66,${alpha})`,
           }}
         />
       ))}
@@ -228,7 +228,7 @@ function PlatePlaceholder() {
       {/* Centre hub — the plate's bore, and the one solid mark in the group. */}
       <div
         className="absolute left-1/2 top-1/2 h-[11%] w-[11%] -translate-x-1/2 -translate-y-1/2 rounded-full"
-        style={{ background: "rgba(151,176,140,0.22)" }}
+        style={{ background: "rgba(44,107,66,0.22)" }}
       />
 
       {/* Crosshair ticks, so the plate reads as a measured object. */}
@@ -236,14 +236,14 @@ function PlatePlaceholder() {
         className="absolute left-1/2 top-1/2 h-px w-[100%] -translate-x-1/2 -translate-y-1/2"
         style={{
           background:
-            "linear-gradient(to right, transparent, rgba(151,176,140,0.18) 18%, rgba(151,176,140,0.18) 82%, transparent)",
+            "linear-gradient(to right, transparent, rgba(44,107,66,0.18) 18%, rgba(44,107,66,0.18) 82%, transparent)",
         }}
       />
       <div
         className="absolute left-1/2 top-1/2 h-[100%] w-px -translate-x-1/2 -translate-y-1/2"
         style={{
           background:
-            "linear-gradient(to bottom, transparent, rgba(151,176,140,0.18) 18%, rgba(151,176,140,0.18) 82%, transparent)",
+            "linear-gradient(to bottom, transparent, rgba(44,107,66,0.18) 18%, rgba(44,107,66,0.18) 82%, transparent)",
         }}
       />
     </div>

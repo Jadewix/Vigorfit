@@ -15,7 +15,7 @@ const statusStyles: Record<BookingStatus, string> = {
   pending:
     "border border-ink-muted/40 text-ink-muted app-dark:border-sage-dim/50 app-dark:text-sage-dim",
   confirmed:
-    "bg-forest/15 text-forest-lift app-dark:bg-sage app-dark:text-ink",
+    "bg-forest/15 text-forest-lift app-dark:bg-sage app-dark:text-paper",
   cancelled:
     "bg-oxblood/15 text-oxblood app-dark:bg-oxblood/25 app-dark:text-red-lift",
   completed:
@@ -44,7 +44,7 @@ export function StatusBadge({ status }: { status: BookingStatus }) {
 */
 const roleStyles: Record<Role, string> = {
   // Heaviest: a solid block of ink.
-  admin: "bg-ink text-paper app-dark:bg-bone app-dark:text-ink",
+  admin: "bg-ink text-paper app-dark:bg-bone app-dark:text-paper",
   // Middle: outlined, so it is clearly distinct from the `confirmed` status
   // badge, which owns the filled-green treatment.
   coach:

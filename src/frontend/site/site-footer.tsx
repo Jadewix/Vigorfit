@@ -30,7 +30,7 @@ const detailRow =
 //
 // Burgundy, and it holds that colour through the row's hover while the words
 // beside it go sage. The glyph is a mark rather than part of the label, and at
-// 3.19:1 it is comfortably past the 3:1 an icon is held to.
+// 4.04:1 on the black it is comfortably past the 3:1 an icon is held to.
 const detailIcon = "mt-[3px] shrink-0 text-brick";
 
 const detailValue =

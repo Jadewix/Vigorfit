@@ -34,12 +34,12 @@ export function slotStateOf(
 
 const styles: Record<SlotState, string> = {
   available: "border-line bg-ground text-bone hover:border-sage hover:text-sage-lift",
-  selected: "border-sage bg-sage text-ink",
+  selected: "border-sage bg-sage text-paper",
   // Your own booking: a result, not a block. Deliberately not struck through —
   // striking it read as a cancellation of something you actually hold.
   mine: "cursor-default border-sage bg-panel-green text-bone",
-  // Oxblood carries the border and the fill, but never the text: oxblood on
-  // this ground measures 1.42:1, so the glyphs use red-lift instead.
+  // Oxblood carries the border; the glyphs use red-lift, the booking app's
+  // own red for text, at 7.71:1 on the pink tint.
   full: "cursor-not-allowed border-oxblood/70 bg-panel-red text-red-lift",
 };
 
@@ -123,7 +123,7 @@ export function SlotCell({
         <span
           className={cn(
             "whitespace-nowrap text-[10px] font-normal uppercase tracking-wide",
-            selected ? "text-ink/70" : "text-sage-lift",
+            selected ? "text-paper" : "text-sage-lift",
           )}
         >
           1 left
