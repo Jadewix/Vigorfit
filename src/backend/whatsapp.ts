@@ -33,10 +33,34 @@ export function isWhatsAppConfigured(): boolean {
  * Convert a stored phone number to the digits-only form the Cloud API wants
  * (country code + number, no "+", spaces or dashes). Returns null if it
  * doesn't look like a usable number.
+ *
+ * Phones are typed freely on the profile page, and the studio is in Lebanon,
+ * so the usual local ways of writing a Lebanese mobile get +961 added rather
+ * than failing at Meta: "03 357 873", "3 357 873", "70 123 456", "0096170…",
+ * and "+961 03…" (the 0 doesn't belong after the country code). Numbers
+ * already written with another country code pass through untouched.
  */
 export function toWaNumber(phone: string | null | undefined): string | null {
-  const digits = (phone ?? "").replace(/\D/g, "");
+  let digits = (phone ?? "").replace(/\D/g, "");
+  if (digits.startsWith("00")) digits = digits.slice(2);
+  if (digits.startsWith("9610")) digits = "961" + digits.slice(4);
+  else if (digits.length === 8 && digits.startsWith("0")) {
+    digits = "961" + digits.slice(1);
+  } else if (digits.length === 8 && /^[78]/.test(digits)) {
+    digits = "961" + digits;
+  } else if (digits.length === 7 && digits.startsWith("3")) {
+    digits = "961" + digits;
+  }
   return digits.length >= 8 ? digits : null;
+}
+
+/**
+ * Meta rejects the whole message if a template value is empty or holds a
+ * line break, a tab or a run of spaces, so a stray one in someone's name
+ * would otherwise cost them the notification.
+ */
+function cleanParam(text: string): string {
+  return text.replace(/\s+/g, " ").trim() || "-";
 }
 
 export async function sendWhatsAppTemplate(opts: {
@@ -59,7 +83,10 @@ export async function sendWhatsAppTemplate(opts: {
         ? [
             {
               type: "body",
-              parameters: opts.params.map((text) => ({ type: "text", text })),
+              parameters: opts.params.map((text) => ({
+                type: "text",
+                text: cleanParam(text),
+              })),
             },
           ]
         : [],
