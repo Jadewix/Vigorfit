@@ -37,12 +37,17 @@ export function isWhatsAppConfigured(): boolean {
  * Phones are typed freely on the profile page, and the studio is in Lebanon,
  * so the usual local ways of writing a Lebanese mobile get +961 added rather
  * than failing at Meta: "03 357 873", "3 357 873", "70 123 456", "0096170…",
- * and "+961 03…" (the 0 doesn't belong after the country code). Numbers
- * already written with another country code pass through untouched.
+ * and "+961 03…" (the 0 doesn't belong after the country code). The same
+ * slip in a French number, "+33 07…", is fixed too, since clients include
+ * people living in France. Other numbers with a country code pass through
+ * untouched: some countries (Italy) really do keep that 0.
  */
 export function toWaNumber(phone: string | null | undefined): string | null {
   let digits = (phone ?? "").replace(/\D/g, "");
   if (digits.startsWith("00")) digits = digits.slice(2);
+  if (digits.startsWith("330") && digits.length === 12) {
+    digits = "33" + digits.slice(3);
+  }
   if (digits.startsWith("9610")) digits = "961" + digits.slice(4);
   else if (digits.length === 8 && digits.startsWith("0")) {
     digits = "961" + digits.slice(1);
