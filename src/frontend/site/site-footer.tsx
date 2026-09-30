@@ -180,7 +180,15 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-line pt-4 text-[11px] text-sage-dim">
-          <p>© {new Date().getFullYear()} Vigorfit</p>
+          <p>
+            © {new Date().getFullYear()} Vigorfit ·{" "}
+            <a
+              href="/privacy"
+              className="underline decoration-line underline-offset-2 transition-colors hover:text-grey"
+            >
+              Privacy
+            </a>
+          </p>
           <p className="text-sage-dim/60">Developed by Planck</p>
         </div>
       </div>
