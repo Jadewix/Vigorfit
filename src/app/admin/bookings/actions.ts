@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/backend/auth";
 import { createAdminClient } from "@/backend/supabase/admin";
+import { prepareStudioCancellationNotice } from "@/backend/notifications";
 
 /**
  * Permanently remove a booking row. Admin-only: `requireRole` is the
@@ -15,6 +16,9 @@ export async function deleteBookingAction(formData: FormData): Promise<void> {
   const id = String(formData.get("id") ?? "");
   if (!id) return;
 
+  // Read who to tell before the row is gone; send only once it really is.
+  const notify = await prepareStudioCancellationNotice(id);
+
   const admin = createAdminClient();
   const { error } = await admin.from("bookings").delete().eq("id", id);
   if (error) {
@@ -22,6 +26,8 @@ export async function deleteBookingAction(formData: FormData): Promise<void> {
     // broken before.
     throw new Error(`Could not delete booking: ${error.message}`);
   }
+
+  await notify();
 
   // The overview lists recent bookings and booking counts too, and coaches and
   // clients see their own lists, so refresh every view that shows bookings.

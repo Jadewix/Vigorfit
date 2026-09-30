@@ -21,6 +21,7 @@ type Party = { name: string; phone: string | null };
 
 async function loadParties(bookingId: string): Promise<{
   startsAt: string;
+  status: string;
   client: Party;
   coach: Party;
 } | null> {
@@ -28,7 +29,7 @@ async function loadParties(bookingId: string): Promise<{
 
   const { data: booking } = await admin
     .from("bookings")
-    .select("client_id, coach_id, starts_at")
+    .select("client_id, coach_id, starts_at, status")
     .eq("id", bookingId)
     .single();
   if (!booking) return null;
@@ -44,6 +45,7 @@ async function loadParties(bookingId: string): Promise<{
 
   return {
     startsAt: booking.starts_at,
+    status: booking.status,
     client: {
       name: c?.full_name || c?.username || "your client",
       phone: c?.phone ?? null,
@@ -96,6 +98,52 @@ export async function notifyBookingUpdate(
     });
   } catch (e) {
     console.error("[notify] notifyBookingUpdate", e);
+  }
+}
+
+/**
+ * An admin deleted a booking -> tell the client and the coach it's off.
+ *
+ * Deleting removes the row this needs to read, so it runs in two steps: call
+ * it before the delete, and run the function it returns once the delete has
+ * succeeded. Only an upcoming session that was still pending or confirmed
+ * gets a message; clearing out past or already-cancelled rows stays silent.
+ */
+export async function prepareStudioCancellationNotice(
+  bookingId: string,
+): Promise<() => Promise<void>> {
+  const silent = async () => {};
+  try {
+    const p = await loadParties(bookingId);
+    if (!p) return silent;
+    const upcoming = new Date(p.startsAt).getTime() > Date.now();
+    if (!upcoming || (p.status !== "pending" && p.status !== "confirmed")) {
+      return silent;
+    }
+
+    const when = formatDateTime(p.startsAt);
+    const label = "Cancelled by the studio";
+    return async () => {
+      try {
+        await Promise.all([
+          sendWhatsAppTemplate({
+            to: p.client.phone,
+            template: WA_TEMPLATES.bookingUpdate,
+            params: [firstName(p.client.name), p.coach.name, when, label],
+          }),
+          sendWhatsAppTemplate({
+            to: p.coach.phone,
+            template: WA_TEMPLATES.bookingUpdate,
+            params: [firstName(p.coach.name), p.client.name, when, label],
+          }),
+        ]);
+      } catch (e) {
+        console.error("[notify] studio cancellation", e);
+      }
+    };
+  } catch (e) {
+    console.error("[notify] prepareStudioCancellationNotice", e);
+    return silent;
   }
 }
 
