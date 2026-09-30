@@ -11,8 +11,15 @@
     "crons": ["0 * * * *"]
   },
 
+  // The app is reached through a service binding, not the public internet:
+  // Cloudflare refuses a Worker's fetch() to another Worker's workers.dev URL
+  // on the same account (error 1042), which silently stopped every reminder.
+  "services": [{ "binding": "APP", "service": "vigorfit" }],
+
   "vars": {
-    "APP_URL": "https://vigorfit.plancksoftware.workers.dev"
+    // Only the path matters through the binding; the host is what the app
+    // sees as its own URL.
+    "APP_URL": "https://vigorfit.me"
   }
 
   // CRON_SECRET is a secret, not a var:

@@ -27,14 +27,17 @@ async function runReminders(env) {
   }
 
   const url = `${env.APP_URL}${ENDPOINT}`;
+  const init = { headers: { Authorization: `Bearer ${env.CRON_SECRET}` } };
   try {
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${env.CRON_SECRET}` },
-    });
+    // Through the service binding when there is one: a plain fetch() to the
+    // app's workers.dev URL is blocked by Cloudflare (error 1042).
+    const res = env.APP ? await env.APP.fetch(url, init) : await fetch(url, init);
     const body = await res.text();
     // Visible in `wrangler tail`. A 401 here means the two Workers disagree
     // about CRON_SECRET; a 200 reports how many messages went out.
-    console.log(`[cron] ${res.status} ${body.slice(0, 200)}`);
+    const line = `[cron] ${res.status} ${body.slice(0, 200)}`;
+    if (res.ok) console.log(line);
+    else console.error(line);
   } catch (e) {
     console.error("[cron] request failed", e);
   }
