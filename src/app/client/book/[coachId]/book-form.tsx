@@ -44,11 +44,14 @@ type Slot = {
 
 export function BookForm({
   coachId,
+  daysOff,
   today,
   plan,
   track,
 }: {
   coachId: string;
+  /** Weekdays the coach doesn't work (0 = Sunday), struck out of the calendar. */
+  daysOff: number[];
   /** Today's date on the studio's clock, "YYYY-MM-DD", from the server. */
   today: string;
   /** The subscription, which decides how many clients share a slot. */
@@ -65,13 +68,13 @@ export function BookForm({
   // Today is Beirut's date, not the device's: a phone set to another zone would
   // otherwise offer yesterday, or hide today, around midnight.
   const todayDate = useMemo(() => new Date(`${today}T00:00:00`), [today]);
-  // Sunday and the past are the only days that cannot be picked. A member's
+  // The past, Sundays and the coach's days off cannot be picked. A member's
   // schedule track used to be struck out of the calendar as well; it is now a
   // preference rather than a rule, so their own days stay the ones to take and
   // the rest are offered with the note below.
   const disabledDays = useMemo(
-    () => [{ before: todayDate }, { dayOfWeek: [0] }],
-    [todayDate],
+    () => [{ before: todayDate }, { dayOfWeek: [0, ...daysOff] }],
+    [todayDate, daysOff],
   );
 
   const [date, setDate] = useState("");
@@ -158,7 +161,8 @@ export function BookForm({
             defaultMonth={todayDate}
             startMonth={todayDate}
             today={todayDate}
-            // Past days and Sundays (studio closed) can't be picked at all.
+            // Past days, Sundays (studio closed) and the coach's days off
+            // can't be picked at all.
             disabled={disabledDays}
           />
         </div>

@@ -19,6 +19,8 @@ import {
 import { weekdayOf, zonedTimeToUtc } from "@/shared/timezone";
 import { classesForCoachOn } from "@/backend/classes";
 import { blockingClass } from "@/shared/classes";
+import { coachHoursOn } from "@/shared/coach-hours";
+import { WEEKDAYS } from "@/shared/studio";
 
 export type BookingState = { error?: string };
 
@@ -54,22 +56,31 @@ export async function createBookingAction(
 
   const supabase = await createClient();
 
-  // 1. Confirm the coach exists and is accepting bookings.
-  const { data: coach } = await supabase
-    .from("coaches")
-    .select("id, active")
-    .eq("id", coachId)
-    .single();
+  // 1. Confirm the coach exists and is accepting bookings. Their name picks
+  //    out their own working hours for step 2.
+  const [{ data: coach }, { data: coachProfile }] = await Promise.all([
+    supabase.from("coaches").select("id, active").eq("id", coachId).single(),
+    supabase.from("profiles").select("full_name").eq("id", coachId).single(),
+  ]);
   if (!coach || !coach.active) {
     return { error: "This coach isn't accepting bookings right now." };
   }
 
-  // 2. The chosen time must be a real slot in the studio's opening hours.
+  // 2. The chosen time must be a real slot in the studio's opening hours,
+  //    and inside the coach's own hours that day.
   const weekday = weekdayOf(date);
   if (!isOpenOn(weekday)) {
     return { error: "The studio is closed that day." };
   }
-  if (!slotTimesFor(weekday).includes(time)) {
+  const coachName: string | null = coachProfile?.full_name ?? null;
+  const coachHours = coachHoursOn(coachName, weekday);
+  if (!coachHours) {
+    const who = coachName?.trim().split(/\s+/)[0] || "Your coach";
+    return {
+      error: `${who} doesn't take sessions on ${WEEKDAYS[weekday]}s. Please pick another day.`,
+    };
+  }
+  if (!slotTimesFor(weekday, coachHours).includes(time)) {
     return { error: "Please pick one of the offered time slots." };
   }
   // The coach is teaching a class then; the grid shows it as taken.

@@ -86,7 +86,7 @@ export function instagramLink(handle: string): string {
 
 /* --------------------------------------------------------------- hours --- */
 
-const WEEKDAYS = [
+export const WEEKDAYS = [
   "Sunday",
   "Monday",
   "Tuesday",
@@ -105,6 +105,16 @@ type OpeningHours = {
   /** Minutes after midnight; null when closed all day. */
   hours: { open: number; close: number } | null;
 };
+
+/**
+ * "Monday" for a single day, "Mon – Fri" for a run of consecutive days. The
+ * days are Date.getDay() numbers, in the order they're listed.
+ */
+export function daysLabel(days: readonly number[]): string {
+  return days.length === 1
+    ? WEEKDAYS[days[0]]
+    : `${SHORT_WEEKDAYS[days[0]]} – ${SHORT_WEEKDAYS[days[days.length - 1]]}`;
+}
 
 /** Two days keep the same hours (or are both closed). */
 function sameHours(
@@ -136,11 +146,7 @@ function buildHours(): OpeningHours[] {
   }
 
   return rows.map(({ days, hours }) => ({
-    // A single day gets its full name; a run gets a short-form range.
-    label:
-      days.length === 1
-        ? WEEKDAYS[days[0]]
-        : `${SHORT_WEEKDAYS[days[0]]} – ${SHORT_WEEKDAYS[days[days.length - 1]]}`,
+    label: daysLabel(days),
     days,
     hours: hours
       ? { open: hours.first * 60, close: hours.last * 60 }
@@ -175,7 +181,7 @@ export const STUDIO_HOURS_DISPLAY = STUDIO_HOURS.map(({ label, hours }) => ({
 }));
 
 /** "8:00 AM", "6:00 PM" from minutes after midnight. */
-function formatLongClock(minutes: number): string {
+export function formatLongClock(minutes: number): string {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
   const suffix = h < 12 ? "AM" : "PM";

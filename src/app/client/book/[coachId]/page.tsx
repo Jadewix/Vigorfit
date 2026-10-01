@@ -7,7 +7,7 @@ import { CoachAvatar } from "@/frontend/components/coach-avatar";
 import { BookForm } from "./book-form";
 import { PLANS, TRACKS } from "@/shared/booking";
 import { STUDIO_HOURS_DISPLAY } from "@/shared/studio";
-import { coachHoursFor } from "@/shared/coach-hours";
+import { coachDaysOff, coachHoursDisplay } from "@/shared/coach-hours";
 import { getCurrentProfile } from "@/backend/auth";
 import {
   getAllowance,
@@ -44,7 +44,7 @@ export default async function BookCoachPage({
   const name = p?.full_name || "Coach";
   const firstName = name.split(" ")[0];
   // Coaches with their own hours show those; the rest show the studio's.
-  const ownHours = coachHoursFor(firstName);
+  const ownHours = coachHoursDisplay(p?.full_name);
 
   // The viewer's subscription decides which days the calendar offers and
   // how many people share a slot. Without one they can't book at all.
@@ -192,6 +192,7 @@ export default async function BookCoachPage({
                 )}
                 <BookForm
                   coachId={coachId}
+                  daysOff={coachDaysOff(p?.full_name)}
                   today={zonedToday()}
                   plan={sub.plan}
                   track={sub.track}

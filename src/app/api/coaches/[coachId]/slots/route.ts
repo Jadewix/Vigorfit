@@ -12,6 +12,7 @@ import {
   hasFreeSessionAvailable,
 } from "@/backend/subscription";
 import { classesForCoachOn } from "@/backend/classes";
+import { coachHoursOn } from "@/shared/coach-hours";
 import { blockingClass } from "@/shared/classes";
 import {
   utcToZonedTime,
@@ -23,11 +24,11 @@ import {
 export const dynamic = "force-dynamic";
 
 /**
- * Hourly slots for a coach on a given date, based on the studio's opening
- * hours. Each slot holds up to SLOT_CAPACITY clients, so a slot is only
- * `taken` once it's full (or the viewer already booked it). A slot that
- * overlaps one of the coach's classes is taken for everyone, with `inClass`
- * set. Past slots are omitted.
+ * Hourly slots for a coach on a given date, within the coach's own hours
+ * (shared/coach-hours) and the studio's opening hours. Each slot holds up to
+ * SLOT_CAPACITY clients, so a slot is only `taken` once it's full (or the
+ * viewer already booked it). A slot that overlaps one of the coach's classes
+ * is taken for everyone, with `inClass` set. Past slots are omitted.
  *
  *   GET /api/coaches/<id>/slots?date=YYYY-MM-DD
  *   -> { closed: false, slots: [{ time, taken, mine, remaining, inClass }] }
@@ -90,10 +91,20 @@ export async function GET(
   // The subscription decides both the capacity and which weekdays are on
   // offer. It needs the user id so it can't join the batch above, but it can
   // run alongside the bookings read.
-  const [sub, booked, classes] = await Promise.all([
+  // The coach's name picks out their own working hours.
+  const [sub, booked, classes, coachName] = await Promise.all([
     getSubscription(user.id),
     bookedPromise ?? Promise.resolve([]),
     classesForCoachOn(coachId, date),
+    supabase
+      .from("profiles")
+      .select("full_name")
+      .eq("id", coachId)
+      .single()
+      .then(
+        (r) => (r.data?.full_name as string | undefined) ?? null,
+        () => null,
+      ),
   ]);
 
   // Classes members join scheduled classes rather than booking coach hours.
@@ -138,7 +149,8 @@ export async function GET(
   }
 
   const now = Date.now();
-  const slots = slotTimesFor(weekday)
+  // A day the coach doesn't work has no times at all.
+  const slots = slotTimesFor(weekday, coachHoursOn(coachName, weekday))
     .filter((t) => zonedTimeToUtc(date, t)!.getTime() >= now)
     .map((t) => {
       // The coach is teaching a class then: nobody can have this hour.

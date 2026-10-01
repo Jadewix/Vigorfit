@@ -222,7 +222,10 @@ export function slotAvailability(
  * side used to carry its own second copy, which drifted to 9–5 while the
  * grid went on selling 8–6.
  */
-export const HOURS: Record<number, { first: number; last: number } | null> = {
+/** One day's hours: the first and last bookable slot hour. */
+export type DayHours = { first: number; last: number };
+
+export const HOURS: Record<number, DayHours | null> = {
   0: null, // Sunday — closed
   1: { first: 8, last: 21 }, // Mon  8:00 AM – 9:00 PM
   2: { first: 8, last: 21 },
@@ -260,9 +263,15 @@ export function offTrackNote(track: ScheduleTrack): string {
   return `This is outside your plan's days — preferably stick to ${TRACKS[track].short}.`;
 }
 
-/** Bookable start times for a weekday, e.g. ["08:00", "09:00", ...]. */
-export function slotTimesFor(weekday: number): string[] {
-  const h = HOURS[weekday];
+/**
+ * Bookable start times for a weekday, e.g. ["08:00", "09:00", ...]. Pass a
+ * coach's own hours that day (`coachHoursOn` in shared/coach-hours) to offer
+ * only those; null means nothing is bookable.
+ */
+export function slotTimesFor(
+  weekday: number,
+  h: DayHours | null = HOURS[weekday],
+): string[] {
   if (!h) return [];
   const times: string[] = [];
   for (let hour = h.first; hour <= h.last; hour++) {
