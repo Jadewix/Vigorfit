@@ -7,6 +7,7 @@ import { CoachAvatar } from "@/frontend/components/coach-avatar";
 import { BookForm } from "./book-form";
 import { PLANS, TRACKS } from "@/shared/booking";
 import { STUDIO_HOURS_DISPLAY } from "@/shared/studio";
+import { coachHoursFor } from "@/shared/coach-hours";
 import { getCurrentProfile } from "@/backend/auth";
 import {
   getAllowance,
@@ -41,6 +42,9 @@ export default async function BookCoachPage({
 
   const p = profile as Profile | null;
   const name = p?.full_name || "Coach";
+  const firstName = name.split(" ")[0];
+  // Coaches with their own hours show those; the rest show the studio's.
+  const ownHours = coachHoursFor(firstName);
 
   // The viewer's subscription decides which days the calendar offers and
   // how many people share a slot. Without one they can't book at all.
@@ -81,7 +85,7 @@ export default async function BookCoachPage({
           {(coach.bio || coach.avatar_url) && (
             <Card>
               <CardHeader>
-                <CardTitle>About {name.split(" ")[0]}</CardTitle>
+                <CardTitle>About {firstName}</CardTitle>
               </CardHeader>
               <CardBody>
                 <div className="flex items-start gap-4">
@@ -102,11 +106,13 @@ export default async function BookCoachPage({
 
           <Card>
             <CardHeader>
-              <CardTitle>Opening hours</CardTitle>
+              <CardTitle>
+                {ownHours ? `${firstName}’s hours` : "Opening hours"}
+              </CardTitle>
             </CardHeader>
             <CardBody>
               <ul className="divide-y divide-line text-sm">
-                {STUDIO_HOURS_DISPLAY.map((row) => (
+                {(ownHours ?? STUDIO_HOURS_DISPLAY).map((row) => (
                   <li
                     key={row.days}
                     className="flex justify-between gap-4 py-2.5 first:pt-0 last:pb-0"
